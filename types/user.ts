@@ -4,7 +4,8 @@ export interface User {
   id: number;
   email: string;
   name: string;
-  role: "ADMIN" | "USER" | string; // 👈 ajusta según los roles que tengas
+  username: string;
+  role: "ADMIN" | "USER";
   createdAt: string;
   updatedAt: string;
 }

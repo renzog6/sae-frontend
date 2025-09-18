@@ -1,97 +1,106 @@
 // filepath: sae-frontend/app/users/[id]/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-import { UsersService } from "@/lib/api/users";
-
-interface UserFormData {
-  email: string;
-  name: string;
-  role: string;
-}
+import { UserForm } from "@/components/forms/user-form";
+import { useUpdateUser, useUser } from "@/lib/hooks/useUsers";
+import { UserFormData } from "@/lib/validations";
 
 export default function EditUserPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const params = useParams();
   const userId = Number(params.id);
-  const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, setValue } = useForm<UserFormData>();
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (session?.accessToken) {
-        const users = await UsersService.getUsers(session.accessToken);
-        const found = users.find((u) => u.id === userId);
-        if (found) {
-          setValue("email", found.email);
-          setValue("name", found.name);
-          setValue("role", found.role.toLowerCase());
-        }
-      }
-    };
-    fetchUser();
-  }, [session, userId, setValue]);
+  const { data: user, isLoading: isLoadingUser } = useUser(
+    session?.accessToken || "",
+    userId
+  );
 
-  const onSubmit = async (data: UserFormData) => {
+  const updateUserMutation = useUpdateUser(session?.accessToken || "");
+
+  const handleSubmit = async (data: UserFormData) => {
     try {
-      setSubmitting(true);
-      if (session?.accessToken) {
-        await UsersService.updateUser(userId, data, session.accessToken);
-        router.push("/users");
-      }
-    } finally {
-      setSubmitting(false);
+      setError(null);
+      await updateUserMutation.mutateAsync({ id: userId, userData: data });
+      router.push("/users");
+    } catch (err) {
+      console.error("Error updating user:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error al actualizar el usuario. Inténtalo de nuevo."
+      );
     }
   };
 
+  const handleCancel = () => {
+    router.push("/users");
+  };
+
+  if (isLoadingUser) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">Cargando usuario...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-600">
+              Usuario no encontrado
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-4">Editar Usuario</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
-        <div>
-          <Label htmlFor="name">Nombre</Label>
-          <Input id="name" {...register("name", { required: true })} />
-        </div>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            {...register("email", { required: true })}
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Editar Usuario</CardTitle>
+          <CardDescription>
+            Modifica los datos del usuario en el sistema.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserForm
+            onSubmit={handleSubmit}
+            isLoading={updateUserMutation.isPending}
+            defaultValues={{
+              name: user.name,
+              email: user.email,
+              username: user.username || "",
+              role: user.role,
+            }}
+            isEdit={true}
+            onCancel={handleCancel}
+            error={error}
           />
-        </div>
-        <div>
-          <Label htmlFor="role">Rol</Label>
-          <Select onValueChange={(value) => setValue("role", value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona un rol" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="user">Usuario</SelectItem>
-              <SelectItem value="admin">Administrador</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Guardando..." : "Guardar cambios"}
-        </Button>
-      </form>
-    </>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

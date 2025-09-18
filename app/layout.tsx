@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "SAE Dashboard",
-  description: "Sistema de Administración Escolar",
+  description: "Sistema de Administración Empresarial",
 };
 
 export default function RootLayout({
@@ -20,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
-        <Providers>
-          <DashboardLayout>{children}</DashboardLayout>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -1,6 +1,8 @@
 // filepath: sae-frontend/app/login/page.tsx
 "use client";
 
+import { PublicLayout } from "@/components/layouts/public-layout";
+
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -45,20 +47,17 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError(
-          "Credenciales inválidas. Por favor, verifica tu email y contraseña."
-        );
+        setError("Credenciales inválidas. Verifica tu email y contraseña.");
       } else {
-        // Verificar la sesión y redirigir
         const session = await getSession();
         if (session) {
           router.push("/dashboard");
           router.refresh();
         }
       }
-    } catch (error) {
+    } catch {
       setError(
-        "Ocurrió un error durante el inicio de sesión. Inténtalo de nuevo."
+        "Ocurrió un error durante el inicio de sesión. Inténtalo nuevamente."
       );
     } finally {
       setIsLoading(false);
@@ -66,106 +65,128 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center px-4 py-12 min-h-screen bg-gradient-to-br from-laurel-50 to-laurel-100 sm:px-6 lg:px-8">
-      <div className="space-y-8 w-full max-w-md">
-        <div className="text-center">
-          <h1 className="mb-2 text-3xl font-bold text-laurel-900">
-            Sistema SAE
-          </h1>
-          <p className="text-laurel-600">
-            Sistema de Administración Empresarial
-          </p>
-        </div>
+    <PublicLayout>
+      <div className="flex flex-col items-center justify-center h-full px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md space-y-8 animate-fadeIn">
+          <div className="text-center">
+            <h1 className="text-4xl font-extrabold text-zinc-900 drop-shadow-sm">
+              Sistema SAE
+            </h1>
+            <p className="mt-2 text-zinc-600">
+              Sistema de Administración Empresarial
+            </p>
+          </div>
 
-        <Card className="w-full shadow-xl backdrop-blur-sm border-laurel-200 bg-white/90">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-laurel-900">
-              Iniciar Sesión
-            </CardTitle>
-            <CardDescription className="text-center text-laurel-600">
-              Ingresa tus credenciales para acceder al sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <div className="flex items-center p-3 space-x-2 text-red-600 bg-red-50 rounded-md border border-red-200">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{error}</span>
-                </div>
-              )}
+          <Card className="w-full transition-all duration-300 border shadow-2xl bg-white/80 border-zinc-200 backdrop-blur-lg rounded-xl hover:shadow-zinc-400/30">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-semibold text-center text-zinc-900">
+                Iniciar Sesión
+              </CardTitle>
+              <CardDescription className="text-center text-zinc-600">
+                Ingresa tus credenciales para acceder al sistema
+              </CardDescription>
+            </CardHeader>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="font-medium text-laurel-700">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="tu@email.com"
-                  {...register("email")}
-                  className={`border-laurel-300 focus:border-laurel-500 focus:ring-laurel-500 ${
-                    errors.email ? "border-red-500" : ""
-                  }`}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email.message}</p>
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                {error && (
+                  <div className="flex items-center p-3 space-x-2 text-sm text-red-700 border border-red-200 rounded-lg shadow-sm bg-red-50">
+                    <AlertCircle className="w-5 h-5" />
+                    <span>{error}</span>
+                  </div>
                 )}
-              </div>
 
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="font-medium text-laurel-700"
-                >
-                  Contraseña
-                </Label>
-                <div className="relative">
+                <div className="space-y-1">
+                  <Label htmlFor="email" className="font-medium text-zinc-700">
+                    Email
+                  </Label>
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="Tu contraseña"
-                    {...register("password")}
-                    className={`border-laurel-300 focus:border-laurel-500 focus:ring-laurel-500 pr-10 ${
-                      errors.password ? "border-red-500" : ""
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="tu@email.com"
+                    {...register("email")}
+                    className={`border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 transition-colors ${
+                      errors.email ? "border-red-500" : ""
                     }`}
                   />
-                  <button
-                    type="button"
-                    className="flex absolute inset-y-0 right-0 items-center pr-3"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-laurel-400" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-laurel-400" />
-                    )}
-                  </button>
+                  {errors.email && (
+                    <p className="text-sm text-red-600">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
 
-              <Button
-                type="submit"
-                className="px-4 py-2 w-full font-medium text-white rounded-md transition-colors bg-laurel-600 hover:bg-laurel-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="space-y-1">
+                  <Label
+                    htmlFor="password"
+                    className="font-medium text-zinc-700"
+                  >
+                    Contraseña
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      placeholder="Tu contraseña"
+                      {...register("password")}
+                      className={`pr-10 border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 transition-colors ${
+                        errors.password ? "border-red-500" : ""
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors text-zinc-400 hover:text-zinc-600"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-600">
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
 
-        <div className="text-sm text-center text-laurel-600">
-          <p>¿Necesitas ayuda? Contacta al administrador del sistema</p>
+                <Button
+                  type="submit"
+                  className="w-full px-4 py-2 font-semibold text-white transition-all duration-300 shadow-md rounded-xl bg-zinc-700 hover:bg-zinc-800 hover:shadow-lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="mt-2 text-sm text-center text-zinc-600">
+            ¿Necesitas ayuda? Contacta al administrador del sistema
+          </div>
         </div>
+
+        {/* Animaciones suaves */}
+        <style jsx>{`
+          .animate-fadeIn {
+            animation: fadeIn 0.6s ease-in-out;
+          }
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </div>
-    </div>
+    </PublicLayout>
   );
 }

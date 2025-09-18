@@ -4,93 +4,62 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-import { UsersService } from "@/lib/api/users";
-
-interface UserFormData {
-  email: string;
-  name: string;
-  password: string;
-  role: string;
-}
+import { UserForm } from "@/components/forms/user-form";
+import { useCreateUser } from "@/lib/hooks/useUsers";
+import { UserFormData } from "@/lib/validations";
 
 export default function NewUserPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, control } = useForm<UserFormData>();
+  const createUserMutation = useCreateUser(session?.accessToken || "");
 
-  const onSubmit = async (data: UserFormData) => {
+  const handleSubmit = async (data: UserFormData) => {
     try {
-      setSubmitting(true);
-      if (session?.accessToken) {
-        await UsersService.createUser(data, session.accessToken);
-        router.push("/users");
-      }
-    } finally {
-      setSubmitting(false);
+      setError(null);
+      await createUserMutation.mutateAsync(data);
+      router.push("/users");
+    } catch (err) {
+      console.error("Error creating user:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error al crear el usuario. Inténtalo de nuevo."
+      );
     }
   };
 
+  const handleCancel = () => {
+    router.push("/users");
+  };
+
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-4">Crear Usuario</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
-        <div>
-          <Label htmlFor="name">Nombre</Label>
-          <Input id="name" {...register("name", { required: true })} />
-        </div>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            {...register("email", { required: true })}
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Crear Nuevo Usuario</CardTitle>
+          <CardDescription>
+            Completa los datos para crear un nuevo usuario en el sistema.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserForm
+            onSubmit={handleSubmit}
+            isLoading={createUserMutation.isPending}
+            onCancel={handleCancel}
+            error={error}
           />
-        </div>
-        <div>
-          <Label htmlFor="password">Contraseña</Label>
-          <Input
-            id="password"
-            type="password"
-            {...register("password", { required: true, minLength: 6 })}
-          />
-        </div>
-        <div>
-          <Label htmlFor="role">Rol</Label>
-          <Controller
-            name="role"
-            control={control}
-            defaultValue="USER"
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un rol" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USER">Usuario</SelectItem>
-                  <SelectItem value="ADMIN">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </div>
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Creando..." : "Crear"}
-        </Button>
-      </form>
-    </>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

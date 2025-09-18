@@ -2,39 +2,98 @@
 import { ApiClient } from "./apiClient";
 import { User } from "../../types/user";
 import { PaginatedResponse, ApiResponse } from "../../types/api";
+import { UserFormData } from "../validations";
 
 export class UsersService {
-  static getUsers(accessToken: string) {
-    return ApiClient.request<PaginatedResponse<User>>("/users", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then((res) => res.data);
+  static async getUsers(accessToken: string): Promise<User[]> {
+    try {
+      const response = await ApiClient.request<PaginatedResponse<User>>(
+        "/users",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    }
   }
 
-  static createUser(
-    userData: Omit<User, "id" | "createdAt" | "updatedAt"> & {
-      password: string;
-    },
+  static async getUserById(id: number, accessToken: string): Promise<User> {
+    try {
+      // Cambia ApiResponse<User> por User directamente
+      const response = await ApiClient.request<User>(`/users/${id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      console.log("getUserById response:", response);
+      return response; // Devuelve response directamente, no response.data
+    } catch (error) {
+      console.error(`Error fetching user with ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async createUser(
+    userData: UserFormData,
     accessToken: string
-  ) {
-    return ApiClient.request<ApiResponse<User>>("/users", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify(userData),
-    }).then((res) => res.data);
+  ): Promise<User> {
+    try {
+      console.log("userData >>> ", userData);
+      const response = await ApiClient.request<ApiResponse<User>>("/users", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      console.log("response.data >>> ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
   }
 
-  static updateUser(id: number, userData: Partial<User>, accessToken: string) {
-    return ApiClient.request<ApiResponse<User>>(`/users/${id}`, {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify(userData),
-    }).then((res) => res.data);
+  static async updateUser(
+    id: number,
+    userData: Partial<User>,
+    accessToken: string
+  ): Promise<User> {
+    try {
+      const response = await ApiClient.request<ApiResponse<User>>(
+        `/users/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
   }
 
-  static deleteUser(id: number, accessToken: string) {
-    return ApiClient.request<{ message: string }>(`/users/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then((res) => res.message);
+  static async deleteUser(id: number, accessToken: string): Promise<string> {
+    try {
+      const response = await ApiClient.request<{ message: string }>(
+        `/users/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      return response.message;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
   }
 }

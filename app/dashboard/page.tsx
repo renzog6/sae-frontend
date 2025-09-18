@@ -15,10 +15,10 @@ export default function DashboardPage() {
   const { data: session } = useSession();
 
   return (
-    <>
+    <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-laurel-900 mb-2">
+        <h1 className="mb-2 text-3xl font-bold text-laurel-900">
           Panel de Control
         </h1>
         <p className="text-laurel-600">
@@ -28,7 +28,7 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Welcome Card */}
           <Card className="col-span-full border-laurel-200 bg-gradient-to-r from-laurel-50 to-white">
             <CardHeader>
@@ -42,7 +42,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 bg-laurel-500 rounded-full"></div>
+                <div className="w-2 h-2 rounded-full bg-laurel-500"></div>
                 <span className="text-sm text-laurel-600">
                   Sistema operativo
                 </span>
@@ -51,7 +51,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Quick Stats */}
-          <Card className="border-laurel-200 hover:shadow-md transition-shadow">
+          <Card className="transition-shadow border-laurel-200 hover:shadow-md">
             <CardHeader>
               <CardTitle className="text-laurel-800">Usuarios</CardTitle>
               <CardDescription className="text-laurel-600">
@@ -64,7 +64,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-laurel-200 hover:shadow-md transition-shadow">
+          <Card className="transition-shadow border-laurel-200 hover:shadow-md">
             <CardHeader>
               <CardTitle className="text-laurel-800">Empresas</CardTitle>
               <CardDescription className="text-laurel-600">
@@ -77,7 +77,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-laurel-200 hover:shadow-md transition-shadow">
+          <Card className="transition-shadow border-laurel-200 hover:shadow-md">
             <CardHeader>
               <CardTitle className="text-laurel-800">Reportes</CardTitle>
               <CardDescription className="text-laurel-600">
@@ -104,29 +104,29 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-laurel-100">
+                <div className="flex items-center justify-between py-2 border-b border-laurel-100">
                   <span className="font-medium text-laurel-700">Email:</span>
                   <span className="text-laurel-600">
                     {session?.user?.email}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-laurel-100">
+                <div className="flex items-center justify-between py-2 border-b border-laurel-100">
                   <span className="font-medium text-laurel-700">Nombre:</span>
                   <span className="text-laurel-600">
                     {session?.user?.name || "No especificado"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-laurel-100">
+                <div className="flex items-center justify-between py-2 border-b border-laurel-100">
                   <span className="font-medium text-laurel-700">Rol:</span>
-                  <span className="px-2 py-1 bg-laurel-100 text-laurel-700 rounded-md text-sm font-medium">
+                  <span className="px-2 py-1 text-sm font-medium rounded-md bg-laurel-100 text-laurel-700">
                     {session?.user?.role || "Usuario"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2">
+                <div className="flex items-center justify-between py-2">
                   <span className="font-medium text-laurel-700">
                     ID de Usuario:
                   </span>
-                  <span className="font-mono text-sm text-laurel-500 bg-laurel-50 px-2 py-1 rounded">
+                  <span className="px-2 py-1 font-mono text-sm rounded text-laurel-500 bg-laurel-50">
                     {session?.user?.id || "N/A"}
                   </span>
                 </div>
@@ -135,6 +135,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-    </>
+    </DashboardLayout>
   );
 }
