@@ -14,7 +14,7 @@ import {
 
 import { UserForm } from "@/components/forms/user-form";
 import { useCreateUser } from "@/lib/hooks/useUsers";
-import { UserFormData } from "@/lib/validations";
+import { UserFormData } from "@/lib/validations/auth";
 
 export default function NewUserPage() {
   const { data: session } = useSession();

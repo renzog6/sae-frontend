@@ -1,4 +1,4 @@
-// filipath: sae-frontend/lib/validations.ts
+// filepath: sae-frontend/lib/validations/auth.ts
 import { z } from "zod";
 
 export const loginSchema = z.object({

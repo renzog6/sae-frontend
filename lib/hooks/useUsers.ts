@@ -1,8 +1,8 @@
-// filepath: sae-frontend/lib/hooks/useUsers.tsx
+// filepath: sae-frontend/lib/hooks/useUsers.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UsersService } from "@/lib/api/users";
 import { User } from "@/types/user";
-import { UserFormData } from "@/lib/validations";
+import { UserFormData } from "@/lib/validations/auth";
 
 export function useUsers(accessToken: string) {
   return useQuery<User[], Error>({

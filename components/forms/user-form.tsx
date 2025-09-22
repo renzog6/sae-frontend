@@ -18,7 +18,7 @@ import {
   updateUserSchema,
   UserFormData,
   UpdateUserFormData,
-} from "@/lib/validations";
+} from "@/lib/validations/auth";
 
 interface UserFormProps {
   onSubmit: (data: UserFormData | UpdateUserFormData) => void;
@@ -52,7 +52,6 @@ export function UserForm({
   });
 
   const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
-    console.log("Form data:", data);
 
     // En modo edición, si el password está vacío, lo removemos del payload
     if (isEdit && (data as UpdateUserFormData).password === "") {

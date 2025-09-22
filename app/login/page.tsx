@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { loginSchema, type LoginFormData } from "@/lib/validations";
+import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {

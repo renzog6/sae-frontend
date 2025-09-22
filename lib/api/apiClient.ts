@@ -15,11 +15,8 @@ export class ApiClient {
       ...options,
     };
 
-    console.log("body enviada >>>", options.body);
-
     const response = await fetch(url, config);
-    console.log("response >>> ", response);
-
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
@@ -30,8 +27,7 @@ export class ApiClient {
   }
 
   // Auth
-  static async login(credentials: LoginDto) {
-    console.log("credentials >>> ", credentials);
+  static async login(credentials: LoginDto) {    
 
     return this.request<{
       accessToken: string;
