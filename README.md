@@ -11,50 +11,71 @@ Un sistema completo de administración empresarial desarrollado con tecnologías
 
 ## 🚀 Descripción
 
-SAE es un sistema integral de administración empresarial que permite gestionar:
+SAE Frontend es una aplicación web en Next.js (App Router) con UI moderna basada en TailwindCSS y shadcn/ui. Integra autenticación con NextAuth, formularios validados con Zod y React Hook Form, y gestión de datos mediante hooks personalizados.
 
-- **Usuarios y autenticación** con roles (ADMIN/USER)
-- **Empresas** con información fiscal y comercial
-- **Empleados** y contactos empresariales
-- **Equipos** y activos de la empresa
-- **Inspecciones** y auditorías
-- **Ubicaciones** geográficas (provincias, ciudades, direcciones)
+Funcionalidades destacadas:
+
+- **Autenticación** (NextAuth) con rutas protegidas y middleware.
+- **Panel y páginas**: Dashboard, Perfil, Usuarios (listado/alta/edición), Settings.
+- **Settings unificado** (Marcas, Unidades, Ciudades):
+  - Formularios en **diálogo centrado** (shadcn/ui `Dialog`) a través del componente reutilizable `FormDialog`.
+  - Formularios consistentes con **`FormField`/`FormItem`/`FormMessage`** de shadcn/ui y validación Zod.
+  - **Toasts** de éxito/error globales con `ToasterProvider`.
+  - Tablas con búsqueda y acciones (editar/eliminar) por entidad.
+- **Accesibilidad y UX**: soporte para `prefers-reduced-motion`, foco visible, jerarquía tipográfica y paleta **slate + emerald**.
+- **Arquitectura modular**: componentes desacoplados (`components/forms/*`, `components/*-dialog.tsx`), hooks en `lib/hooks`, y tipados en `types/*`.
 
 ## 📁 Estructura del Proyecto
 
 ```
-sae-web/
-├── sae-frontend/          # Aplicación Next.js 15.5.3
-│   ├── app/              # App Router de Next.js
-│   │   ├── api/          # API Routes (NextAuth)
-│   │   ├── dashboard/    # Páginas del dashboard
-│   │   ├── login/        # Página de login
-│   │   ├── users/        # Gestión de usuarios
-│   │   └── layout.tsx    # Layout principal
-│   ├── components/       # Componentes React reutilizables
-│   │   ├── forms/        # Formularios
-│   │   ├── layouts/      # Layouts y navegación
-│   │   ├── providers/    # Context providers
-│   │   └── ui/           # Componentes UI (shadcn/ui)
-│   ├── lib/             # Utilidades y configuraciones
-│   │   ├── api/         # Cliente API y servicios
-│   │   ├── hooks/       # Custom hooks (TanStack Query)
-│   │   └── validations.ts # Esquemas Zod
-│   └── types/           # Definiciones TypeScript
+sae-frontend/
+├── app/                               # App Router
+│   ├── api/
+│   │   └── auth/[...nextauth]/        # NextAuth (credenciales/JWT)
+│   ├── dashboard/                     # Dashboard
+│   ├── login/                         # Login
+│   ├── profile/                       # Perfil de usuario
+│   ├── settings/
+│   │   ├── brands/                    # Settings: Marcas (tabla + acciones)
+│   │   ├── locations/                 # Settings: Ciudades (tabla + acciones)
+│   │   ├── units/                     # Settings: Unidades (tabla + acciones)
+│   │   ├── layout.tsx                 # Layout de settings
+│   │   └── page.tsx                   # Landing de settings (cards)
+│   ├── users/                         # Gestión de usuarios
+│   │   ├── [id]/                      # Detalle/edición
+│   │   └── new/                       # Alta de usuario
+│   ├── globals.css                    # Estilos globales (Tailwind)
+│   └── layout.tsx                     # Root layout + Providers + Toaster
 │
-└── sae-backend/         # API NestJS 10.0.0
-    ├── src/
-    │   ├── auth/        # Módulo de autenticación JWT
-    │   ├── users/       # Gestión de usuarios
-    │   ├── companies/   # Gestión de empresas
-    │   ├── employees/   # Gestión de empleados
-    │   ├── equipment/   # Gestión de equipos
-    │   ├── contacts/    # Gestión de contactos
-    │   ├── locations/   # Gestión de ubicaciones
-    │   ├── inspections/ # Gestión de inspecciones
-    │   ├── common/      # Utilidades compartidas
-    │   └── prisma/      # Configuración Prisma ORM
-    └── prisma/          # Esquemas y migraciones de BD
+├── components/
+│   ├── brands/
+│   │   └── brand-dialog.tsx           # Dialog centrado para crear/editar marcas
+│   ├── units/
+│   │   └── unit-dialog.tsx            # Dialog centrado para crear/editar unidades
+│   ├── locations/
+│   │   └── city-dialog.tsx            # Dialog centrado para crear/editar ciudades
+│   ├── forms/
+│   │   ├── brand-form.tsx             # Form de marca (shadcn FormField + Zod)
+│   │   ├── unit-form.tsx              # Form de unidad (shadcn FormField + Zod)
+│   │   └── city-form.tsx              # Form de ciudad (shadcn FormField + Zod)
+│   ├── layouts/                        # Layouts y navegación
+│   ├── providers/                      # Providers (Auth/Query/etc.)
+│   └── ui/
+│       ├── form.tsx                   # Primitivas de formulario shadcn adaptadas
+│       ├── form-dialog.tsx            # Dialog reutilizable con motion
+│       ├── toaster.tsx                # Toaster global con framer-motion
+│       └── (button, card, input, ...) # Componentes de shadcn/ui
+│
+├── lib/
+│   ├── api/                           # Cliente HTTP y servicios
+│   ├── hooks/                         # Hooks de datos (useCatalogs, useLocations)
+│   ├── validations/                   # Esquemas Zod (catalog, location, auth)
+│   └── utils.ts                       # Utilidades varias
+│
+├── types/                             # Tipados de dominio (auth, user, catalog, location)
+├── middleware.ts                      # Protección de rutas (NextAuth)
+├── tailwind.config.js                 # Configuración Tailwind (tema slate + emerald)
+└── next.config.ts                     # Configuración Next.js
 ```
 
 ## 🛠 Tecnologías Utilizadas

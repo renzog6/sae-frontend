@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { City } from "@/types/location";
 import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
-import { CityDrawer } from "@/components/locations/city-drawer";
+import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "./data-table";
 import { getCityColumns } from "./columns";
 import {
@@ -57,14 +57,14 @@ export default function LocationsPage() {
   const columns = getCityColumns({ onEdit: handleEdit, onDelete: handleDelete });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-laurel-900">Ciudades</h1>
-          <p className="text-laurel-600">Administra las ciudades y provincias</p>
+          <h1 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">Ciudades</h1>
+          <p className="text-sm text-muted-foreground">Administra las ciudades y provincias</p>
         </div>
-        <Button onClick={handleAdd} className="bg-laurel-600 hover:bg-laurel-700">
-          Nueva Ciudad
+        <Button onClick={handleAdd}>
+          Nueva ciudad
         </Button>
       </div>
 
@@ -76,10 +76,10 @@ export default function LocationsPage() {
         </Card>
       )}
 
-      <Card className="border-laurel-200">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-laurel-900">Lista de Ciudades</CardTitle>
-          <CardDescription className="text-laurel-600">
+          <CardTitle>Lista de ciudades</CardTitle>
+          <CardDescription>
             {cityCount} ciudad{cityCount !== 1 ? "es" : ""}
           </CardDescription>
         </CardHeader>
@@ -88,7 +88,7 @@ export default function LocationsPage() {
         </CardContent>
       </Card>
 
-      <CityDrawer
+      <CityDialog
         accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={setDialogOpen}

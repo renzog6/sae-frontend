@@ -1,11 +1,11 @@
 // filepath: sae-frontend/components/forms/city-form.tsx
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -37,80 +37,92 @@ export function CityForm({
 }: CityFormProps) {
   const { data: provinces, isLoading: provLoading, error: provError } = useProvinces(accessToken);
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<CityFormData>({
+  const form = useForm<CityFormData>({
     resolver: zodResolver(CitySchema),
     defaultValues,
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
-        <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <Label htmlFor="name">Nombre de la ciudad</Label>
-        <Input id="name" {...register("name")} placeholder="Ej. Buenos Aires" />
-        {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="postalCode">Código postal</Label>
-        <Input id="postalCode" {...register("postalCode")} placeholder="Ej. C1000" />
-        {errors.postalCode && (
-          <p className="text-sm text-red-600">{errors.postalCode.message}</p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
+          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            {error}
+          </div>
         )}
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="provinceId">Provincia</Label>
-        <Controller
-          name="provinceId"
-          control={control}
+        <FormField
+          control={form.control}
+          name="name"
           render={({ field }) => (
-            <Select
-              onValueChange={(val) => field.onChange(Number(val))}
-              value={field.value ? String(field.value) : undefined}
-              disabled={provLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={provLoading ? "Cargando..." : "Selecciona una provincia"} />
-              </SelectTrigger>
-              <SelectContent>
-                {provinces?.map((p) => (
-                  <SelectItem key={p.id} value={String(p.id)}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormItem>
+              <FormLabel>Nombre de la ciudad</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej. Buenos Aires" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
-        {provError && (
-          <p className="text-sm text-red-600">Error al cargar provincias</p>
-        )}
-        {errors.provinceId && (
-          <p className="text-sm text-red-600">{errors.provinceId.message}</p>
-        )}
-      </div>
 
-      <div className="flex justify-end gap-3 pt-2">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancelar
+        <FormField
+          control={form.control}
+          name="postalCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Código postal</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej. C1000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="provinceId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Provincia</FormLabel>
+              <Select
+                onValueChange={(val) => field.onChange(Number(val))}
+                value={field.value ? String(field.value) : undefined}
+                disabled={provLoading}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={provLoading ? "Cargando..." : "Selecciona una provincia"} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {provinces?.map((p) => (
+                    <SelectItem key={p.id} value={String(p.id)}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {provError && (
+                <FormDescription className="text-red-600">Error al cargar provincias</FormDescription>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end gap-3 pt-2">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+              Cancelar
+            </Button>
+          )}
+          <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar cambios" : "Crear"}
           </Button>
-        )}
-        <Button type="submit" disabled={isLoading} className="text-white bg-green-700 hover:bg-green-600">
-          {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar cambios" : "Crear ciudad"}
-        </Button>
-      </div>
-    </form>
+        </div>
+      </form>
+    </Form>
   );
 }
+
