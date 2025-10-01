@@ -17,7 +17,6 @@ export const AddressSchema = z.object({
   number: z.string().max(10, "Máximo 10 caracteres").optional(),
   floor: z.string().max(10, "Máximo 10 caracteres").optional(),
   apartment: z.string().max(10, "Máximo 10 caracteres").optional(),
-  postalCode: z.string().max(20, "Máximo 20 caracteres").optional(),
   neighborhood: z.string().max(100, "Máximo 100 caracteres").optional(),
   reference: z.string().max(255, "Máximo 255 caracteres").optional(),
   latitude: z.number().optional(),

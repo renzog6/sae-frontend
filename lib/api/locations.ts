@@ -281,4 +281,17 @@ export class LocationsService {
       throw error;
     }
   }
+
+  static async getAddressesByPerson(personId: number, accessToken: string): Promise<Address[]> {
+    try {
+      const response = await ApiClient.request<Address[] | PaginatedResponse<Address>>(
+        `/locations/addresses/person/${personId}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      return unwrap<Address[]>(response);
+    } catch (error) {
+      console.error(`Error fetching addresses for person ${personId}:`, error);
+      throw error;
+    }
+  }
 }

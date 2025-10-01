@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, BarChart3, Settings, Leaf, X } from "lucide-react";
+import { Home, Users, User, BarChart3, Settings, Leaf, X, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 
@@ -25,6 +25,8 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Empresas", href: "/companies", icon: Building },
+  { name: "Empleados", href: "/employees", icon: User },
   { name: "Usuarios", href: "/users", icon: Users, requiredRole: "ADMIN" },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
   { name: "Configuración", href: "/settings", icon: Settings },

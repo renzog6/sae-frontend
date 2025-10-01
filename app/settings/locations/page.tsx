@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { City } from "@/types/location";
 import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/data-table";
 import { getCityColumns } from "./columns";
 import {
   AlertDialog,

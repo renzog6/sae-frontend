@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brand } from "@/types/catalog";
 import { useBrands, useDeleteBrand } from "@/lib/hooks/useCatalogs";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/data-table";
 import { getBrandColumns } from "./columns";
 import {
   AlertDialog,
@@ -71,7 +71,7 @@ export default function BrandsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Listado</CardTitle>
+          <CardTitle>Listado de Marcas</CardTitle>
           <CardDescription>Gestión de marcas activas</CardDescription>
         </CardHeader>
         <CardContent>

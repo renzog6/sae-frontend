@@ -86,7 +86,7 @@ export function BrandForm({ onSubmit, isLoading = false, defaultValues, isEdit =
             </Button>
           )}
           <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar cambios" : "Crear"}
+            {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar" : "Crear"}
           </Button>
         </div>
       </form>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Unit } from "@/types/catalog";
 import { useUnits, useCreateUnit, useUpdateUnit, useDeleteUnit } from "@/lib/hooks/useCatalogs";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/data-table";
 import { getUnitColumns } from "./columns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

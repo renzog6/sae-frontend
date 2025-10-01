@@ -69,8 +69,20 @@ export function useCreateAddress(accessToken: string) {
   return useMutation({
     mutationFn: (data: AddressFormData) =>
       LocationsService.createAddress(data, accessToken),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      // Invalidate generic addresses and all company-scoped address lists
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      // Invalidate any "addressesByCompany" queries regardless of companyId
+      queryClient.invalidateQueries({ queryKey: ["addressesByCompany"] });
+      // Invalidate any "addressesByPerson" queries regardless of personId
+      queryClient.invalidateQueries({ queryKey: ["addressesByPerson"] });
+      // Optional: if we have companyId in the payload, we can target it as well
+      if (variables?.companyId) {
+        queryClient.invalidateQueries({ queryKey: ["addressesByCompany", variables.companyId] });
+      }
+      if (variables?.personId) {
+        queryClient.invalidateQueries({ queryKey: ["addressesByPerson", variables.personId] });
+      }
     },
   });
 }
@@ -84,6 +96,10 @@ export function useUpdateAddress(accessToken: string) {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
       queryClient.invalidateQueries({ queryKey: ["address", variables.id] });
+      // Also invalidate all company-scoped address lists (we might not know the companyId here)
+      queryClient.invalidateQueries({ queryKey: ["addressesByCompany"] });
+      // Also invalidate all person-scoped address lists
+      queryClient.invalidateQueries({ queryKey: ["addressesByPerson"] });
     },
   });
 }
@@ -96,6 +112,10 @@ export function useDeleteAddress(accessToken: string) {
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
       queryClient.invalidateQueries({ queryKey: ["address", id] });
+      // Also invalidate all company-scoped address lists
+      queryClient.invalidateQueries({ queryKey: ["addressesByCompany"] });
+      // Also invalidate all person-scoped address lists
+      queryClient.invalidateQueries({ queryKey: ["addressesByPerson"] });
     },
   });
 }
@@ -113,6 +133,14 @@ export function useAddressesByCompany(accessToken: string, companyId: number) {
     queryKey: ["addressesByCompany", companyId],
     queryFn: () => LocationsService.getAddressesByCompany(companyId, accessToken),
     enabled: !!accessToken && !!companyId,
+  });
+}
+
+export function useAddressesByPerson(accessToken: string, personId: number) {
+  return useQuery<Address[], Error>({
+    queryKey: ["addressesByPerson", personId],
+    queryFn: () => LocationsService.getAddressesByPerson(personId, accessToken),
+    enabled: !!accessToken && !!personId,
   });
 }
 

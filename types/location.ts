@@ -28,7 +28,6 @@ export interface Address {
   number?: string;
   floor?: string;
   apartment?: string;
-  postalCode?: string;
   cityId: number;
   city?: City;
   latitude?: number;

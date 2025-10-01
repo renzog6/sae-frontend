@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/settings/brands/data-table.tsx
+// filepath: sae-frontend/components/data-table.tsx
 "use client";
 
 import * as React from "react";
@@ -20,11 +20,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchableColumn?: keyof TData;
+  searchableColumn?: keyof TData; // backward-compatible single column
+  searchableColumns?: (keyof TData)[]; // new: multiple columns
   searchPlaceholder?: string;
 }
 
-export function DataTable<TData, TValue>({ columns, data, searchableColumn, searchPlaceholder = "Buscar..." }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, searchableColumn, searchableColumns, searchPlaceholder = "Buscar..." }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filter, setFilter] = React.useState("");
 
@@ -39,10 +40,16 @@ export function DataTable<TData, TValue>({ columns, data, searchableColumn, sear
   });
 
   const filteredRows = React.useMemo(() => {
-    if (!filter || !searchableColumn) return data;
-    const key = searchableColumn as string;
-    return data.filter((row: any) => String(row?.[key] ?? "").toLowerCase().includes(filter.toLowerCase()));
-  }, [data, filter, searchableColumn]);
+    if (!filter) return data;
+    const q = filter.toLowerCase();
+    const keys: string[] = Array.isArray(searchableColumns) && searchableColumns.length
+      ? (searchableColumns as string[])
+      : searchableColumn
+        ? [searchableColumn as string]
+        : [];
+    if (!keys.length) return data;
+    return data.filter((row: any) => keys.some((k) => String(row?.[k] ?? "").toLowerCase().includes(q)));
+  }, [data, filter, searchableColumn, searchableColumns]);
 
   const tableForRender = useReactTable({
     data: filteredRows,
@@ -55,7 +62,7 @@ export function DataTable<TData, TValue>({ columns, data, searchableColumn, sear
 
   return (
     <div className="space-y-4">
-      {searchableColumn && (
+      {(searchableColumn || (searchableColumns && searchableColumns.length)) && (
         <div className="flex items-center justify-between gap-2">
           <Input
             placeholder={searchPlaceholder}
