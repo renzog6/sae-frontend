@@ -3,9 +3,9 @@ import { LoginDto } from "@/types/auth";
 import { User } from "@/types/user";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  process.env.API_URL ||
-  "http://localhost:3305/api";
+  typeof window === "undefined"
+    ? process.env.API_URL || "http://sae-backend:3005/api"
+    : process.env.NEXT_PUBLIC_API_URL || "http://192.168.88.80:3305/api";
 
 export class ApiClient {
   public static async request<T>(

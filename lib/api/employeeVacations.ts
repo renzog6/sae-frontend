@@ -14,6 +14,8 @@ function unwrap<T>(resp: any): T {
   return resp as T;
 }
 export class EmployeeVacationsService {
+
+  // Fetch all employee vacations with optional pagination
   static async getEmployeeVacations(
     accessToken: string,
     page?: number,
@@ -38,6 +40,7 @@ export class EmployeeVacationsService {
     }
   }
 
+  // Fetch a single employee vacation by ID
   static async getEmployeeVacationById(
     id: number,
     accessToken: string
@@ -56,6 +59,7 @@ export class EmployeeVacationsService {
     }
   }
 
+  // Create a new employee vacation
   static async createVacation(
     data: EmployeeVacationFormData,
     accessToken: string
@@ -78,6 +82,7 @@ export class EmployeeVacationsService {
     }
   }
 
+  // Update an existing employee vacation
   static async updateVacation(
     id: number,
     data: UpdateEmployeeVacationFormData,
@@ -101,6 +106,7 @@ export class EmployeeVacationsService {
     }
   }
 
+  // Delete an employee vacation
   static async deleteVacation(
     id: number,
     accessToken: string
@@ -120,6 +126,7 @@ export class EmployeeVacationsService {
     }
   }
 
+  // Download vacation details as a PDF
   static async downloadVacationPdf(id: number, accessToken: string) {
     const blob = await ApiClient.requestBlob(`/employee-vacations/${id}/pdf`, {
       method: "GET",
