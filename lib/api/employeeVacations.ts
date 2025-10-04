@@ -14,7 +14,6 @@ function unwrap<T>(resp: any): T {
   return resp as T;
 }
 export class EmployeeVacationsService {
-
   // Fetch all employee vacations with optional pagination
   static async getEmployeeVacations(
     accessToken: string,
@@ -134,6 +133,48 @@ export class EmployeeVacationsService {
     });
 
     const filename = `Vacaciones_${id}.pdf`;
+    const link = document.createElement("a");
+    const blobUrl = URL.createObjectURL(blob);
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  }
+
+  // Export vacations to Excel for a specific employee
+  static async exportVacationsToExcel(employeeId: number, accessToken: string) {
+    const blob = await ApiClient.requestBlob(
+      `/employee-vacations/${employeeId}/exportVacations/excel`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    const filename = `vacaciones.xlsx`;
+    const link = document.createElement("a");
+    const blobUrl = URL.createObjectURL(blob);
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  }
+
+  // Export employees vacations summary to Excel
+  static async exportEmployeesVacationsToExcel(accessToken: string) {
+    const blob = await ApiClient.requestBlob(
+      `/employee-vacations/exportEmployees/excel`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    const filename = `empleados_vacaciones.xlsx`;
     const link = document.createElement("a");
     const blobUrl = URL.createObjectURL(blob);
     link.href = blobUrl;

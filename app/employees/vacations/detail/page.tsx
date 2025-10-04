@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -20,78 +19,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { FileDown, FilePenLine } from "lucide-react";
+import type { EmployeeVacation } from "@/types/employee";
+import { VacationType, AvailableYear } from "@/types/employee";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import type { Employee, EmployeeVacation } from "@/types/employee";
-import { VacationType } from "@/types/employee";
-import { useDownloadVacationPdf } from "@/lib/hooks/useEmployeeVacations";
+import {
+  useDownloadVacationPdf,
+  useExportVacationsToExcel,
+} from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
-import { EmployeeVacationDeleteDialog } from "@/components/employees/employee-vacation-delete-dialog";
+import { formatDate, formatTenure, calcAge } from "@/lib/utils/date";
 
-function formatTenure(hireDateISO?: string | null): string {
-  if (!hireDateISO) return "-";
-  const start = new Date(hireDateISO);
-  if (isNaN(start.getTime())) return "-";
-  const now = new Date();
-  let totalMonths =
-    (now.getFullYear() - start.getFullYear()) * 12 +
-    (now.getMonth() - start.getMonth());
-  if (now.getDate() < start.getDate()) totalMonths -= 1;
-  if (totalMonths < 0) totalMonths = 0;
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
-  return `${years},${months}`;
-}
-
-function formatDate(iso?: string | null): string {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
-}
-
-function calcAge(birthDateISO?: string | null): number | string {
-  if (!birthDateISO) return "-";
-  const birth = new Date(birthDateISO);
-  if (isNaN(birth.getTime())) return "-";
-  const now = new Date();
-  let age = now.getFullYear() - birth.getFullYear();
-  const m = now.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
-  return age;
-}
-
-function exportVacationsToCSV(employee: Employee) {
-  const rows: (string | number)[][] = [
-    ["Fecha Liquidación", "Detalle", "Días", "Año", "Periodo", "Información"],
-  ];
-  const list = (employee.vacations ?? []).slice().sort((a, b) => {
-    const da = new Date(a.settlementDate).getTime();
-    const db = new Date(b.settlementDate).getTime();
-    return db - da;
-  });
-  for (const v of list) {
-    const periodo = `${formatDate(v.startDate)} - ${formatDate(v.endDate)}`;
-    rows.push([
-      formatDate(v.settlementDate),
-      v.detail ?? "",
-      typeof v.days === "number" ? v.days : "",
-      typeof v.year === "number" ? v.year : "",
-      periodo,
-      String(v.type ?? ""),
-    ]);
-  }
-  const csv = rows
-    .map((r) => r.map((c) => `"${String(c).replaceAll('"', '""')}"`).join(","))
-    .join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const name = `${employee.person?.lastName ?? "Empleado"}_${
-    employee.person?.firstName ?? ""
-  }_Vacaciones.csv`;
-  a.href = url;
-  a.download = name.replace(/\s+/g, "_");
-  a.click();
-  URL.revokeObjectURL(url);
+function sumVacationDays(vacations: EmployeeVacation[] = []): number {
+  return vacations.reduce((acc, v) => {
+    const d = Number(v?.days ?? 0) || 0;
+    if (v?.type === VacationType.ASSIGNED) return acc + d;
+    if (v?.type === VacationType.TAKEN) return acc - d;
+    return acc;
+  }, 0);
 }
 
 export default function EmployeeVacationsDetailPage() {
@@ -114,6 +60,7 @@ export default function EmployeeVacationsDetailPage() {
   } = useEmployeeDetail(id, accessToken);
 
   const downloadPdfMutation = useDownloadVacationPdf(accessToken);
+  const exportExcelMutation = useExportVacationsToExcel(accessToken);
 
   // Dialog state
   const [openAssignAnnual, setOpenAssignAnnual] = useState(false); // ASSIGNED
@@ -122,9 +69,6 @@ export default function EmployeeVacationsDetailPage() {
   const [editVacation, setEditVacation] = useState<EmployeeVacation | null>(
     null
   );
-  const [openDelete, setOpenDelete] = useState(false);
-  const [deleteVacationSel, setDeleteVacationSel] =
-    useState<EmployeeVacation | null>(null);
 
   const vacationsSorted = useMemo<EmployeeVacation[]>(() => {
     const v = employee?.vacations ?? [];
@@ -138,8 +82,9 @@ export default function EmployeeVacationsDetailPage() {
   }, [employee?.vacations]);
 
   // Years with available remaining days: sum(ASSIGNED) - sum(TAKEN) per year > 0
-  const availableYears = useMemo<number[]>(() => {
+  const availableYears = useMemo<AvailableYear[]>(() => {
     const map = new Map<number, { assigned: number; taken: number }>();
+
     for (const v of employee?.vacations ?? []) {
       const y = typeof v.year === "number" ? v.year : 0;
       if (!map.has(y)) map.set(y, { assigned: 0, taken: 0 });
@@ -148,30 +93,32 @@ export default function EmployeeVacationsDetailPage() {
       if (v.type === "ASSIGNED") entry.assigned += d;
       else if (v.type === "TAKEN") entry.taken += d;
     }
-    const years: number[] = [];
+
+    const years: AvailableYear[] = [];
     for (const [y, { assigned, taken }] of map.entries()) {
-      if (assigned - taken > 0) years.push(y);
+      const available = assigned - taken;
+      if (available > 0) {
+        years.push({ year: y, available, assigned, taken });
+      }
     }
-    // Ensure current year present if no map entries
-    if (years.length === 0) {
-      const cy = new Date().getFullYear();
-      years.push(cy);
-    }
-    years.sort((a, b) => b - a);
+
+    years.sort((a, b) => b.year - a.year);
     return years;
   }, [employee?.vacations]);
 
   return (
-    <div className="p-4 space-y-4">
-      <Card>
+    <div className="p-6 space-y-6">
+      <Card className="shadow-lg">
         <div className="flex items-center justify-between">
           <CardHeader>
-            <CardTitle className="text-slate-800">Vacaciones</CardTitle>
+            <CardTitle className="text-2xl text-slate-800">
+              Vacaciones
+            </CardTitle>
             <CardDescription className="text-slate-500">
               Detalle de vacaciones del empleado
             </CardDescription>
           </CardHeader>
-          <div className="flex gap-2 p-4">
+          <div className="flex gap-2 p-6">
             <Button
               variant="outline"
               onClick={() => router.push("/employees/vacations")}
@@ -180,50 +127,87 @@ export default function EmployeeVacationsDetailPage() {
             </Button>
           </div>
         </div>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8">
           {error && (
-            <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            <div className="flex items-center gap-2 p-4 text-sm text-red-600 border border-red-200 rounded-lg bg-red-50">
+              <span className="text-red-500">⚠️</span>
               {(error as any)?.message ?? "Error al cargar"}
             </div>
           )}
 
           {/* Información */}
-          {!isLoading && employee && (
-            <section className="pt-4 border-t border-slate-200">
-              <h2 className="mb-2 text-lg font-semibold text-slate-700">
-                Información
+          {isLoading && (
+            <section className="pt-6 border-t border-slate-200">
+              <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-slate-700">
+                <span>👤</span> Información
               </h2>
-              <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-5">
-                <div>
-                  <div className="text-slate-500">Legajo</div>
-                  <div className="font-medium">
+              <div className="grid grid-cols-1 gap-4 text-sm lg:grid-cols-6 md:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="p-3 rounded-lg bg-slate-100 animate-pulse"
+                  >
+                    <div className="h-4 mb-2 rounded bg-slate-200"></div>
+                    <div className="h-5 rounded bg-slate-200"></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+          {!isLoading && employee && (
+            <section className="pt-6 border-t border-slate-200">
+              <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-slate-700">
+                <span>👤</span> Información
+              </h2>
+              <div className="grid grid-cols-1 gap-4 text-sm lg:grid-cols-6 md:grid-cols-3">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>🏷️</span> Legajo
+                  </div>
+                  <div className="font-medium text-slate-800">
                     {employee.employeeCode ?? "-"}
                   </div>
                 </div>
-                <div>
-                  <div className="text-slate-500">Apellido y Nombre</div>
-                  <div className="font-medium">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>👤</span> Apellido y Nombre
+                  </div>
+                  <div className="font-medium text-slate-800">
                     {`${employee.person?.lastName ?? ""} ${
                       employee.person?.firstName ?? ""
                     }`.trim() || "-"}
                   </div>
                 </div>
-                <div>
-                  <div className="text-slate-500">Edad</div>
-                  <div className="font-medium">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>🎂</span> Edad
+                  </div>
+                  <div className="font-medium text-slate-800">
                     {calcAge(employee.person?.birthDate)}
                   </div>
                 </div>
-                <div>
-                  <div className="text-slate-500">Fecha Ingreso</div>
-                  <div className="font-medium">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>📅</span> Fecha Ingreso
+                  </div>
+                  <div className="font-medium text-slate-800">
                     {formatDate(employee.hireDate)}
                   </div>
                 </div>
-                <div>
-                  <div className="text-slate-500">Antigüedad</div>
-                  <div className="font-medium">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>⏳</span> Antigüedad
+                  </div>
+                  <div className="font-medium text-slate-800">
                     {formatTenure(employee.hireDate)}
+                  </div>
+                </div>
+                <div className="p-3 border rounded-lg bg-emerald-50 border-emerald-200">
+                  <div className="flex items-center gap-1 text-emerald-600">
+                    <span>🏖️</span> Dias Disponibles
+                  </div>
+                  <div className="text-lg font-bold text-emerald-800">
+                    {sumVacationDays(employee.vacations)}
                   </div>
                 </div>
               </div>
@@ -231,59 +215,72 @@ export default function EmployeeVacationsDetailPage() {
           )}
 
           {/* Acciones */}
-          <section className="pt-4 border-t border-slate-200">
-            <h2 className="mb-2 text-lg font-semibold text-slate-700">
-              Acciones
+          <section className="pt-6 border-t border-slate-200">
+            <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-slate-700">
+              <span>⚡</span> Acciones
             </h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               <Button
-                className="text-white bg-emerald-600 hover:bg-emerald-700"
+                className="text-white shadow-md bg-emerald-600 hover:bg-emerald-700"
                 onClick={() => setOpenAssignAnnual(true)}
               >
-                Agregar Vacaciones Anuales
+                <span className="mr-2">📅</span> Agregar Vacaciones Anuales
               </Button>
               <Button
-                className="text-white bg-amber-500 hover:bg-amber-600"
+                className="text-white shadow-md bg-amber-500 hover:bg-amber-600"
                 onClick={() => setOpenAssignDays(true)}
               >
-                Asignar Días de Vacaciones
+                <span className="mr-2">🏖️</span> Asignar Días de Vacaciones
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  if (employee) exportVacationsToCSV(employee as Employee);
-                }}
-                disabled={!employee}
+                onClick={() => exportExcelMutation.mutate(id!)}
+                disabled={!employee || exportExcelMutation.isPending}
+                className="shadow-sm"
               >
-                Exportar
+                <span className="mr-2">📄</span>{" "}
+                {exportExcelMutation.isPending ? "Exportando..." : "Exportar"}
               </Button>
             </div>
           </section>
 
           {/* Historial */}
-          <section className="pt-4 border-t border-slate-200">
-            <h2 className="mb-2 text-lg font-semibold text-slate-700">
-              Historial
+          <section className="pt-6 border-t border-slate-200">
+            <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-slate-700">
+              <span>📋</span> Historial
             </h2>
-            <div className="border rounded-md">
+            <div className="overflow-hidden border rounded-lg shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-50">
                     <TableHead>Fecha</TableHead>
-                    <TableHead>Detalle</TableHead>
+                    <TableHead>Tipo</TableHead>
                     <TableHead>Días</TableHead>
                     <TableHead>Año</TableHead>
                     <TableHead>Periodo</TableHead>
-                    <TableHead>Tipo</TableHead>
+                    <TableHead>Detalle</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vacationsSorted.length ? (
                     vacationsSorted.map((v) => (
-                      <TableRow key={v.id}>
+                      <TableRow
+                        key={v.id}
+                        className="transition-colors hover:bg-slate-50"
+                      >
                         <TableCell>{formatDate(v.settlementDate)}</TableCell>
-                        <TableCell>{v.detail ?? "-"}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                              v.type === "ASSIGNED"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {v.type === "ASSIGNED" ? "Asignadas" : "Tomadas"}
+                          </span>
+                        </TableCell>
                         <TableCell>
                           {typeof v.days === "number" ? v.days : "-"}
                         </TableCell>
@@ -297,9 +294,19 @@ export default function EmployeeVacationsDetailPage() {
                               )}`
                             : "-"}
                         </TableCell>
-                        <TableCell>{String(v.type ?? "-")}</TableCell>
+                        <TableCell>{v.detail ?? "-"}</TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-2">
+                            {v.type !== "ASSIGNED" && employee && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => downloadPdfMutation.mutate(v.id)}
+                                className="bg-blue-100 hover:bg-blue-200"
+                              >
+                                <FileDown className="w-4 h-4" />
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               variant="outline"
@@ -307,36 +314,24 @@ export default function EmployeeVacationsDetailPage() {
                                 setEditVacation(v);
                                 setOpenEdit(true);
                               }}
+                              className="bg-amber-100 hover:bg-amber-200"
                             >
-                              Editar
+                              <FilePenLine className="w-4 h-4" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setDeleteVacationSel(v);
-                                setOpenDelete(true);
-                              }}
-                            >
-                              Eliminar
-                            </Button>
-                            {v.type !== "ASSIGNED" && employee && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => downloadPdfMutation.mutate(v.id)}
-                              >
-                                PDF
-                              </Button>
-                            )}
                           </div>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                        Sin registros
+                      <TableCell
+                        colSpan={7}
+                        className="h-24 text-center text-slate-500"
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <span className="text-2xl">📭</span>
+                          No hay registros de vacaciones aún
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -392,20 +387,6 @@ export default function EmployeeVacationsDetailPage() {
           availableYears={availableYears}
           onSuccess={() => {
             setEditVacation(null);
-            refetch();
-          }}
-        />
-      )}
-
-      {/* Dialog: Eliminar */}
-      {deleteVacationSel && (
-        <EmployeeVacationDeleteDialog
-          open={openDelete}
-          onOpenChange={(o) => setOpenDelete(o)}
-          accessToken={accessToken}
-          vacation={deleteVacationSel}
-          onSuccess={() => {
-            setDeleteVacationSel(null);
             refetch();
           }}
         />

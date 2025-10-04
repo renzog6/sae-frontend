@@ -81,3 +81,17 @@ export function useDownloadVacationPdf(accessToken: string) {
       EmployeeVacationsService.downloadVacationPdf(id, accessToken),
   });
 }
+
+export function useExportVacationsToExcel(accessToken: string) {
+  return useMutation({
+    mutationFn: (employeeId: number) =>
+      EmployeeVacationsService.exportVacationsToExcel(employeeId, accessToken),
+  });
+}
+
+export function useExportEmployeesVacationsToExcel(accessToken: string) {
+  return useMutation({
+    mutationFn: () =>
+      EmployeeVacationsService.exportEmployeesVacationsToExcel(accessToken),
+  });
+}

@@ -7,24 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import type { Employee } from "@/types/employee";
 import { VacationType } from "@/types/employee";
-
-function formatTenure(hireDateISO: string): string {
-  // Returns "Y,M" e.g., "4,5" for 4 years and 5 months
-  if (!hireDateISO) return "-";
-  const start = new Date(hireDateISO);
-  if (isNaN(start.getTime())) return "-";
-  const now = new Date();
-
-  let totalMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
-  // Adjust if current day is before the hire day
-  if (now.getDate() < start.getDate()) {
-    totalMonths -= 1;
-  }
-  if (totalMonths < 0) totalMonths = 0;
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
-  return `${years},${months}`;
-}
+import { formatTenure } from "@/lib/utils/date";
 
 function sumVacationDays(employee: Employee): number {
   const vacations = employee.vacations || [];
@@ -52,7 +35,9 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
       header: "Apellido y Nombre",
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>
-          {`${row.original.person?.lastName ?? ""} ${row.original.person?.firstName ?? ""}`.trim() || "-"}
+          {`${row.original.person?.lastName ?? ""} ${
+            row.original.person?.firstName ?? ""
+          }`.trim() || "-"}
         </span>
       ),
     },
@@ -60,14 +45,18 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
       accessorKey: "hireDate",
       header: "Ingreso",
       cell: ({ row }: { row: Row<Employee> }) => {
-        const d = row.original.hireDate ? new Date(row.original.hireDate) : null;
+        const d = row.original.hireDate
+          ? new Date(row.original.hireDate)
+          : null;
         return <span>{d ? d.toLocaleDateString() : "-"}</span>;
       },
     },
     {
       id: "tenure",
       header: "Antigüedad",
-      cell: ({ row }: { row: Row<Employee> }) => <span>{formatTenure(row.original.hireDate)}</span>,
+      cell: ({ row }: { row: Row<Employee> }) => (
+        <span>{formatTenure(row.original.hireDate)}</span>
+      ),
     },
     {
       id: "vacationDays",
@@ -85,7 +74,9 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
       id: "categoryPosition",
       header: "Categoría y Puesto",
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span>{`${row.original.category?.name ?? "-"} - ${row.original.position?.name ?? "-"}`}</span>
+        <span>{`${row.original.category?.name ?? "-"} - ${
+          row.original.position?.name ?? "-"
+        }`}</span>
       ),
     },
     {
@@ -97,7 +88,7 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
           <div className="flex justify-end gap-2">
             <Link href={`/employees/vacations/detail?id=${employee.id}`}>
               <Button variant="outline" size="sm" title="Ver / Editar">
-                <Eye className="h-4 w-4" />
+                <Eye className="w-4 h-4" />
               </Button>
             </Link>
           </div>

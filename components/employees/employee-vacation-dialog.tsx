@@ -2,26 +2,21 @@
 "use client";
 
 import * as React from "react";
-import type { EmployeeVacation, VacationType } from "@/types/employee";
+import type {
+  EmployeeVacation,
+  VacationType,
+  AvailableYear,
+} from "@/types/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { EmployeeVacationForm } from "@/components/forms/employee-vacation-form";
 import {
   useCreateEmployeeVacation,
   useUpdateEmployeeVacation,
-  useDeleteEmployeeVacation,
 } from "@/lib/hooks/useEmployeeVacations";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { EmployeeVacationDeleteDialog } from "@/components/employees/employee-vacation-delete-dialog";
+import { EmployeeVacationFormTaken } from "@/components/forms/employee-vacation-form-taken";
+import { EmployeeVacationFormAssigned } from "@/components/forms/employee-vacation-form-assigned";
 
 export interface EmployeeVacationDialogProps {
   accessToken: string;
@@ -31,7 +26,7 @@ export interface EmployeeVacationDialogProps {
   mode: "create" | "edit";
   fixedType: VacationType; // ASSIGNED or TAKEN; not shown to the user
   vacation?: EmployeeVacation | null;
-  availableYears?: number[]; // years with available days to choose
+  availableYears?: AvailableYear[]; // years with available days to choose
   onSuccess?: () => void;
 }
 
@@ -51,8 +46,6 @@ export function EmployeeVacationDialog({
     useCreateEmployeeVacation(accessToken);
   const { mutate: updateVacation, isPending: updating } =
     useUpdateEmployeeVacation(accessToken);
-  const { mutate: deleteVacation, isPending: deleting } =
-    useDeleteEmployeeVacation(accessToken);
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -134,32 +127,69 @@ export function EmployeeVacationDialog({
         }
       >
         <div className="space-y-4">
-          <EmployeeVacationForm
-            onSubmit={onSubmit}
-            isLoading={creating || updating}
-            defaultValues={
-              mode === "edit" && vacation
-                ? {
-                    detail: vacation.detail || "",
-                    days: vacation.days,
-                    year: vacation.year,
-                    startDate: vacation.startDate
-                      ? new Date(vacation.startDate).toISOString().slice(0, 10)
-                      : "",
-                    settlementDate: vacation.settlementDate
-                      ? new Date(vacation.settlementDate)
-                          .toISOString()
-                          .slice(0, 10)
-                      : new Date().toISOString().slice(0, 10),
-                  }
-                : undefined
-            }
-            isEdit={mode === "edit"}
-            availableYears={availableYears}
-            onCancel={() => onOpenChange(false)}
-            error={null}
-          />
+          {/* Vacation Form Taken*/}
+          {fixedType === "TAKEN" && (
+            <EmployeeVacationFormTaken
+              onSubmit={onSubmit}
+              isLoading={creating || updating}
+              defaultValues={
+                mode === "edit" && vacation
+                  ? {
+                      detail: vacation.detail || "",
+                      days: vacation.days,
+                      year: vacation.year,
+                      startDate: vacation.startDate
+                        ? new Date(vacation.startDate)
+                            .toISOString()
+                            .slice(0, 10)
+                        : "",
+                      settlementDate: vacation.settlementDate
+                        ? new Date(vacation.settlementDate)
+                            .toISOString()
+                            .slice(0, 10)
+                        : new Date().toISOString().slice(0, 10),
+                    }
+                  : undefined
+              }
+              isEdit={mode === "edit"}
+              availableYears={availableYears}
+              onCancel={() => onOpenChange(false)}
+              error={null}
+            />
+          )}
 
+          {/* Vacation Form Assigned*/}
+          {fixedType === "ASSIGNED" && (
+            <EmployeeVacationFormAssigned
+              onSubmit={onSubmit}
+              isLoading={creating || updating}
+              defaultValues={
+                mode === "edit" && vacation
+                  ? {
+                      detail: vacation.detail || "",
+                      days: vacation.days,
+                      year: vacation.year,
+                      startDate: vacation.startDate
+                        ? new Date(vacation.startDate)
+                            .toISOString()
+                            .slice(0, 10)
+                        : "",
+                      settlementDate: vacation.settlementDate
+                        ? new Date(vacation.settlementDate)
+                            .toISOString()
+                            .slice(0, 10)
+                        : new Date().toISOString().slice(0, 10),
+                    }
+                  : undefined
+              }
+              isEdit={mode === "edit"}
+              availableYears={availableYears[0] ? [availableYears[0]] : []} // only current year for assigned
+              onCancel={() => onOpenChange(false)}
+              error={null}
+            />
+          )}
+
+          {/* Delete button, only in edit mode */}
           {mode === "edit" && vacation && (
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
@@ -174,7 +204,6 @@ export function EmployeeVacationDialog({
                 <Button
                   variant="destructive"
                   onClick={() => setConfirmOpen(true)}
-                  disabled={deleting}
                 >
                   Eliminar
                 </Button>
@@ -184,48 +213,17 @@ export function EmployeeVacationDialog({
         </div>
       </FormDialog>
 
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar vacación</AlertDialogTitle>
-            <AlertDialogDescription>
-              ¿Seguro que quieres eliminar la vacación "
-              {vacation?.detail || "Sin detalle"}"? Esta acción no se puede
-              deshacer.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (vacation) {
-                  deleteVacation(vacation.id, {
-                    onSuccess: () => {
-                      toast({
-                        title: "Vacación eliminada",
-                        description: "La vacación fue eliminada.",
-                        variant: "success",
-                      });
-                      setConfirmOpen(false);
-                      onOpenChange(false);
-                      onSuccess?.();
-                    },
-                    onError: (e: any) => {
-                      toast({
-                        title: "Error al eliminar vacación",
-                        description: e?.message || "Intenta nuevamente.",
-                        variant: "error",
-                      });
-                    },
-                  });
-                }
-              }}
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <EmployeeVacationDeleteDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        accessToken={accessToken}
+        vacation={vacation || null}
+        onSuccess={() => {
+          setConfirmOpen(false);
+          onOpenChange(false);
+          onSuccess?.();
+        }}
+      />
     </>
   );
 }
