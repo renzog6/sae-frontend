@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Menu, Bell, Search, User, Settings, LogOut } from "lucide-react";
 
+import { GlobalSearch } from "@/components/ui/global-search";
+
 interface HeaderProps {
   onMenuClick: () => void;
 }
@@ -51,7 +53,9 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   const crumbs = segments.map((seg, idx) => {
     const href = "/" + segments.slice(0, idx + 1).join("/");
-    const label = LABEL_MAP[seg] || seg.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
+    const label =
+      LABEL_MAP[seg] ||
+      seg.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
     const isLast = idx === segments.length - 1;
     return { href, label, isLast };
   });
@@ -70,10 +74,15 @@ export function Header({ onMenuClick }: HeaderProps) {
   const handleProfile = () => router.push("/profile");
 
   return (
-    <header className="flex justify-between items-center p-4 bg-white border-b border-laurel-200">
+    <header className="flex items-center justify-between p-4 bg-white border-b border-laurel-200">
       <div className="flex items-center">
         {/* Botón del menú hamburguesa - IMPORTANTE: fuera del DropdownMenu */}
-        <Button variant="ghost" size="icon" className="mr-4 text-laurel-700" onClick={onMenuClick}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-4 text-laurel-700"
+          onClick={onMenuClick}
+        >
           <Menu className="w-5 h-5" />
         </Button>
         {/*MODIFICAR*/}
@@ -81,7 +90,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Link href="/dashboard" className="text-laurel-700 hover:text-foreground">
+                <Link
+                  href="/dashboard"
+                  className="text-laurel-700 hover:text-foreground"
+                >
                   Inicio
                 </Link>
               </BreadcrumbItem>
@@ -90,7 +102,10 @@ export function Header({ onMenuClick }: HeaderProps) {
                 <React.Fragment key={c.href}>
                   {!c.isLast ? (
                     <BreadcrumbItem>
-                      <Link href={c.href} className="text-laurel-700 hover:text-foreground">
+                      <Link
+                        href={c.href}
+                        className="text-laurel-700 hover:text-foreground"
+                      >
                         {c.label}
                       </Link>
                     </BreadcrumbItem>
@@ -103,22 +118,25 @@ export function Header({ onMenuClick }: HeaderProps) {
                 </React.Fragment>
               ))}
             </BreadcrumbList>
-        </Breadcrumb>
-        {/* Fuerza re-render cuando cambia la sesión */}
-        <span className="sr-only">{session?.user?.email ?? ""}</span>
-      </div>
-      {/* Cierre del contenedor izquierdo */}
+          </Breadcrumb>
+          {/* Fuerza re-render cuando cambia la sesión */}
+          <span className="sr-only">{session?.user?.email ?? ""}</span>
+        </div>
+        {/* Cierre del contenedor izquierdo */}
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="hidden relative md:block">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-laurel-400" />
-          <Input type="text" placeholder="Buscar..." className="pl-10 w-64 border-laurel-200 focus:border-laurel-500" />
+      <div className="flex items-center gap-4">
+        <div className="relative hidden md:block">
+          <GlobalSearch />
         </div>
 
-        <Button variant="ghost" size="icon" className="relative text-laurel-600">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative text-laurel-600"
+        >
           <Bell className="w-5 h-5" />
-          <span className="flex absolute -top-1 -right-1 justify-center items-center w-4 h-4 text-xs text-white bg-red-500 rounded-full">
+          <span className="absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
             3
           </span>
         </Button>
@@ -126,24 +144,35 @@ export function Header({ onMenuClick }: HeaderProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="text-laurel-700">
-              <div className="flex justify-center items-center w-8 h-8 rounded-full bg-laurel-600">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-laurel-600">
                 <User className="w-5 h-5" />
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 border-laurel-200 bg-zinc-100">
+          <DropdownMenuContent
+            align="end"
+            className="w-48 border-laurel-200 bg-zinc-100"
+          >
             <DropdownMenuLabel className="flex flex-col">
               <span className="font-medium">{session?.user.username}</span>
-              <span className="text-xs font-normal text-laurel-600">{session?.user.email}</span>
+              <span className="text-xs font-normal text-laurel-600">
+                {session?.user.email}
+              </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-laurel-100" />
-            <DropdownMenuItem onClick={handleSettings} className="flex items-center cursor-pointer text-laurel-700 focus:bg-laurel-50">
-              <Settings className="mr-2 w-4 h-4" />
+            <DropdownMenuItem
+              onClick={handleSettings}
+              className="flex items-center cursor-pointer text-laurel-700 focus:bg-laurel-50"
+            >
+              <Settings className="w-4 h-4 mr-2" />
               Configuración
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-laurel-100" />
-            <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600 cursor-pointer focus:bg-red-50">
-              <LogOut className="mr-2 w-4 h-4" />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="flex items-center text-red-600 cursor-pointer focus:bg-red-50"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
               Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
