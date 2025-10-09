@@ -6,16 +6,36 @@ import type { Person } from "@/types/employee";
 export const createPersonSchema = z.object({
   firstName: z.string().min(1, "Nombre requerido").max(100),
   lastName: z.string().min(1, "Apellido requerido").max(100),
-  birthDate: z.string().optional().nullable().transform((v) => (v ?? undefined)), // ISO
-  dni: z.string().max(50).optional().nullable().transform((v) => (v ?? undefined)),
-  cuil: z.string().max(50).optional().nullable().transform((v) => (v ?? undefined)),
+  birthDate: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => v ?? undefined), // ISO
+  dni: z
+    .string()
+    .max(50)
+    .optional()
+    .nullable()
+    .transform((v) => v ?? undefined),
+  cuil: z
+    .string()
+    .max(50)
+    .optional()
+    .nullable()
+    .transform((v) => v ?? undefined),
   gender: z.nativeEnum(Gender).optional(),
   maritalStatus: z.nativeEnum(MaritalStatus).optional(),
-  information: z.string().max(500).optional().nullable().transform((v) => (v ?? undefined)),
+  information: z
+    .string()
+    .max(500)
+    .optional()
+    .nullable()
+    .transform((v) => v ?? undefined),
   status: z.nativeEnum(PersonStatus).optional(),
 });
 
 export type CreatePersonFormData = z.infer<typeof createPersonSchema>;
+export type CreatePersonFormInput = z.input<typeof createPersonSchema>;
 
 export const updatePersonSchema = createPersonSchema.partial();
 export type UpdatePersonFormData = z.infer<typeof updatePersonSchema>;

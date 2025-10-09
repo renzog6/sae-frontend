@@ -22,6 +22,7 @@ import { ChevronDown } from "lucide-react";
 import type { Employee } from "@/types/employee";
 import { EmployeeStatus } from "@/types/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
+import { employeeStatusLabels } from "@/lib/constants";
 import { useExportEmployeesVacationsToExcel } from "@/lib/hooks/useEmployeeVacations";
 import { DataTable } from "@/components/data-table";
 import { getVacationColumns } from "./columns";
@@ -50,18 +51,7 @@ export default function EmployeeVacationsPage() {
   const [status, setStatus] = useState<StatusFilter>(EmployeeStatus.ACTIVE);
 
   const getStatusLabel = (status: StatusFilter) => {
-    switch (status) {
-      case "ALL":
-        return "Todos";
-      case "ACTIVE":
-        return "Activo";
-      case "SUSPENDED":
-        return "Suspendido";
-      case "TERMINATED":
-        return "Terminado";
-      default:
-        return status;
-    }
+    return status === "ALL" ? "Todos" : employeeStatusLabels[status];
   };
 
   // Debounce query
@@ -141,17 +131,20 @@ export default function EmployeeVacationsPage() {
                   <DropdownMenuItem
                     onClick={() => setStatus(EmployeeStatus.ACTIVE)}
                   >
-                    <span className="mr-2">✅</span> Activo
+                    <span className="mr-2">✅</span>{" "}
+                    {employeeStatusLabels[EmployeeStatus.ACTIVE]}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setStatus(EmployeeStatus.SUSPENDED)}
                   >
-                    <span className="mr-2">⏸️</span> Suspendido
+                    <span className="mr-2">⏸️</span>{" "}
+                    {employeeStatusLabels[EmployeeStatus.SUSPENDED]}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setStatus(EmployeeStatus.TERMINATED)}
                   >
-                    <span className="mr-2">❌</span> Terminado
+                    <span className="mr-2">❌</span>{" "}
+                    {employeeStatusLabels[EmployeeStatus.TERMINATED]}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

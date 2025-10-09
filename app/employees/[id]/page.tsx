@@ -1,515 +1,224 @@
 // filepath: sae-frontend/app/employees/[id]/page.tsx
+
 "use client";
 
-import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useQueryClient } from "@tanstack/react-query";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { EmployeesService } from "@/lib/api/employees";
+import { useParams } from "next/navigation";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import { useEmployeeCategories, useEmployeePositions } from "@/lib/hooks/useEmployees";
-import { Employee, EmployeeStatus, Gender, MaritalStatus } from "@/types/employee";
-import { employeeToUpdateForm, updateEmployeeSchema, type UpdateEmployeeFormData, type UpdateEmployeeFormInput } from "@/lib/validations/employee";
-import { AddressDialog } from "@/components/addresses/address-dialog";
-import { ContactDialog } from "@/components/contacts/contact-dialog";
-import { useAddressesByPerson, useCreateAddress, useUpdateAddress, useDeleteAddress } from "@/lib/hooks/useLocations";
-import { useContactsByPerson, useCreateContact, useUpdateContact, useDeleteContact } from "@/lib/hooks/useContacts";
-import { personToUpdateForm, updatePersonSchema, type UpdatePersonFormInput, type UpdatePersonFormData } from "@/lib/validations/person";
-import { PersonsService } from "@/lib/api/persons";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Phone, Mail, User } from "lucide-react";
+import { Address } from "@/types/location";
+import { Contact } from "@/types/contact";
+import {
+  genderLabels,
+  maritalLabels,
+  employeeStatusLabels,
+} from "@/lib/constants";
 
-export default function EmployeeDetailPage() {
+export default function EmployeePage() {
   const params = useParams();
-  const router = useRouter();
+  const id = Number(params.id);
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
-  const queryClient = useQueryClient();
 
-  const id = useMemo(() => {
-    const p = params?.id;
-    const asStr = Array.isArray(p) ? p[0] : (p as string | undefined);
-    const n = asStr ? Number(asStr) : NaN;
-    return Number.isNaN(n) ? undefined : n;
-  }, [params]);
+  const { data: employee, isLoading } = useEmployeeDetail(id, accessToken);
 
-  const { data: employee, isLoading, error: fetchError } = useEmployeeDetail(id, accessToken);
-  const { data: categories = [] } = useEmployeeCategories(accessToken);
-  const { data: positions = [] } = useEmployeePositions(accessToken);
-
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Person-scoped lists and mutations
-  const personId = employee?.personId;
-  const { data: personAddresses = [] } = useAddressesByPerson(accessToken, personId ?? 0);
-  const { data: personContacts = [] } = useContactsByPerson(accessToken, personId ?? 0);
-  const createAddressMut = useCreateAddress(accessToken);
-  const updateAddressMut = useUpdateAddress(accessToken);
-  const deleteAddressMut = useDeleteAddress(accessToken);
-  const createContactMut = useCreateContact(accessToken);
-  const updateContactMut = useUpdateContact(accessToken);
-  const deleteContactMut = useDeleteContact(accessToken);
-
-  const [addressOpen, setAddressOpen] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<any | undefined>(undefined);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [editingContact, setEditingContact] = useState<any | undefined>(undefined);
-
-  const defaultValues = useMemo(() => {
-    if (!employee) return undefined;
-    const base = employeeToUpdateForm(employee as Employee);
-    // Ensure default companyId if absent (creation contexts), here kept for safety
-    return {
-      companyId: base.companyId ?? 1,
-      employeeCode: base.employeeCode,
-      information: base.information,
-      status: base.status ?? EmployeeStatus.ACTIVE,
-      hireDate: base.hireDate,
-      categoryId: base.categoryId,
-      positionId: base.positionId,
-      personId: base.personId,
-    } as UpdateEmployeeFormData;
-  }, [employee]);
-
-  // useForm aligned to schema; using output type is fine for update (all optional)
-  // IMPORTANT: use input type to match zodResolver expectations
-  const form = useForm<UpdateEmployeeFormInput>({
-    resolver: zodResolver(updateEmployeeSchema),
-    defaultValues: defaultValues,
-    values: defaultValues, // keep in sync when employee loads
-  });
-  async function handleSubmit(data: UpdateEmployeeFormInput) {
-    if (!accessToken || !id) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await EmployeesService.updateEmployee(id, data as unknown as UpdateEmployeeFormData, accessToken);
-      // refresh caches
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
-      queryClient.invalidateQueries({ queryKey: ["employees", id] });
-      router.back();
-    } catch (e: any) {
-      setError(e?.message || "Error al guardar cambios del empleado");
-    } finally {
-      setSaving(false);
-    }
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <div className="w-1/4 h-6 rounded animate-pulse bg-muted"></div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 animate-pulse">
+              <div className="w-1/2 h-4 rounded bg-muted"></div>
+              <div className="w-1/3 h-4 rounded bg-muted"></div>
+              <div className="w-1/4 h-4 rounded bg-muted"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
-  // ============ Person form (Datos Personales) ============
-  const personDefaults = useMemo(() => {
-    if (!employee?.person) return undefined;
-    return personToUpdateForm(employee.person);
-  }, [employee?.person]);
-
-  const personForm = useForm<UpdatePersonFormInput>({
-    resolver: zodResolver(updatePersonSchema),
-    defaultValues: personDefaults,
-    values: personDefaults,
-  });
-
-  async function handlePersonSubmit(data: UpdatePersonFormInput) {
-    if (!accessToken || !personId) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await PersonsService.updatePerson(personId, data as unknown as UpdatePersonFormData, accessToken);
-      queryClient.invalidateQueries({ queryKey: ["persons", personId] });
-      queryClient.invalidateQueries({ queryKey: ["employees", id] });
-    } catch (e: any) {
-      setError(e?.message || "Error al guardar datos personales");
-    } finally {
-      setSaving(false);
-    }
+  if (!employee) {
+    return <div>Empleado no encontrado</div>;
   }
-  const genderLabels: Record<Gender, string> = {
-    [Gender.MALE]: "Masculino",
-    [Gender.FEMALE]: "Femenino",
-    [Gender.OTHER]: "Otro",
-  } as const;
-  const maritalLabels: Record<MaritalStatus, string> = {
-    [MaritalStatus.SINGLE]: "Soltero/a",
-    [MaritalStatus.MARRIED]: "Casado/a",
-    [MaritalStatus.DIVORCED]: "Divorciado/a",
-    [MaritalStatus.WIDOWED]: "Viudo/a",
-  } as const;
+
+  const { person, position, category, status, hireDate, endDate } = employee;
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-6">
       <Card>
-        <div className="flex items-center justify-between">
-          <CardHeader>
-            <CardTitle className="text-slate-800">Empleado</CardTitle>
-            <CardDescription className="text-slate-500">Detalle y edición del empleado</CardDescription>
-          </CardHeader>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => router.back()}>Volver</Button>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="w-5 h-5" />
+            Información Personal
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Nombre
+              </label>
+              <p className="text-lg">
+                {person?.firstName} {person?.lastName}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                DNI
+              </label>
+              <p>{person?.dni || "No especificado"}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                CUIL
+              </label>
+              <p>{person?.cuil || "No especificado"}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Fecha de Nacimiento
+              </label>
+              <p>
+                {person?.birthDate
+                  ? new Date(person.birthDate).toLocaleDateString()
+                  : "No especificada"}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Género
+              </label>
+              <p>
+                {person?.gender
+                  ? genderLabels[person.gender]
+                  : "No especificado"}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Estado Civil
+              </label>
+              <p>
+                {person?.maritalStatus
+                  ? maritalLabels[person.maritalStatus]
+                  : "No especificado"}
+              </p>
+            </div>
           </div>
-        </div>
-        <CardContent className="space-y-8">
-          {(error || fetchError) && (
-            <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">{error || (fetchError as any)?.message}</div>
-          )}
-
-          {/* Datos Personales (Editable) */}
-          {!isLoading && employee && (
-            <section className="border-t border-slate-200 pt-4">
-              <h2 className="text-lg font-semibold text-slate-700 mb-2">Datos Personales</h2>
-              <Form {...personForm}>
-                <form onSubmit={personForm.handleSubmit(handlePersonSubmit)} className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <FormField control={personForm.control} name="firstName" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nombre" value={field.value ?? ""} onChange={field.onChange} onBlur={field.onBlur} name={field.name} ref={field.ref} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={personForm.control} name="lastName" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellido</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Apellido" value={field.value ?? ""} onChange={field.onChange} onBlur={field.onBlur} name={field.name} ref={field.ref} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={personForm.control} name="birthDate" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Fecha de Nacimiento</FormLabel>
-                        <FormControl>
-                          <Input type="date" value={field.value ? (field.value as string).substring(0, 10) : ""} onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={personForm.control} name="dni" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>DNI</FormLabel>
-                        <FormControl>
-                          <Input placeholder="DNI" value={field.value ?? ""} onChange={field.onChange} onBlur={field.onBlur} name={field.name} ref={field.ref} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <div>
-                      <label className="text-sm text-slate-600">CUIL</label>
-                      <Input value={employee.person?.cuil ?? ""} readOnly />
-                    </div>
-                    <FormField control={personForm.control} name="gender" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Género</FormLabel>
-                        <FormControl>
-                          <select className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700" value={field.value ?? Gender.OTHER} onChange={(e) => field.onChange(e.target.value as Gender)}>
-                            {Object.values(Gender).map((g) => (
-                              <option key={g} value={g}>{genderLabels[g]}</option>
-                            ))}
-                          </select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={personForm.control} name="maritalStatus" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Estado Civil</FormLabel>
-                        <FormControl>
-                          <select className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700" value={field.value ?? MaritalStatus.SINGLE} onChange={(e) => field.onChange(e.target.value as MaritalStatus)}>
-                            {Object.values(MaritalStatus).map((m) => (
-                              <option key={m} value={m}>{maritalLabels[m]}</option>
-                            ))}
-                          </select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={personForm.control} name="information" render={({ field }) => (
-                      <FormItem className="md:col-span-3">
-                        <FormLabel>Información</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="Notas" value={field.value ?? ""} onChange={field.onChange} onBlur={field.onBlur} name={field.name} ref={field.ref} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white" disabled={saving}>{saving ? "Guardando..." : "Guardar Datos Personales"}</Button>
-                  </div>
-                </form>
-              </Form>
-            </section>
-          )}
-
-          {/* Direcciones (Persona) */}
-          <section className="border-t border-slate-200 pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-slate-700">Direcciones</h2>
-              <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50" onClick={() => setAddressOpen(true)} disabled={!personId}>
-                + Agregar
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {personAddresses?.length ? (
-                personAddresses.map((addr) => (
-                  <div key={addr.id ?? `${addr.street}-${addr.number}-${addr.cityId}`} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
-                    <span className="text-slate-700">
-                      {addr.reference ? `${addr.reference} : ` : ""}
-                      {addr.street ?? ""} {addr.number ?? ""}
-                      {addr.floor ? `, ${addr.floor}` : ""}
-                      {addr.apartment ? ` ${addr.apartment}` : ""}
-                      {addr.city?.name ? ` - ${addr.city.name}` : ""}
-                      {addr.city?.postalCode ? ` (${addr.city.postalCode})` : ""}
-                      {addr.city?.province?.name ? ` - ${addr.city.province.name}` : ""}
-                    </span>
-                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => { setEditingAddress(addr as any); setAddressOpen(true); }}>Editar</Button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-sm text-slate-500">Sin direcciones</div>
-              )}
-            </div>
-          </section>
-
-          {/* Contactos (Persona) */}
-          <section className="border-t border-slate-200 pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-slate-700">Contactos</h2>
-              <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50" onClick={() => setContactOpen(true)} disabled={!personId}>
-                + Agregar
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {personContacts?.length ? (
-                personContacts.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
-                    <div className="flex items-center gap-2 text-slate-700">
-                      <span className="font-medium">{c.type}</span>
-                      <span>{c.label ?? "Sin etiqueta"}</span>
-                      <span className="text-slate-400">·</span>
-                      <span className="font-mono">{c.value}</span>
-                      {c.information && <span className="text-slate-500">— {c.information}</span>}
-                    </div>
-                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => { setEditingContact(c as any); setContactOpen(true); }}>Editar</Button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-sm text-slate-500">Sin contactos</div>
-              )}
-            </div>
-          </section>
-
-          {/* Datos Laborales */}
-          {!isLoading && employee && (
-            <section className="border-t border-slate-200 pt-4">
-              <h2 className="text-lg font-semibold text-slate-700 mb-2">Datos Laborales</h2>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="employeeCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Código Empleado</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Legajo interno"
-                              value={field.value ?? ""}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div>
-                      <label className="text-sm text-slate-600">CUIL (desde Persona)</label>
-                      <Input value={employee.person?.cuil ?? ""} readOnly />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Estado</FormLabel>
-                          <FormControl>
-                            <select
-                              className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700"
-                              value={field.value ?? EmployeeStatus.ACTIVE}
-                              onChange={(e) => field.onChange(e.target.value as EmployeeStatus)}
-                            >
-                              {Object.values(EmployeeStatus).map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
-                            </select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="hireDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha de Ingreso</FormLabel>
-                          <FormControl>
-                            <Input type="date" value={field.value ? field.value.substring(0, 10) : ""} onChange={(e) => field.onChange(new Date(e.target.value).toISOString())} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {/* endDate eliminado según requerimiento */}
-                    <FormField
-                      control={form.control}
-                      name="categoryId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Categoría</FormLabel>
-                          <FormControl>
-                            <select
-                              className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700"
-                              value={field.value ?? ""}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                            >
-                              <option value="">Seleccione</option>
-                              {categories.map((c) => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
-                              ))}
-                            </select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="positionId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Posición</FormLabel>
-                          <FormControl>
-                            <select
-                              className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700"
-                              value={field.value ?? ""}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                            >
-                              <option value="">Seleccione</option>
-                              {positions.map((p) => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                              ))}
-                            </select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="information"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-3">
-                          <FormLabel>Información</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Notas opcionales..."
-                              value={field.value ?? ""}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={() => router.back()} disabled={saving}>Cancelar</Button>
-                    <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white" disabled={saving}>
-                      {saving ? "Guardando..." : "Guardar"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </section>
-          )}
-          {isLoading && (
-            <div className="text-sm text-slate-500">Cargando datos del empleado...</div>
-          )}
-
-          {/* Modales Persona */}
-      <AddressDialog
-        open={addressOpen}
-        onOpenChange={(v) => {
-          if (!v) setEditingAddress(undefined);
-          setAddressOpen(v);
-        }}
-        initial={editingAddress ? {
-          street: editingAddress.street,
-          number: editingAddress.number,
-          floor: editingAddress.floor,
-          apartment: editingAddress.apartment,
-          neighborhood: editingAddress.neighborhood,
-          reference: editingAddress.reference,
-          cityId: editingAddress.cityId,
-          personId: editingAddress.personId ?? personId,
-        } : (personId ? { cityId: 1, personId } : undefined)}
-        accessToken={accessToken}
-        onDelete={editingAddress?.id ? () => deleteAddressMut.mutate(editingAddress.id!) : undefined}
-        onSave={(data) => {
-          if (!personId) return;
-          if (editingAddress?.id) {
-            updateAddressMut.mutate({ id: editingAddress.id, data });
-          } else {
-            createAddressMut.mutate({ ...data, personId });
-          }
-        }}
-      />
-
-      <ContactDialog
-        open={contactOpen}
-        onOpenChange={(v) => {
-          if (!v) setEditingContact(undefined);
-          setContactOpen(v);
-        }}
-        initial={editingContact ? {
-          type: editingContact.type,
-          value: editingContact.value,
-          label: editingContact.label ?? undefined,
-          information: editingContact.information ?? undefined,
-        } : undefined}
-        onDelete={editingContact?.id ? () => deleteContactMut.mutate(editingContact.id!) : undefined}
-        onSave={(data) => {
-          if (editingContact?.id) {
-            updateContactMut.mutate({ id: editingContact.id, data });
-          } else if (personId) {
-            createContactMut.mutate({ ...data, personId });
-          }
-        }}
-      />
-
-      {/* Documentos */}
-      <section className="border-t border-slate-200 pt-4">
-        <h2 className="text-lg font-semibold text-slate-700 mb-2">Documentos</h2>
-        <div className="text-sm text-slate-500">(Implementación pendiente)</div>
-      </section>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            Información Laboral
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Legajo
+              </label>
+              <p>{employee.id}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Estado
+              </label>
+              <Badge variant={status === "ACTIVE" ? "default" : "secondary"}>
+                {employeeStatusLabels[status]}
+              </Badge>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Fecha de Ingreso
+              </label>
+              <p>{new Date(hireDate).toLocaleDateString()}</p>
+            </div>
+            {endDate && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Fecha de Egreso
+                </label>
+                <p>{new Date(endDate).toLocaleDateString()}</p>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Categoría
+              </label>
+              <p>{category?.name}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Puesto
+              </label>
+              <p>{position?.name}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {(person?.contacts as Contact[]) &&
+        (person.contacts as Contact[]).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Phone className="w-5 h-5" />
+                Contactos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {(person.contacts as Contact[]).map((contact) => (
+                  <div key={contact.id} className="flex items-center gap-2">
+                    {contact.type === "EMAIL" && <Mail className="w-4 h-4" />}
+                    {contact.type === "PHONE" && <Phone className="w-4 h-4" />}
+                    <span>{contact.value}</span>
+                    {contact.label && (
+                      <span className="text-sm text-muted-foreground">
+                        ({contact.label})
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+      {person?.address ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              Dirección
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              {(person.address as Address).street}{" "}
+              {(person.address as Address).number}
+              {(person.address as Address).floor &&
+                `, Piso ${(person.address as Address).floor}`}
+              {(person.address as Address).apartment &&
+                `, Depto ${(person.address as Address).apartment}`}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {(person.address as Address).city?.name},{" "}
+              {(person.address as Address).city?.province?.name}
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

@@ -8,18 +8,7 @@ import { Eye } from "lucide-react";
 import type { Employee } from "@/types/employee";
 import { VacationType } from "@/types/employee";
 import { formatTenure } from "@/lib/utils/date";
-
-function sumVacationDays(employee: Employee): number {
-  const vacations = employee.vacations || [];
-  let assigned = 0;
-  let taken = 0;
-  for (const v of vacations) {
-    const d = Number(v?.days ?? 0) || 0;
-    if (v?.type === VacationType.ASSIGNED) assigned += d;
-    else if (v?.type === VacationType.TAKEN) taken += d;
-  }
-  return assigned - taken;
-}
+import { sumEmployeeVacationDays } from "@/lib/utils/employee";
 
 export function getVacationColumns(): ColumnDef<Employee>[] {
   return [
@@ -67,7 +56,9 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
         </div>
       ),
       cell: ({ row }: { row: Row<Employee> }) => (
-        <div className="text-center">{sumVacationDays(row.original)}</div>
+        <div className="text-center">
+          {sumEmployeeVacationDays(row.original)}
+        </div>
       ),
     },
     {
