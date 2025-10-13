@@ -76,7 +76,7 @@ export default function EmployeeNewPage() {
         accessToken
       );
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-      router.push(`/employees/${employee.id}`);
+      router.push(`/employees/${employee.id}/edit`);
     } catch (e: any) {
       setError(e?.message || "Error al crear empleado");
     } finally {

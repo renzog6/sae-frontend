@@ -14,9 +14,10 @@ import {
   useUpdateEmployeeVacation,
 } from "@/lib/hooks/useEmployeeVacations";
 import { Button } from "@/components/ui/button";
-import { EmployeeVacationDeleteDialog } from "@/components/employees/employee-vacation-delete-dialog";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { EmployeeVacationFormTaken } from "@/components/forms/employee-vacation-form-taken";
 import { EmployeeVacationFormAssigned } from "@/components/forms/employee-vacation-form-assigned";
+import { useDeleteEmployeeVacation } from "@/lib/hooks/useEmployeeVacations";
 
 export interface EmployeeVacationDialogProps {
   accessToken: string;
@@ -46,8 +47,37 @@ export function EmployeeVacationDialog({
     useCreateEmployeeVacation(accessToken);
   const { mutate: updateVacation, isPending: updating } =
     useUpdateEmployeeVacation(accessToken);
+  const { mutate: deleteVacation, isPending: deleting } =
+    useDeleteEmployeeVacation(accessToken);
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+
+  const handleDeleteConfirm = async () => {
+    if (!vacation) return;
+    deleteVacation(vacation.id, {
+      onSuccess: () => {
+        toast({
+          title: "Vacación eliminada",
+          description: "La vacación fue eliminada.",
+          variant: "success",
+        });
+        setConfirmOpen(false);
+        onOpenChange(false);
+        onSuccess?.();
+      },
+      onError: (e: any) => {
+        toast({
+          title: "Error al eliminar vacación",
+          description: e?.message || "Intenta nuevamente.",
+          variant: "error",
+        });
+      },
+    });
+  };
+
+  const deleteDescription = `¿Seguro que quieres eliminar la vacación "${
+    vacation?.detail || "Sin detalle"
+  }"? Esta acción no se puede deshacer.`;
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
@@ -213,16 +243,13 @@ export function EmployeeVacationDialog({
         </div>
       </FormDialog>
 
-      <EmployeeVacationDeleteDialog
+      <DeleteConfirmationDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        accessToken={accessToken}
-        vacation={vacation || null}
-        onSuccess={() => {
-          setConfirmOpen(false);
-          onOpenChange(false);
-          onSuccess?.();
-        }}
+        title="Eliminar vacación"
+        description={deleteDescription}
+        onConfirm={handleDeleteConfirm}
+        isLoading={deleting}
       />
     </>
   );
