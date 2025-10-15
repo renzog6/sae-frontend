@@ -19,7 +19,7 @@ SAE Frontend es una aplicación web moderna construida con Next.js 15 (App Route
 
 - **Versión**: 1.0.0
 - **Autor**: Renzo O. Gorosito
-- **Licencia**: UNLICENSED (privado)
+- **Licencia**: MIT
 
 ## ✨ Características
 
@@ -370,7 +370,7 @@ npm run lint         # Linting del código
 
 ## 📄 Licencia
 
-Este proyecto es privado y no tiene licencia pública.
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
 

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Sistema de Administración Empresarial",
   "author": "Renzo O. Gorosito",
-  "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack --port 3003",
     "build": "next build --turbopack",
