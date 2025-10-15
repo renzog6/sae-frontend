@@ -19,6 +19,7 @@ import {
   UserFormData,
   UpdateUserFormData,
 } from "@/lib/validations/auth";
+import { Role } from "@/types/enums";
 
 interface UserFormProps {
   onSubmit: (data: UserFormData | UpdateUserFormData) => void;
@@ -45,14 +46,13 @@ export function UserForm({
   } = useForm<UserFormData | UpdateUserFormData>({
     resolver: zodResolver(isEdit ? updateUserSchema : userSchema),
     defaultValues: {
-      role: "USER",
+      role: Role.USER,
       password: "", // Valor por defecto para password
       ...defaultValues,
     },
   });
 
   const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
-
     // En modo edición, si el password está vacío, lo removemos del payload
     if (isEdit && (data as UpdateUserFormData).password === "") {
       const { password, ...dataWithoutPassword } = data;

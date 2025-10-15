@@ -1,20 +1,22 @@
-// file: sae-frontend/types/catalog.ts
+// filepath: sae-frontend/types/catalog.ts
 
-export interface Brand {
-  id: number;
+// Re-export shared types for backward compatibility
+export type { Brand, Unit } from "./shared";
+
+// ===== DTOs for catalog types =====
+export interface CreateBrandDto {
   name: string;
   code: string;
-  information?: string | null;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  information?: string;
+  isActive?: boolean;
 }
 
-export interface Unit {
-  id: number;
+export interface UpdateBrandDto extends Partial<CreateBrandDto> {}
+
+export interface CreateUnitDto {
   name: string;
   abbreviation: string;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  isActive?: boolean;
 }
+
+export interface UpdateUnitDto extends Partial<CreateUnitDto> {}

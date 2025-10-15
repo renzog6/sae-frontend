@@ -167,33 +167,28 @@ export default function EmployeePage() {
         </CardContent>
       </Card>
 
-      {(person?.contacts as Contact[]) &&
-        (person.contacts as Contact[]).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Phone className="w-5 h-5" />
-                Contactos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {(person.contacts as Contact[]).map((contact) => (
-                  <div key={contact.id} className="flex items-center gap-2">
-                    {contact.type === "EMAIL" && <Mail className="w-4 h-4" />}
-                    {contact.type === "PHONE" && <Phone className="w-4 h-4" />}
-                    <span>{contact.value}</span>
-                    {contact.label && (
-                      <span className="text-sm text-muted-foreground">
-                        ({contact.label})
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {person?.contacts && person.contacts.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Phone className="w-5 h-5" />
+              Contactos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {person.contacts.map((contactLink) => (
+                <div key={contactLink.id} className="flex items-center gap-2">
+                  <span>{contactLink.contactId}</span>
+                  <span className="text-sm text-muted-foreground">
+                    (Contact ID: {contactLink.contactId})
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {person?.address ? (
         <Card>

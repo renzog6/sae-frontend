@@ -21,14 +21,18 @@ export function getBusinessSubcategoryColumns({
       ),
     },
     {
-      accessorKey: "categoryId",
+      accessorKey: "businessCategoryId",
       header: "Categoría ID",
-      cell: ({ row }: { row: Row<BusinessSubcategory> }) => <span>{row.original.categoryId}</span>,
+      cell: ({ row }: { row: Row<BusinessSubcategory> }) => (
+        <span>{row.original.businessCategoryId}</span>
+      ),
     },
     {
-      accessorKey: "information",
-      header: "Información",
-      cell: ({ row }: { row: Row<BusinessSubcategory> }) => <span>{row.original.information || "-"}</span>,
+      accessorKey: "description",
+      header: "Descripción",
+      cell: ({ row }: { row: Row<BusinessSubcategory> }) => (
+        <span>{row.original.description || "-"}</span>
+      ),
     },
     {
       id: "actions",
@@ -37,10 +41,18 @@ export function getBusinessSubcategoryColumns({
         const subcategory = row.original;
         return (
           <div className="flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => onEdit(subcategory)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(subcategory)}
+            >
               Editar
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onDelete(subcategory)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(subcategory)}
+            >
               Eliminar
             </Button>
           </div>

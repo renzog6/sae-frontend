@@ -19,6 +19,16 @@ export const routes = {
     detail: (id: number | string) => `/companies/${id}`,
   },
 
+  equipments: {
+    root: "/equipments",
+    list: "/equipments/list",
+    new: "/equipments/new",
+    categories: "/equipments/categories",
+    types: "/equipments/types",
+    models: "/equipments/models",
+    detail: (id: number | string) => `/equipments/${id}`,
+  },
+
   settings: {
     root: "/settings",
     profile: "/settings/profile",

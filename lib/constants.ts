@@ -6,12 +6,17 @@ import {
   EmployeeStatus,
   PersonStatus,
   VacationType,
-} from "@/types/employee";
+  Role,
+  ContactType,
+  MaintenanceType,
+  InspectionType,
+} from "@/types/enums";
 import {
   EmployeeIncidentType,
   HistoryType,
   SeverityLevel,
-} from "@/types/history";
+} from "@/types/enums";
+import { EquipmentStatus } from "@/types/enums";
 
 export const genderLabels: Record<Gender, string> = {
   [Gender.MALE]: "Masculino",
@@ -50,7 +55,7 @@ export const employeeIncidentTypeLabels: Record<EmployeeIncidentType, string> =
     [EmployeeIncidentType.ACCIDENT]: "Accidente laboral",
     [EmployeeIncidentType.FAMILY_EMERGENCY]: "Emergencia familiar",
     [EmployeeIncidentType.UNJUSTIFIED_ABSENCE]: "Ausencia sin justificar",
-    //[EmployeeIncidentType.VACATION_LEAVE]: "Licencia por vacaciones",
+    [EmployeeIncidentType.VACATION_LEAVE]: "Licencia por vacaciones",
   } as const;
 
 export const historyTypeLabels: Record<HistoryType, string> = {
@@ -74,4 +79,40 @@ export const severityLevelLabels: Record<SeverityLevel, string> = {
   [SeverityLevel.WARNING]: "Advertencia",
   [SeverityLevel.CRITICAL]: "Crítico",
   [SeverityLevel.SUCCESS]: "Exitoso",
+} as const;
+
+export const equipmentStatusLabels: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.ACTIVE]: "Activo",
+  [EquipmentStatus.INACTIVE]: "Inactivo",
+  [EquipmentStatus.MAINTENANCE]: "En mantenimiento",
+  [EquipmentStatus.RETIRED]: "Retirado",
+} as const;
+
+export const roleLabels: Record<Role, string> = {
+  [Role.USER]: "Usuario",
+  [Role.ADMIN]: "Administrador",
+} as const;
+
+export const contactTypeLabels: Record<ContactType, string> = {
+  [ContactType.EMAIL]: "Email",
+  [ContactType.PHONE]: "Teléfono",
+  [ContactType.WHATSAPP]: "WhatsApp",
+  [ContactType.TELEGRAM]: "Telegram",
+  [ContactType.INSTAGRAM]: "Instagram",
+  [ContactType.LINKEDIN]: "LinkedIn",
+  [ContactType.OTHER]: "Otro",
+} as const;
+
+export const maintenanceTypeLabels: Record<MaintenanceType, string> = {
+  [MaintenanceType.PREVENTIVE]: "Preventivo",
+  [MaintenanceType.CORRECTIVE]: "Correctivo",
+  [MaintenanceType.ACCIDENT_REPAIR]: "Reparación por accidente",
+  [MaintenanceType.ROUTINE_CHECK]: "Revisión rutinaria",
+} as const;
+
+export const inspectionTypeLabels: Record<InspectionType, string> = {
+  [InspectionType.GENERAL]: "General",
+  [InspectionType.SAFETY]: "Seguridad",
+  [InspectionType.MAINTENANCE]: "Mantenimiento",
+  [InspectionType.COMPLIANCE]: "Cumplimiento",
 } as const;

@@ -30,5 +30,22 @@ export interface Contact {
   contactLinks?: ContactLink[];
 }
 
+export interface CreateContactDto {
+  type: ContactType;
+  value: string;
+  label?: string;
+  information?: string;
+}
+
+export interface UpdateContactDto extends Partial<CreateContactDto> {}
+
+export interface CreateContactLinkDto {
+  contactId: number;
+  companyId?: number;
+  personId?: number;
+}
+
+export interface UpdateContactLinkDto extends Partial<CreateContactLinkDto> {}
+
 // Helpers
 export type ContactsPage = PaginatedResponse<Contact>;

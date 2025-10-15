@@ -7,12 +7,14 @@ import {
   Building2,
   LayoutDashboard,
   Settings,
+  Wrench,
 } from "lucide-react";
 
 export const mainMenu = [
   { title: "Dashboard", href: routes.dashboard, icon: LayoutDashboard },
   { title: "Empleados", href: routes.employees.list, icon: Users },
   { title: "Vacaciones", href: routes.employees.vacation, icon: Calendar },
+  { title: "Equipos", href: routes.equipments.list, icon: Wrench },
   { title: "Empresas", href: routes.companies.list, icon: Building2 },
   { title: "Configuración", href: routes.settings.root, icon: Settings },
 ];

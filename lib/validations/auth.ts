@@ -1,5 +1,6 @@
 // filepath: sae-frontend/lib/validations/auth.ts
 import { z } from "zod";
+import { Role } from "@/types/enums";
 
 export const loginSchema = z.object({
   email: z
@@ -25,7 +26,7 @@ export const userSchema = z.object({
     .email("Formato de email inválido"),
   username: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  role: z.enum(["USER", "ADMIN"]),
+  role: z.nativeEnum(Role),
 });
 
 export const updateUserSchema = z.object({
@@ -39,7 +40,7 @@ export const updateUserSchema = z.object({
     .email("Formato de email inválido"),
   username: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"), // Permite string vacío
-  role: z.enum(["USER", "ADMIN"]),
+  role: z.nativeEnum(Role),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;

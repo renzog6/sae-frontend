@@ -89,17 +89,30 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Reportes Card */}
+          {/* Equipos Card */}
           <Card className="transition-shadow border-laurel-200 hover:shadow-md">
             <CardHeader>
-              <CardTitle className="text-laurel-800">Reportes</CardTitle>
+              <CardTitle className="text-laurel-800">Equipos</CardTitle>
               <CardDescription className="text-laurel-600">
-                Informes y estadísticas
+                Gestión de los equipos de la empresa.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-laurel-700">--</div>
-              <p className="text-xs text-laurel-500">Próximamente disponible</p>
+            <CardContent className="space-y-4">
+              <LinkAsBadge
+                icon={ChevronRight}
+                href={routes.equipments.list}
+                title="Listado de Equipos"
+              />
+              <LinkAsBadge
+                icon={ChevronRight}
+                href={routes.equipments.new}
+                title="Nuevo Equipo"
+              />
+              <LinkAsBadge
+                icon={ChevronRight}
+                href={routes.equipments.categories}
+                title="Categorías"
+              />
             </CardContent>
           </Card>
         </div>

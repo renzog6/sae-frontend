@@ -9,19 +9,26 @@ export const BusinessCategorySchema = z.object({
 });
 export type BusinessCategoryFormData = z.infer<typeof BusinessCategorySchema>;
 export const UpdateBusinessCategorySchema = BusinessCategorySchema.partial();
-export type UpdateBusinessCategoryFormData = z.infer<typeof UpdateBusinessCategorySchema>;
+export type UpdateBusinessCategoryFormData = z.infer<
+  typeof UpdateBusinessCategorySchema
+>;
 
 // ===== Business Subcategories =====
 export const BusinessSubcategorySchema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(100),
-  information: z.string().max(255).optional(),
-  categoryId: z
+  description: z.string().max(255).optional(),
+  businessCategoryId: z
     .number()
     .min(1, { message: "La categoría es requerida" }),
 });
-export type BusinessSubcategoryFormData = z.infer<typeof BusinessSubcategorySchema>;
-export const UpdateBusinessSubcategorySchema = BusinessSubcategorySchema.partial();
-export type UpdateBusinessSubcategoryFormData = z.infer<typeof UpdateBusinessSubcategorySchema>;
+export type BusinessSubcategoryFormData = z.infer<
+  typeof BusinessSubcategorySchema
+>;
+export const UpdateBusinessSubcategorySchema =
+  BusinessSubcategorySchema.partial();
+export type UpdateBusinessSubcategoryFormData = z.infer<
+  typeof UpdateBusinessSubcategorySchema
+>;
 
 // ===== Company =====
 export const CompanyAddressSchema = z.object({

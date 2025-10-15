@@ -4,9 +4,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, User, BarChart3, Settings, Leaf, X, Building } from "lucide-react";
+import { X, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import { mainMenu } from "@/lib/navigation";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -17,26 +18,25 @@ interface MobileSidebarProps {
 type UserRole = "ADMIN" | "USER";
 
 interface NavigationItem {
-  name: string;
+  title: string;
   href: string;
   icon: React.ComponentType<any>;
   requiredRole?: UserRole;
 }
-
-const navigation: NavigationItem[] = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Empresas", href: "/companies", icon: Building },
-  { name: "Empleados", href: "/employees", icon: User },
-  { name: "Usuarios", href: "/users", icon: Users, requiredRole: "ADMIN" },
-  { name: "Reportes", href: "/reports", icon: BarChart3 },
-  { name: "Configuración", href: "/settings", icon: Settings },
-];
 
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const userRole = (session?.user?.role as UserRole) || "USER";
+
+  // Adaptar mainMenu al formato esperado
+  const navigation: NavigationItem[] = mainMenu.map((item) => ({
+    title: item.title,
+    href: item.href,
+    icon: item.icon,
+    requiredRole: item.title === "Usuarios" ? "ADMIN" : undefined,
+  }));
 
   const filteredNavigation = navigation.filter((item) => {
     if (!item.requiredRole) return true;
@@ -79,7 +79,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             const isActive = pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.title}
                 href={item.href}
                 className={cn(
                   "flex items-center px-4 py-3 rounded-lg transition-colors",
@@ -90,7 +90,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 onClick={onClose}
               >
                 <item.icon className="w-5 h-5 mr-3" />
-                {item.name}
+                {item.title}
               </Link>
             );
           })}

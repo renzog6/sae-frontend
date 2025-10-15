@@ -28,3 +28,5 @@ export interface CreateDocumentDto {
   employeeId?: number;
   companyId?: number;
 }
+
+export interface UpdateDocumentDto extends Partial<CreateDocumentDto> {}

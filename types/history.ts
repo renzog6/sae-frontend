@@ -1,37 +1,19 @@
 // filepath: sae-frontend/types/history.ts
 
-export enum EmployeeIncidentType {
-  SICK_LEAVE = "SICK_LEAVE",
-  DISCIPLINARY = "DISCIPLINARY",
-  WARNING = "WARNING",
-  ACCIDENT = "ACCIDENT",
-  FAMILY_EMERGENCY = "FAMILY_EMERGENCY",
-  UNJUSTIFIED_ABSENCE = "UNJUSTIFIED_ABSENCE",
-  //VACATION_LEAVE = "VACATION_LEAVE", // Se usa solo en el Backend
-}
+// Import enums from shared location
+import {
+  EmployeeIncidentType,
+  HistoryType,
+  SeverityLevel,
+  MaintenanceType,
+  InspectionType,
+} from "./enums";
+import { Equipment } from "./equipment";
+import { Person } from "./employee";
+import { Company } from "./company";
 
-export enum HistoryType {
-  EMPLOYEE_ILLNESS = "EMPLOYEE_ILLNESS",
-  EMPLOYEE_WARNING = "EMPLOYEE_WARNING",
-  EMPLOYEE_ACHIEVEMENT = "EMPLOYEE_ACHIEVEMENT",
-  EMPLOYEE_HIRE = "EMPLOYEE_HIRE",
-  VACATION_ASSIGNED = "VACATION_ASSIGNED",
-  VACATION_TAKEN = "VACATION_TAKEN",
-  COMPANY_REMINDER = "COMPANY_REMINDER",
-  COMPANY_EVENT = "COMPANY_EVENT",
-  EQUIPMENT_MAINTENANCE = "EQUIPMENT_MAINTENANCE",
-  EQUIPMENT_ACCIDENT = "EQUIPMENT_ACCIDENT",
-  EQUIPMENT_REPAIR = "EQUIPMENT_REPAIR",
-  PERSONAL_EVENT = "PERSONAL_EVENT",
-  GENERAL_NOTE = "GENERAL_NOTE",
-}
-
-export enum SeverityLevel {
-  INFO = "INFO",
-  WARNING = "WARNING",
-  CRITICAL = "CRITICAL",
-  SUCCESS = "SUCCESS",
-}
+// Re-export enums for backward compatibility
+export { EmployeeIncidentType, HistoryType, SeverityLevel } from "./enums";
 
 export interface EmployeeIncident {
   id: number;

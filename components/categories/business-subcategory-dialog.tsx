@@ -2,7 +2,10 @@
 "use client";
 
 import * as React from "react";
-import { useCreateBusinessSubcategory, useUpdateBusinessSubcategory } from "@/lib/hooks/useCompanies";
+import {
+  useCreateBusinessSubcategory,
+  useUpdateBusinessSubcategory,
+} from "@/lib/hooks/useCompanies";
 import type { BusinessSubcategory } from "@/types/company";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
@@ -17,35 +20,70 @@ export interface BusinessSubcategoryDialogProps {
   subcategory?: BusinessSubcategory | null;
 }
 
-export function BusinessSubcategoryDialog({ accessToken, open, onOpenChange, mode, subcategory }: BusinessSubcategoryDialogProps) {
+export function BusinessSubcategoryDialog({
+  accessToken,
+  open,
+  onOpenChange,
+  mode,
+  subcategory,
+}: BusinessSubcategoryDialogProps) {
   const { toast } = useToast();
-  const { mutate: createSub, isPending: creating } = useCreateBusinessSubcategory(accessToken);
-  const { mutate: updateSub, isPending: updating } = useUpdateBusinessSubcategory(accessToken);
+  const { mutate: createSub, isPending: creating } =
+    useCreateBusinessSubcategory(accessToken);
+  const { mutate: updateSub, isPending: updating } =
+    useUpdateBusinessSubcategory(accessToken);
 
   const onSubmit = (data: BusinessSubcategoryFormData) => {
     if (mode === "create") {
       createSub(
-        { name: data.name, information: data.information, categoryId: data.categoryId },
+        {
+          name: data.name,
+          description: data.description,
+          businessCategoryId: data.businessCategoryId,
+        },
         {
           onSuccess: () => {
-            toast({ title: "Subcategoría creada", description: `"${data.name}" creada correctamente.`, variant: "success" });
+            toast({
+              title: "Subcategoría creada",
+              description: `"${data.name}" creada correctamente.`,
+              variant: "success",
+            });
             onOpenChange(false);
           },
           onError: (e: any) => {
-            toast({ title: "Error al crear subcategoría", description: e?.message || "Intenta nuevamente.", variant: "error" });
+            toast({
+              title: "Error al crear subcategoría",
+              description: e?.message || "Intenta nuevamente.",
+              variant: "error",
+            });
           },
         }
       );
     } else if (mode === "edit" && subcategory) {
       updateSub(
-        { id: subcategory.id, data: { name: data.name, information: data.information, categoryId: data.categoryId } },
+        {
+          id: subcategory.id,
+          data: {
+            name: data.name,
+            description: data.description,
+            businessCategoryId: data.businessCategoryId,
+          },
+        },
         {
           onSuccess: () => {
-            toast({ title: "Subcategoría actualizada", description: `"${data.name}" guardada.`, variant: "success" });
+            toast({
+              title: "Subcategoría actualizada",
+              description: `"${data.name}" guardada.`,
+              variant: "success",
+            });
             onOpenChange(false);
           },
           onError: (e: any) => {
-            toast({ title: "Error al actualizar subcategoría", description: e?.message || "Intenta nuevamente.", variant: "error" });
+            toast({
+              title: "Error al actualizar subcategoría",
+              description: e?.message || "Intenta nuevamente.",
+              variant: "error",
+            });
           },
         }
       );
@@ -57,12 +95,24 @@ export function BusinessSubcategoryDialog({ accessToken, open, onOpenChange, mod
       open={open}
       onOpenChange={onOpenChange}
       title={mode === "create" ? "Crear subcategoría" : "Editar subcategoría"}
-      description={mode === "create" ? "Completa los datos para crear una nueva subcategoría." : "Modifica los datos de la subcategoría."}
+      description={
+        mode === "create"
+          ? "Completa los datos para crear una nueva subcategoría."
+          : "Modifica los datos de la subcategoría."
+      }
     >
       <BusinessSubcategoryForm
         onSubmit={onSubmit}
         isLoading={creating || updating}
-        defaultValues={mode === "edit" && subcategory ? { name: subcategory.name, information: subcategory.information || "", categoryId: subcategory.categoryId } : undefined}
+        defaultValues={
+          mode === "edit" && subcategory
+            ? {
+                name: subcategory.name,
+                description: subcategory.description || "",
+                businessCategoryId: subcategory.businessCategoryId,
+              }
+            : undefined
+        }
         isEdit={mode === "edit"}
         onCancel={() => onOpenChange(false)}
         error={null}
