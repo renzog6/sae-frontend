@@ -29,6 +29,19 @@ export const routes = {
     detail: (id: number | string) => `/equipments/${id}`,
   },
 
+  tires: {
+    root: "/tires",
+    list: "/tires/list",
+    new: "/tires/new",
+    sizes: "/tires/sizes",
+    assignments: "/tires/assignments",
+    rotations: "/tires/rotations",
+    recaps: "/tires/recaps",
+    inspections: "/tires/inspections",
+    reports: "/tires/reports",
+    detail: (id: number | string) => `/tires/${id}`,
+  },
+
   settings: {
     root: "/settings",
     profile: "/settings/profile",

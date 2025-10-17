@@ -112,3 +112,43 @@ export enum InspectionType {
   MAINTENANCE = "MAINTENANCE",
   COMPLIANCE = "COMPLIANCE",
 }
+
+// Tire statuses
+export enum TireStatus {
+  IN_STOCK = "IN_STOCK",
+  IN_USE = "IN_USE",
+  UNDER_REPAIR = "UNDER_REPAIR",
+  RECAP = "RECAP",
+  DISCARDED = "DISCARDED",
+}
+
+// Tire positions
+export enum TirePosition {
+  DI = "DI", // Delantero Izquierdo
+  DD = "DD", // Delantero Derecho
+  E1I = "E1I", // Eje 1 Izquierdo
+  E1D = "E1D", // Eje 1 Derecho
+  E2I = "E2I", // Eje 2 Izquierdo
+  E2D = "E2D", // Eje 2 Derecho
+  E3I = "E3I", // Eje 3 Izquierdo
+  E3D = "E3D", // Eje 3 Derecho
+  E4I = "E4I", // Eje 4 Izquierdo
+  E4D = "E4D", // Eje 4 Derecho
+  E1II = "E1II", // Eje 1 Izquierdo Interno
+  E1ID = "E1ID", // Eje 1 Izquierdo Externo
+  E1DI = "E1DI", // Eje 1 Derecho Interno
+  E1DD = "E1DD", // Eje 1 Derecho Externo
+  SPARE = "SPARE", // Rueda de auxilio
+  UNKNOWN = "UNKNOWN", // Sin posición definida
+}
+
+// Tire event types
+export enum TireEventType {
+  ASSIGNMENT = "ASSIGNMENT",
+  UNASSIGNMENT = "UNASSIGNMENT",
+  ROTATION = "ROTATION",
+  INSPECTION = "INSPECTION",
+  RECAP = "RECAP",
+  DISCARD = "DISCARD",
+  OTHER = "OTHER",
+}

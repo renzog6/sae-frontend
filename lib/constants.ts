@@ -10,6 +10,9 @@ import {
   ContactType,
   MaintenanceType,
   InspectionType,
+  TireStatus,
+  TirePosition,
+  TireEventType,
 } from "@/types/enums";
 import {
   EmployeeIncidentType,
@@ -115,4 +118,44 @@ export const inspectionTypeLabels: Record<InspectionType, string> = {
   [InspectionType.SAFETY]: "Seguridad",
   [InspectionType.MAINTENANCE]: "Mantenimiento",
   [InspectionType.COMPLIANCE]: "Cumplimiento",
+} as const;
+
+// Tire status labels
+export const tireStatusLabels: Record<TireStatus, string> = {
+  [TireStatus.IN_STOCK]: "En stock",
+  [TireStatus.IN_USE]: "En uso",
+  [TireStatus.UNDER_REPAIR]: "En reparación",
+  [TireStatus.RECAP]: "En recapado",
+  [TireStatus.DISCARDED]: "Dado de baja",
+} as const;
+
+// Tire position labels
+export const tirePositionLabels: Record<TirePosition, string> = {
+  [TirePosition.DI]: "Delantero Izquierdo",
+  [TirePosition.DD]: "Delantero Derecho",
+  [TirePosition.E1I]: "Eje 1 Izquierdo",
+  [TirePosition.E1D]: "Eje 1 Derecho",
+  [TirePosition.E2I]: "Eje 2 Izquierdo",
+  [TirePosition.E2D]: "Eje 2 Derecho",
+  [TirePosition.E3I]: "Eje 3 Izquierdo",
+  [TirePosition.E3D]: "Eje 3 Derecho",
+  [TirePosition.E4I]: "Eje 4 Izquierdo",
+  [TirePosition.E4D]: "Eje 4 Derecho",
+  [TirePosition.E1II]: "Eje 1 Izquierdo Interno",
+  [TirePosition.E1ID]: "Eje 1 Izquierdo Externo",
+  [TirePosition.E1DI]: "Eje 1 Derecho Interno",
+  [TirePosition.E1DD]: "Eje 1 Derecho Externo",
+  [TirePosition.SPARE]: "Rueda de auxilio",
+  [TirePosition.UNKNOWN]: "Sin posición",
+} as const;
+
+// Tire event type labels
+export const tireEventTypeLabels: Record<TireEventType, string> = {
+  [TireEventType.ASSIGNMENT]: "Asignación",
+  [TireEventType.UNASSIGNMENT]: "Desasignación",
+  [TireEventType.ROTATION]: "Rotación",
+  [TireEventType.INSPECTION]: "Inspección",
+  [TireEventType.RECAP]: "Recapado",
+  [TireEventType.DISCARD]: "Descartado",
+  [TireEventType.OTHER]: "Otro",
 } as const;
