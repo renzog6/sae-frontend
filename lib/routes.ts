@@ -33,12 +33,17 @@ export const routes = {
     root: "/tires",
     list: "/tires/list",
     new: "/tires/new",
+    stock: "/tires/stock",
     sizes: "/tires/sizes",
     assignments: "/tires/assignments",
     rotations: "/tires/rotations",
     recaps: "/tires/recaps",
     inspections: "/tires/inspections",
-    reports: "/tires/reports",
+    reports: {
+      root: "/tires/reports",
+      summary: "/tires/reports/summary",
+      events: "/tires/reports/events",
+    },
     detail: (id: number | string) => `/tires/${id}`,
   },
 
