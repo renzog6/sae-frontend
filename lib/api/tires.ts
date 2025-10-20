@@ -8,6 +8,7 @@ import {
   TireStats,
   TireSize,
   TireSizeAlias,
+  TireModel,
   TireAssignment,
   TireRotation,
   TireRecap,
@@ -19,6 +20,8 @@ import {
   UpdateTireSizeDto,
   CreateTireSizeAliasDto,
   UpdateTireSizeAliasDto,
+  CreateTireModelDto,
+  UpdateTireModelDto,
   MountTireDto,
   UnmountTireDto,
   CreateTireRotationDto,
@@ -128,14 +131,97 @@ export class TiresService {
   }
 }
 
+// ===== TIRE MODELS =====
+
+export class TireModelsService {
+  static async getTireModels(
+    accessToken: string,
+    params?: { page?: number; limit?: number }
+  ) {
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    const qs = query.toString();
+
+    const response = await ApiClient.request<PaginatedResponse<TireModel>>(
+      `/tires/models${qs ? `?${qs}` : ""}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
+  }
+
+  static async getTireModelById(id: number, accessToken: string) {
+    const response = await ApiClient.request<
+      TireModel | ApiResponse<TireModel>
+    >(`/tires/models/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<TireModel>(response);
+  }
+
+  static async createTireModel(data: CreateTireModelDto, accessToken: string) {
+    const response = await ApiClient.request<
+      TireModel | ApiResponse<TireModel>
+    >("/tires/models", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<TireModel>(response);
+  }
+
+  static async updateTireModel(
+    id: number,
+    data: UpdateTireModelDto,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      TireModel | ApiResponse<TireModel>
+    >(`/tires/models/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<TireModel>(response);
+  }
+
+  static async deleteTireModel(id: number, accessToken: string) {
+    await ApiClient.request(`/tires/models/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return "Tire model deleted";
+  }
+}
+
 // ===== TIRE SIZES =====
 
 export class TireSizesService {
-  static async getTireSizes(accessToken: string) {
-    const response = await ApiClient.request<
-      TireSize[] | PaginatedResponse<TireSize>
-    >("/tires/sizes", { headers: { Authorization: `Bearer ${accessToken}` } });
-    return unwrap<TireSize[] | PaginatedResponse<TireSize>>(response);
+  static async getTireSizes(
+    accessToken: string,
+    params?: { page?: number; limit?: number; query?: string }
+  ) {
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.query) query.set("query", params.query);
+    const qs = query.toString();
+
+    const response = await ApiClient.request<PaginatedResponse<TireSize>>(
+      `/tires/sizes${qs ? `?${qs}` : ""}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
   }
 
   static async getTireSizeById(id: number, accessToken: string) {

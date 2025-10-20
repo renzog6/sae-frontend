@@ -1,15 +1,15 @@
-// filepath: sae-frontend/components/tire/tire-size-dialog.tsx
+// filepath: sae-frontend/components/tire/tire-model-dialog.tsx
 "use client";
 
 import * as React from "react";
-import type { TireSize } from "@/types/tire";
+import type { TireModel } from "@/types/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { TireSizeForm } from "@/components/forms/tire-size-form";
+import { TireModelForm } from "@/components/forms/tire-model-form";
 import {
-  useCreateTireSize,
-  useUpdateTireSize,
-  useDeleteTireSize,
+  useCreateTireModel,
+  useUpdateTireModel,
+  useDeleteTireModel,
 } from "@/lib/hooks/useTires";
 import {
   AlertDialog,
@@ -23,65 +23,65 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-export interface TireSizeDialogProps {
+export interface TireModelDialogProps {
   accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
-  size?: TireSize | null;
+  model?: TireModel | null;
 }
 
-export function TireSizeDialog({
+export function TireModelDialog({
   accessToken,
   open,
   onOpenChange,
   mode,
-  size,
-}: TireSizeDialogProps) {
+  model,
+}: TireModelDialogProps) {
   const { toast } = useToast();
-  const { mutate: createSize, isPending: creating } =
-    useCreateTireSize(accessToken);
-  const { mutate: updateSize, isPending: updating } =
-    useUpdateTireSize(accessToken);
-  const { mutate: deleteSize, isPending: deleting } =
-    useDeleteTireSize(accessToken);
+  const { mutate: createModel, isPending: creating } =
+    useCreateTireModel(accessToken);
+  const { mutate: updateModel, isPending: updating } =
+    useUpdateTireModel(accessToken);
+  const { mutate: deleteModel, isPending: deleting } =
+    useDeleteTireModel(accessToken);
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      createSize(data, {
+      createModel(data, {
         onSuccess: () => {
           toast({
-            title: "Tamaño creado",
-            description: `"${data.mainCode}" creado correctamente.`,
+            title: "Modelo creado",
+            description: `"${data.name}" creado correctamente.`,
             variant: "success",
           });
           onOpenChange(false);
         },
         onError: (e: any) => {
           toast({
-            title: "Error al crear tamaño",
+            title: "Error al crear modelo",
             description: e?.message || "Intenta nuevamente.",
             variant: "error",
           });
         },
       });
-    } else if (mode === "edit" && size) {
-      updateSize(
-        { id: size.id, data },
+    } else if (mode === "edit" && model) {
+      updateModel(
+        { id: model.id, data },
         {
           onSuccess: () => {
             toast({
-              title: "Tamaño actualizado",
-              description: `"${data.mainCode}" guardado correctamente.`,
+              title: "Modelo actualizado",
+              description: `"${data.name}" guardado correctamente.`,
               variant: "success",
             });
             onOpenChange(false);
           },
           onError: (e: any) => {
             toast({
-              title: "Error al actualizar tamaño",
+              title: "Error al actualizar modelo",
               description: e?.message || "Intenta nuevamente.",
               variant: "error",
             });
@@ -96,40 +96,43 @@ export function TireSizeDialog({
       <FormDialog
         open={open}
         onOpenChange={onOpenChange}
-        title={mode === "create" ? "Crear tamaño" : "Editar tamaño"}
+        title={mode === "create" ? "Crear modelo" : "Editar modelo"}
         description={
           mode === "create"
-            ? "Completa los datos para crear un nuevo tamaño de neumático."
-            : "Modifica los datos del tamaño seleccionado."
+            ? "Completa los datos para crear un nuevo modelo de neumático."
+            : "Modifica los datos del modelo seleccionado."
         }
       >
         <div className="space-y-4">
-          <TireSizeForm
+          <TireModelForm
             onSubmit={onSubmit}
             isLoading={creating || updating}
             defaultValues={
-              mode === "edit" && size
+              mode === "edit" && model
                 ? {
-                    mainCode: size.mainCode,
-                    width: size.width || undefined,
-                    aspectRatio: size.aspectRatio || undefined,
-                    rimDiameter: size.rimDiameter || undefined,
-                    construction: size.construction || "",
-                    information: size.information || "",
+                    brandId: model.brandId,
+                    sizeId: model.sizeId,
+                    name: model.name,
+                    loadIndex: model.loadIndex || undefined,
+                    speedSymbol: model.speedSymbol || "",
+                    plyRating: model.plyRating || "",
+                    treadPattern: model.treadPattern || "",
+                    information: model.information || "",
                   }
                 : undefined
             }
             isEdit={mode === "edit"}
             onCancel={() => onOpenChange(false)}
             error={null}
+            accessToken={accessToken}
           />
 
-          {mode === "edit" && size && (
+          {mode === "edit" && model && (
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-red-600">
-                    Eliminar tamaño
+                    Eliminar modelo
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Esta acción no se puede deshacer.
@@ -151,9 +154,9 @@ export function TireSizeDialog({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar tamaño</AlertDialogTitle>
+            <AlertDialogTitle>Eliminar modelo</AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Seguro que quieres eliminar el tamaño "{size?.mainCode}"? Esta
+              ¿Seguro que quieres eliminar el modelo "{model?.name}"? Esta
               acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -161,12 +164,12 @@ export function TireSizeDialog({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (size) {
-                  deleteSize(size.id, {
+                if (model) {
+                  deleteModel(model.id, {
                     onSuccess: () => {
                       toast({
-                        title: "Tamaño eliminado",
-                        description: `"${size.mainCode}" eliminado.`,
+                        title: "Modelo eliminado",
+                        description: `"${model.name}" eliminado.`,
                         variant: "success",
                       });
                       setConfirmOpen(false);
@@ -174,7 +177,7 @@ export function TireSizeDialog({
                     },
                     onError: (e: any) => {
                       toast({
-                        title: "Error al eliminar tamaño",
+                        title: "Error al eliminar modelo",
                         description: e?.message || "Intenta nuevamente.",
                         variant: "error",
                       });

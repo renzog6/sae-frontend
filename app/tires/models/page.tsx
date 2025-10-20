@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/tires/sizes/page.tsx
+// filepath: sae-frontend/app/tires/models/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -19,12 +19,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { TireSize } from "@/types/tire";
-import { useTireSizes } from "@/lib/hooks/useTires";
+import type { TireModel } from "@/types/tire";
+import { useTireModels } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table";
-import { getTireSizeColumns } from "./columns";
-import { TireSizeDialog } from "@/components/tire/tire-size-dialog";
-import { TireSizeAliasDialog } from "@/components/tire/tire-size-alias-dialog";
+import { getTireModelColumns } from "./columns";
+import { TireModelDialog } from "@/components/tire/tire-model-dialog";
 import {
   Pagination,
   PaginationContent,
@@ -34,7 +33,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function TireSizesPage() {
+export default function TireModelsPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
@@ -57,45 +56,30 @@ export default function TireSizesPage() {
   }, [debouncedQuery, limit]);
 
   const {
-    data: sizesResponse,
+    data: modelsResponse,
     isLoading,
     error,
-  } = useTireSizes(accessToken, {
+  } = useTireModels(accessToken, {
     page,
     limit,
-    query: debouncedQuery,
   });
 
-  // Invalidate queries when alias is created/updated/deleted
-  const invalidateQueries = () => {
-    // This will be called after alias operations
-  };
-
-  const sizes: TireSize[] = Array.isArray(sizesResponse)
-    ? sizesResponse
-    : (sizesResponse as any)?.data ?? [];
-  const totalPages = (sizesResponse as any)?.meta?.totalPages ?? 1;
+  const models: TireModel[] = Array.isArray(modelsResponse)
+    ? modelsResponse
+    : (modelsResponse as any)?.data ?? [];
+  const totalPages = (modelsResponse as any)?.meta?.totalPages ?? 1;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-  const [selected, setSelected] = useState<TireSize | null>(null);
-
-  const [aliasDialogOpen, setAliasDialogOpen] = useState(false);
-  const [selectedForAlias, setSelectedForAlias] = useState<TireSize | null>(
-    null
-  );
+  const [selected, setSelected] = useState<TireModel | null>(null);
 
   const columns = useMemo(
     () =>
-      getTireSizeColumns({
+      getTireModelColumns({
         onEdit: (item) => {
           setSelected(item);
           setDialogMode("edit");
           setDialogOpen(true);
-        },
-        onAddAlias: (item) => {
-          setSelectedForAlias(item);
-          setAliasDialogOpen(true);
         },
       }),
     []
@@ -106,7 +90,7 @@ export default function TireSizesPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Tamaños de neumáticos</CardTitle>
+            <CardTitle className="text-2xl">Modelos de neumáticos</CardTitle>
             <Button
               onClick={() => {
                 setDialogMode("create");
@@ -114,16 +98,16 @@ export default function TireSizesPage() {
                 setDialogOpen(true);
               }}
             >
-              Nuevo tamaño
+              Nuevo modelo
             </Button>
           </div>
-          <CardDescription>Gestión de tamaños de neumáticos</CardDescription>
+          <CardDescription>Gestión de modelos de neumáticos</CardDescription>
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
             <div className="flex-1">
               <Input
-                placeholder="🔍 Buscar por medida..."
+                placeholder="🔍 Buscar por nombre..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full"
@@ -177,7 +161,7 @@ export default function TireSizesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<TireSize, unknown> columns={columns} data={sizes} />
+            <DataTable<TireModel, unknown> columns={columns} data={models} />
           )}
           {/* Pagination controls */}
           <div className="mt-4">
@@ -213,7 +197,7 @@ export default function TireSizesPage() {
         </CardContent>
       </Card>
 
-      <TireSizeDialog
+      <TireModelDialog
         accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
@@ -221,26 +205,8 @@ export default function TireSizesPage() {
           if (!o) setSelected(null);
         }}
         mode={dialogMode}
-        size={selected}
+        model={selected}
       />
-
-      {selectedForAlias && (
-        <TireSizeAliasDialog
-          accessToken={accessToken}
-          open={aliasDialogOpen}
-          onOpenChange={(o: boolean) => {
-            setAliasDialogOpen(o);
-            if (!o) {
-              setSelectedForAlias(null);
-              // Refresh the data after alias operations
-              window.location.reload();
-            }
-          }}
-          mode="create"
-          tireSize={selectedForAlias}
-          alias={null}
-        />
-      )}
     </div>
   );
 }

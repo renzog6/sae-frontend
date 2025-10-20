@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/tire-size-form.tsx
+// filepath: sae-frontend/components/forms/tire-model-form.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,41 +22,57 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  createTireSizeSchema,
-  type CreateTireSizeFormData,
+  createTireModelSchema,
+  type CreateTireModelFormData,
 } from "@/lib/validations/tire";
+import { useBrands } from "@/lib/hooks/useCatalogs";
+import { useTireSizes } from "@/lib/hooks/useTires";
 
-interface TireSizeFormProps {
-  onSubmit: (data: CreateTireSizeFormData) => void;
+interface TireModelFormProps {
+  onSubmit: (data: CreateTireModelFormData) => void;
   isLoading?: boolean;
-  defaultValues?: Partial<CreateTireSizeFormData>;
+  defaultValues?: Partial<CreateTireModelFormData>;
   isEdit?: boolean;
   onCancel?: () => void;
   error?: string | null;
+  accessToken: string;
 }
 
-export function TireSizeForm({
+export function TireModelForm({
   onSubmit,
   isLoading = false,
   defaultValues,
   isEdit = false,
   onCancel,
   error,
-}: TireSizeFormProps) {
-  const form = useForm<CreateTireSizeFormData>({
-    resolver: zodResolver(createTireSizeSchema),
+  accessToken,
+}: TireModelFormProps) {
+  const { data: brands } = useBrands(accessToken);
+  const { data: sizesResponse } = useTireSizes(accessToken, {
+    page: 1,
+    limit: 100,
+  });
+
+  const sizes = Array.isArray(sizesResponse)
+    ? sizesResponse
+    : (sizesResponse as any)?.data ?? [];
+
+  const form = useForm<CreateTireModelFormData>({
+    resolver: zodResolver(createTireModelSchema),
     defaultValues: {
-      mainCode: "",
-      width: undefined,
-      aspectRatio: undefined,
-      rimDiameter: undefined,
-      construction: "",
+      brandId: undefined,
+      sizeId: undefined,
+      name: "",
+      loadIndex: undefined,
+      speedSymbol: "",
+      plyRating: "",
+      treadPattern: "",
       information: "",
       ...defaultValues,
     },
   });
 
-  const handleSubmit = (data: CreateTireSizeFormData) => {
+  const handleSubmit = (data: CreateTireModelFormData) => {
     onSubmit(data);
   };
 
@@ -69,15 +85,75 @@ export function TireSizeForm({
           </div>
         )}
 
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="brandId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Marca *</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(Number(value))}
+                  defaultValue={field.value?.toString()}
+                  disabled={isLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona marca" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {brands?.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.id.toString()}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="sizeId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Medida *</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(Number(value))}
+                  defaultValue={field.value?.toString()}
+                  disabled={isLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona medida" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {sizes?.map((size: any) => (
+                      <SelectItem key={size.id} value={size.id.toString()}>
+                        {size.mainCode}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
-          name="mainCode"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Código principal *</FormLabel>
+              <FormLabel>Nombre del modelo *</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Ej: 380/90R46"
+                  placeholder="Ej: Agribib"
                   {...field}
                   disabled={isLoading}
                 />
@@ -90,14 +166,14 @@ export function TireSizeForm({
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="width"
+            name="loadIndex"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ancho</FormLabel>
+                <FormLabel>Índice de carga</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="380"
+                    placeholder="142"
                     {...field}
                     onChange={(e) =>
                       field.onChange(
@@ -114,20 +190,14 @@ export function TireSizeForm({
 
           <FormField
             control={form.control}
-            name="aspectRatio"
+            name="speedSymbol"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Relación de aspecto</FormLabel>
+                <FormLabel>Símbolo de velocidad</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
-                    placeholder="90"
+                    placeholder="Ej: A8, B, L"
                     {...field}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
-                      )
-                    }
                     disabled={isLoading}
                   />
                 </FormControl>
@@ -140,21 +210,14 @@ export function TireSizeForm({
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="rimDiameter"
+            name="plyRating"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Diámetro de llanta</FormLabel>
+                <FormLabel>Capas</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
-                    step="0.1"
-                    placeholder="46"
+                    placeholder="Ej: 8PR"
                     {...field}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
-                      )
-                    }
                     disabled={isLoading}
                   />
                 </FormControl>
@@ -165,25 +228,17 @@ export function TireSizeForm({
 
           <FormField
             control={form.control}
-            name="construction"
+            name="treadPattern"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Construcción</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={isLoading}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona construcción" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="R">Radial (R)</SelectItem>
-                    <SelectItem value="D">Diagonal (D)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>Dibujo</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ej: R-1W, LSW"
+                    {...field}
+                    disabled={isLoading}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -198,7 +253,7 @@ export function TireSizeForm({
               <FormLabel>Información adicional</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Información opcional sobre el tamaño..."
+                  placeholder="Información opcional sobre el modelo..."
                   className="resize-none"
                   rows={3}
                   {...field}

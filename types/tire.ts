@@ -21,7 +21,7 @@ export interface TireSize {
 
   // Relations
   aliases?: TireSizeAlias[];
-  tires?: Tire[];
+  models?: TireModel[];
 }
 
 export interface TireSizeAlias {
@@ -33,13 +33,35 @@ export interface TireSizeAlias {
   updatedAt?: string;
 }
 
+// Tire Model (commercial model with brand and size)
+export interface TireModel {
+  id: number;
+  brandId: number;
+  sizeId: number;
+  name: string; // Ej: "Agribib"
+  loadIndex?: number | null;
+  speedSymbol?: string | null; // Ej: "A8", "B", "L"
+  plyRating?: string | null; // Ej: "8PR"
+  treadPattern?: string | null; // Ej: "R-1W", "LSW", etc.
+  information?: string | null; // Notas técnicas, presión recomendada, etc.
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  brand: {
+    id: number;
+    name: string;
+    code: string;
+  };
+  size: TireSize;
+  tires?: Tire[];
+}
+
 // Main Tire entity
 export interface Tire {
   id: number;
   serialNumber: string; // Unique identifier
-  brandId?: number | null;
-  sizeId?: number | null;
-  model?: string | null; // Commercial name
+  modelId: number;
   position?: TirePosition | null;
   status: TireStatus;
   totalKm?: number | null;
@@ -47,12 +69,7 @@ export interface Tire {
   updatedAt: string;
 
   // Relations
-  brand?: {
-    id: number;
-    name: string;
-    code: string;
-  } | null;
-  size?: TireSize | null;
+  model: TireModel;
 
   // Related entities (optional hydration)
   assignments?: TireAssignment[];
@@ -148,9 +165,7 @@ export interface TireEvent {
 // Tire CRUD
 export interface CreateTireDto {
   serialNumber: string;
-  brandId?: number;
-  sizeId?: number;
-  model?: string;
+  modelId: number;
   position?: TirePosition;
   status?: TireStatus;
   totalKm?: number;
@@ -171,6 +186,20 @@ export interface CreateTireSizeDto {
 }
 
 export interface UpdateTireSizeDto extends Partial<CreateTireSizeDto> {}
+
+// Tire Models
+export interface CreateTireModelDto {
+  brandId: number;
+  sizeId: number;
+  name: string;
+  loadIndex?: number;
+  speedSymbol?: string;
+  plyRating?: string;
+  treadPattern?: string;
+  information?: string;
+}
+
+export interface UpdateTireModelDto extends Partial<CreateTireModelDto> {}
 
 export interface CreateTireSizeAliasDto {
   aliasCode: string;
@@ -299,6 +328,7 @@ export interface TireSummary {
   id: number;
   serialNumber: string;
   brand?: string;
+  model?: string;
   size?: string;
   position?: TirePosition;
   status: TireStatus;

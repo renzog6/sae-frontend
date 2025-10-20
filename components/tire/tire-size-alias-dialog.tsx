@@ -1,15 +1,15 @@
-// filepath: sae-frontend/components/tire/tire-size-dialog.tsx
+// filepath: sae-frontend/components/tire/tire-size-alias-dialog.tsx
 "use client";
 
 import * as React from "react";
-import type { TireSize } from "@/types/tire";
+import type { TireSize, TireSizeAlias } from "@/types/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { TireSizeForm } from "@/components/forms/tire-size-form";
+import { TireSizeAliasForm } from "@/components/forms/tire-size-alias-form";
 import {
-  useCreateTireSize,
-  useUpdateTireSize,
-  useDeleteTireSize,
+  useCreateTireSizeAlias,
+  useUpdateTireSizeAlias,
+  useDeleteTireSizeAlias,
 } from "@/lib/hooks/useTires";
 import {
   AlertDialog,
@@ -23,65 +23,67 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-export interface TireSizeDialogProps {
+export interface TireSizeAliasDialogProps {
   accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
-  size?: TireSize | null;
+  tireSize: TireSize;
+  alias?: TireSizeAlias | null;
 }
 
-export function TireSizeDialog({
+export function TireSizeAliasDialog({
   accessToken,
   open,
   onOpenChange,
   mode,
-  size,
-}: TireSizeDialogProps) {
+  tireSize,
+  alias,
+}: TireSizeAliasDialogProps) {
   const { toast } = useToast();
-  const { mutate: createSize, isPending: creating } =
-    useCreateTireSize(accessToken);
-  const { mutate: updateSize, isPending: updating } =
-    useUpdateTireSize(accessToken);
-  const { mutate: deleteSize, isPending: deleting } =
-    useDeleteTireSize(accessToken);
+  const { mutate: createAlias, isPending: creating } =
+    useCreateTireSizeAlias(accessToken);
+  const { mutate: updateAlias, isPending: updating } =
+    useUpdateTireSizeAlias(accessToken);
+  const { mutate: deleteAlias, isPending: deleting } =
+    useDeleteTireSizeAlias(accessToken);
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      createSize(data, {
+      createAlias(data, {
         onSuccess: () => {
           toast({
-            title: "Tamaño creado",
-            description: `"${data.mainCode}" creado correctamente.`,
+            title: "Alias creado",
+            description: `"${data.aliasCode}" creado correctamente.`,
             variant: "success",
           });
           onOpenChange(false);
         },
         onError: (e: any) => {
           toast({
-            title: "Error al crear tamaño",
+            title: "Error al crear alias",
             description: e?.message || "Intenta nuevamente.",
             variant: "error",
           });
         },
       });
-    } else if (mode === "edit" && size) {
-      updateSize(
-        { id: size.id, data },
+    } else if (mode === "edit" && alias) {
+      updateAlias(
+        { id: alias.id, data },
         {
           onSuccess: () => {
             toast({
-              title: "Tamaño actualizado",
-              description: `"${data.mainCode}" guardado correctamente.`,
+              title: "Alias actualizado",
+              description: `"${data.aliasCode}" guardado correctamente.`,
               variant: "success",
             });
             onOpenChange(false);
           },
           onError: (e: any) => {
             toast({
-              title: "Error al actualizar tamaño",
+              title: "Error al actualizar alias",
               description: e?.message || "Intenta nuevamente.",
               variant: "error",
             });
@@ -96,40 +98,42 @@ export function TireSizeDialog({
       <FormDialog
         open={open}
         onOpenChange={onOpenChange}
-        title={mode === "create" ? "Crear tamaño" : "Editar tamaño"}
+        title={
+          mode === "create"
+            ? "Crear medida alternativa"
+            : "Editar medida alternativa"
+        }
         description={
           mode === "create"
-            ? "Completa los datos para crear un nuevo tamaño de neumático."
-            : "Modifica los datos del tamaño seleccionado."
+            ? `Agrega una medida alternativa para el tamaño "${tireSize.mainCode}".`
+            : "Modifica la medida alternativa seleccionada."
         }
       >
         <div className="space-y-4">
-          <TireSizeForm
+          <TireSizeAliasForm
             onSubmit={onSubmit}
             isLoading={creating || updating}
             defaultValues={
-              mode === "edit" && size
+              mode === "edit" && alias
                 ? {
-                    mainCode: size.mainCode,
-                    width: size.width || undefined,
-                    aspectRatio: size.aspectRatio || undefined,
-                    rimDiameter: size.rimDiameter || undefined,
-                    construction: size.construction || "",
-                    information: size.information || "",
+                    aliasCode: alias.aliasCode,
+                    tireSizeId: alias.tireSizeId,
                   }
-                : undefined
+                : {
+                    tireSizeId: tireSize.id,
+                  }
             }
             isEdit={mode === "edit"}
             onCancel={() => onOpenChange(false)}
             error={null}
           />
 
-          {mode === "edit" && size && (
+          {mode === "edit" && alias && (
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-red-600">
-                    Eliminar tamaño
+                    Eliminar medida alternativa
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Esta acción no se puede deshacer.
@@ -151,22 +155,22 @@ export function TireSizeDialog({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar tamaño</AlertDialogTitle>
+            <AlertDialogTitle>Eliminar medida alternativa</AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Seguro que quieres eliminar el tamaño "{size?.mainCode}"? Esta
-              acción no se puede deshacer.
+              ¿Seguro que quieres eliminar la medida alternativa "
+              {alias?.aliasCode}"? Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (size) {
-                  deleteSize(size.id, {
+                if (alias) {
+                  deleteAlias(alias.id, {
                     onSuccess: () => {
                       toast({
-                        title: "Tamaño eliminado",
-                        description: `"${size.mainCode}" eliminado.`,
+                        title: "Alias eliminado",
+                        description: `"${alias.aliasCode}" eliminado.`,
                         variant: "success",
                       });
                       setConfirmOpen(false);
@@ -174,7 +178,7 @@ export function TireSizeDialog({
                     },
                     onError: (e: any) => {
                       toast({
-                        title: "Error al eliminar tamaño",
+                        title: "Error al eliminar alias",
                         description: e?.message || "Intenta nuevamente.",
                         variant: "error",
                       });

@@ -14,6 +14,7 @@ export const routes = {
 
   companies: {
     root: "/companies",
+    new: "/companies/new",
     list: "/companies/list",
     create: "/companies/create",
     detail: (id: number | string) => `/companies/${id}`,
@@ -35,6 +36,7 @@ export const routes = {
     new: "/tires/new",
     stock: "/tires/stock",
     sizes: "/tires/sizes",
+    models: "/tires/models",
     assignments: "/tires/assignments",
     rotations: "/tires/rotations",
     recaps: "/tires/recaps",

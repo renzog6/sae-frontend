@@ -29,8 +29,6 @@ export const createTireSizeSchema = z.object({
   aspectRatio: z.number().min(1).optional(),
   rimDiameter: z.number().min(1).optional(),
   construction: z.string().optional(),
-  loadIndex: z.number().min(1).optional(),
-  speedSymbol: z.string().optional(),
   information: z.string().optional(),
 });
 
@@ -38,6 +36,24 @@ export const updateTireSizeSchema = createTireSizeSchema.partial();
 
 export type CreateTireSizeFormData = z.infer<typeof createTireSizeSchema>;
 export type UpdateTireSizeFormData = z.infer<typeof updateTireSizeSchema>;
+
+// ===== TIRE MODEL VALIDATIONS =====
+
+export const createTireModelSchema = z.object({
+  brandId: z.number().min(1, "Brand ID is required"),
+  sizeId: z.number().min(1, "Size ID is required"),
+  name: z.string().min(1, "Name is required"),
+  loadIndex: z.number().min(1).optional(),
+  speedSymbol: z.string().optional(),
+  plyRating: z.string().optional(),
+  treadPattern: z.string().optional(),
+  information: z.string().optional(),
+});
+
+export const updateTireModelSchema = createTireModelSchema.partial();
+
+export type CreateTireModelFormData = z.infer<typeof createTireModelSchema>;
+export type UpdateTireModelFormData = z.infer<typeof updateTireModelSchema>;
 
 // ===== TIRE SIZE ALIAS VALIDATIONS =====
 

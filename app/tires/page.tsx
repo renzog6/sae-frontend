@@ -67,6 +67,12 @@ export default function TiresPage() {
       icon: <Ruler className="w-4 h-4" />,
     },
     {
+      href: routes.tires.models,
+      title: "Modelos",
+      description: "Administra los modelos de neumáticos.",
+      icon: <Ruler className="w-4 h-4" />,
+    },
+    {
       href: routes.tires.assignments,
       title: "Asignaciones",
       description: "Asigna neumáticos a los equipos.",
