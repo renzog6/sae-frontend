@@ -1,5 +1,5 @@
 // filepath: sae-frontend/lib/api/utils.ts
-import { PaginatedResponse } from "@/types/api";
+import { PaginatedResponse } from "@/lib/types/api";
 
 export function normalizeListResponse<T>(
   resp: T[] | PaginatedResponse<T> | { items: T[]; meta: any }

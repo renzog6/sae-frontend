@@ -1,8 +1,19 @@
 // file: sae-frontend/lib/api/companies.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
-import { BusinessCategory, BusinessSubcategory, Company } from "@/types/company";
-import { BusinessCategoryFormData, BusinessSubcategoryFormData, CompanyFormData, UpdateBusinessCategoryFormData, UpdateBusinessSubcategoryFormData, UpdateCompanyFormData } from "@/lib/validations/company";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
+import {
+  BusinessCategory,
+  BusinessSubcategory,
+  Company,
+} from "@/lib/types/company";
+import {
+  BusinessCategoryFormData,
+  BusinessSubcategoryFormData,
+  CompanyFormData,
+  UpdateBusinessCategoryFormData,
+  UpdateBusinessSubcategoryFormData,
+  UpdateCompanyFormData,
+} from "@/lib/validations/company";
 
 function unwrap<T>(resp: any): T {
   if (resp && typeof resp === "object" && "data" in resp) {
@@ -12,15 +23,19 @@ function unwrap<T>(resp: any): T {
 }
 
 export class CompaniesService {
-  static async getCompanies(accessToken: string, params?: { page?: number; limit?: number }) {
+  static async getCompanies(
+    accessToken: string,
+    params?: { page?: number; limit?: number }
+  ) {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
-    const response = await ApiClient.request<Company[] | PaginatedResponse<Company>>(
-      `/companies${qs ? `?${qs}` : ""}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      Company[] | PaginatedResponse<Company>
+    >(`/companies${qs ? `?${qs}` : ""}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     return unwrap<Company[] | PaginatedResponse<Company>>(response);
   }
 
@@ -37,19 +52,29 @@ export class CompaniesService {
       "/companies",
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       }
     );
     return unwrap<Company>(response);
   }
 
-  static async updateCompany(id: number, data: UpdateCompanyFormData, accessToken: string) {
+  static async updateCompany(
+    id: number,
+    data: UpdateCompanyFormData,
+    accessToken: string
+  ) {
     const response = await ApiClient.request<Company | ApiResponse<Company>>(
       `/companies/${id}`,
       {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       }
     );
@@ -67,42 +92,57 @@ export class CompaniesService {
 
 export class BusinessCategoriesService {
   static async getCategories(accessToken: string) {
-    const response = await ApiClient.request<BusinessCategory[] | PaginatedResponse<BusinessCategory>>(
-      "/companies/categories",
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+    const response = await ApiClient.request<
+      BusinessCategory[] | PaginatedResponse<BusinessCategory>
+    >("/companies/categories", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<BusinessCategory[] | PaginatedResponse<BusinessCategory>>(
+      response
     );
-    return unwrap<BusinessCategory[] | PaginatedResponse<BusinessCategory>>(response);
   }
 
   static async getCategoryById(id: number, accessToken: string) {
-    const response = await ApiClient.request<BusinessCategory | ApiResponse<BusinessCategory>>(
-      `/companies/categories/${id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      BusinessCategory | ApiResponse<BusinessCategory>
+    >(`/companies/categories/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     return unwrap<BusinessCategory>(response);
   }
 
-  static async createCategory(data: BusinessCategoryFormData, accessToken: string) {
-    const response = await ApiClient.request<BusinessCategory | ApiResponse<BusinessCategory>>(
-      "/companies/categories",
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+  static async createCategory(
+    data: BusinessCategoryFormData,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      BusinessCategory | ApiResponse<BusinessCategory>
+    >("/companies/categories", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
     return unwrap<BusinessCategory>(response);
   }
 
-  static async updateCategory(id: number, data: UpdateBusinessCategoryFormData, accessToken: string) {
-    const response = await ApiClient.request<BusinessCategory | ApiResponse<BusinessCategory>>(
-      `/companies/categories/${id}`,
-      {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+  static async updateCategory(
+    id: number,
+    data: UpdateBusinessCategoryFormData,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      BusinessCategory | ApiResponse<BusinessCategory>
+    >(`/companies/categories/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
     return unwrap<BusinessCategory>(response);
   }
 
@@ -116,44 +156,62 @@ export class BusinessCategoriesService {
 }
 
 export class BusinessSubcategoriesService {
-  static async getSubcategories(accessToken: string, params?: { categoryId?: number }) {
+  static async getSubcategories(
+    accessToken: string,
+    params?: { categoryId?: number }
+  ) {
     const qs = params?.categoryId ? `?categoryId=${params.categoryId}` : "";
-    const response = await ApiClient.request<BusinessSubcategory[] | PaginatedResponse<BusinessSubcategory>>(
-      `/companies/subcategories${qs}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    return unwrap<BusinessSubcategory[] | PaginatedResponse<BusinessSubcategory>>(response);
+    const response = await ApiClient.request<
+      BusinessSubcategory[] | PaginatedResponse<BusinessSubcategory>
+    >(`/companies/subcategories${qs}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<
+      BusinessSubcategory[] | PaginatedResponse<BusinessSubcategory>
+    >(response);
   }
 
   static async getSubcategoryById(id: number, accessToken: string) {
-    const response = await ApiClient.request<BusinessSubcategory | ApiResponse<BusinessSubcategory>>(
-      `/companies/subcategories/${id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      BusinessSubcategory | ApiResponse<BusinessSubcategory>
+    >(`/companies/subcategories/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     return unwrap<BusinessSubcategory>(response);
   }
 
-  static async createSubcategory(data: BusinessSubcategoryFormData, accessToken: string) {
-    const response = await ApiClient.request<BusinessSubcategory | ApiResponse<BusinessSubcategory>>(
-      "/companies/subcategories",
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+  static async createSubcategory(
+    data: BusinessSubcategoryFormData,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      BusinessSubcategory | ApiResponse<BusinessSubcategory>
+    >("/companies/subcategories", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
     return unwrap<BusinessSubcategory>(response);
   }
 
-  static async updateSubcategory(id: number, data: UpdateBusinessSubcategoryFormData, accessToken: string) {
-    const response = await ApiClient.request<BusinessSubcategory | ApiResponse<BusinessSubcategory>>(
-      `/companies/subcategories/${id}`,
-      {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+  static async updateSubcategory(
+    id: number,
+    data: UpdateBusinessSubcategoryFormData,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      BusinessSubcategory | ApiResponse<BusinessSubcategory>
+    >(`/companies/subcategories/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
     return unwrap<BusinessSubcategory>(response);
   }
 

@@ -1,13 +1,13 @@
 // filepath: sae-frontend/lib/api/documents.ts
 
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
 import { normalizeListResponse } from "@/lib/api/utils";
 import {
   Document,
   UploadDocumentData,
   CreateDocumentDto,
-} from "@/types/document";
+} from "@/lib/types/document";
 
 function unwrap<T>(resp: any): T {
   if (resp && typeof resp === "object" && "data" in resp) {

@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/utils/employee.ts
 
-import { Employee, EmployeeVacation, VacationType } from "@/types/employee";
+import { Employee, EmployeeVacation, VacationType } from "@/lib/types/employee";
 
 /**
  * Calculates the total available vacation days for an employee.

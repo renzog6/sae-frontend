@@ -1,8 +1,12 @@
 // filepath: sae-frontend/lib/api/employees.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
 import { normalizeListResponse } from "@/lib/api/utils";
-import { Employee, EmployeeCategory, EmployeePosition } from "@/types/employee";
+import {
+  Employee,
+  EmployeeCategory,
+  EmployeePosition,
+} from "@/lib/types/employee";
 import {
   CreateEmployeeFormData,
   UpdateEmployeeFormData,

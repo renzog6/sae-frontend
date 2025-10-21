@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/toaster";
-import type { BusinessCategory } from "@/types/company";
+import type { BusinessCategory } from "@/lib/types/company";
 import {
   useBusinessCategories,
   useDeleteBusinessCategory,

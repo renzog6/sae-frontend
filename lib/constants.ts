@@ -13,13 +13,15 @@ import {
   TireStatus,
   TirePosition,
   TireEventType,
-} from "@/types/enums";
+  AxleType,
+  TireSide,
+} from "@/lib/types/enums";
 import {
   EmployeeIncidentType,
   HistoryType,
   SeverityLevel,
-} from "@/types/enums";
-import { EquipmentStatus } from "@/types/enums";
+} from "@/lib/types/enums";
+import { EquipmentStatus } from "@/lib/types/enums";
 
 export const genderLabels: Record<Gender, string> = {
   [Gender.MALE]: "Masculino",
@@ -158,4 +160,20 @@ export const tireEventTypeLabels: Record<TireEventType, string> = {
   [TireEventType.RECAP]: "Recapado",
   [TireEventType.DISCARD]: "Descartado",
   [TireEventType.OTHER]: "Otro",
+} as const;
+
+// Axle type labels
+export const axleTypeLabels: Record<AxleType, string> = {
+  [AxleType.FRONT]: "Delantero",
+  [AxleType.DRIVE]: "Motriz",
+  [AxleType.TRAILER]: "Remolque",
+  [AxleType.TAG]: "Tag",
+} as const;
+
+// Tire side labels
+export const tireSideLabels: Record<TireSide, string> = {
+  [TireSide.LEFT]: "Izquierda",
+  [TireSide.RIGHT]: "Derecha",
+  [TireSide.INNER]: "Interna",
+  [TireSide.OUTER]: "Externa",
 } as const;

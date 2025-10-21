@@ -8,8 +8,8 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, Mail, User } from "lucide-react";
-import { Address } from "@/types/location";
-import { Contact } from "@/types/contact";
+import { Address } from "@/lib/types/location";
+import { Contact } from "@/lib/types/contact";
 import {
   genderLabels,
   maritalLabels,

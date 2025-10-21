@@ -6,7 +6,7 @@ import type {
   EmployeeVacation,
   VacationType,
   AvailableYear,
-} from "@/types/employee";
+} from "@/lib/types/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import {

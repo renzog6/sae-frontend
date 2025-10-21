@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/api/apiClient.ts
-import { LoginDto } from "@/types/auth";
-import { User } from "@/types/user";
+import { LoginDto } from "@/lib/types/auth";
+import { User } from "@/lib/types/user";
 
 /* const API_BASE_URL =
   typeof window === "undefined"

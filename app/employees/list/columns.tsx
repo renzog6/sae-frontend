@@ -5,7 +5,7 @@ import type { ColumnDef, Row } from "@tanstack/react-table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import type { Employee } from "@/types/employee";
+import type { Employee } from "@/lib/types/employee";
 import { formatTenure } from "@/lib/utils/date";
 
 export function getEmployeeColumns(): ColumnDef<Employee>[] {

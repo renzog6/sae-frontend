@@ -41,6 +41,8 @@ export const routes = {
     rotations: "/tires/rotations",
     recaps: "/tires/recaps",
     inspections: "/tires/inspections",
+    equipmentAxles: "/tires/equipment-axles",
+    positionConfigs: "/tires/position-configs",
     reports: {
       root: "/tires/reports",
       summary: "/tires/reports/summary",

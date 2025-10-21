@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { Brand } from "@/types/catalog";
+import type { Brand } from "@/lib/types/catalog";
 import { Button } from "@/components/ui/button";
 
 export function getBrandColumns({
@@ -28,7 +28,9 @@ export function getBrandColumns({
     {
       accessorKey: "information",
       header: "Información",
-      cell: ({ row }: { row: Row<Brand> }) => <span>{row.original.information || "-"}</span>,
+      cell: ({ row }: { row: Row<Brand> }) => (
+        <span>{row.original.information || "-"}</span>
+      ),
     },
     {
       id: "actions",
@@ -40,7 +42,11 @@ export function getBrandColumns({
             <Button variant="outline" size="sm" onClick={() => onEdit(brand)}>
               Editar
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onDelete(brand)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(brand)}
+            >
               Eliminar
             </Button>
           </div>

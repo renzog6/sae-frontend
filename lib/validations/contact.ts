@@ -1,6 +1,6 @@
 // file: sae-frontend/lib/validations/contact.ts
 import { z } from "zod";
-import { ContactType } from "@/types/contact";
+import { ContactType } from "@/lib/types/contact";
 
 export const ContactSchema = z
   .object({
@@ -16,14 +16,22 @@ export const ContactSchema = z
       const emailSchema = z.string().email();
       const res = emailSchema.safeParse(data.value);
       if (!res.success) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Email inválido", path: ["value"] });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Email inválido",
+          path: ["value"],
+        });
       }
     }
     if (data.type === ContactType.PHONE || data.type === ContactType.WHATSAPP) {
       const phoneSchema = z.string().regex(/^\+\d{7,15}$/);
       const res = phoneSchema.safeParse(data.value);
       if (!res.success) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Teléfono en formato E.164 (ej. +5491112345678)", path: ["value"] });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Teléfono en formato E.164 (ej. +5491112345678)",
+          path: ["value"],
+        });
       }
     }
   });
@@ -35,4 +43,3 @@ export const UpdateContactSchema = ContactSchema.partial().extend({
   personId: z.number().int().nullable().optional(),
 });
 export type UpdateContactFormData = z.infer<typeof UpdateContactSchema>;
-

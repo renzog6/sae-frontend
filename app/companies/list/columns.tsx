@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { Company } from "@/types/company";
+import type { Company } from "@/lib/types/company";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye } from "lucide-react";
@@ -19,17 +19,23 @@ export function getCompanyColumns(): ColumnDef<Company>[] {
     {
       accessorKey: "cuit",
       header: "CUIT",
-      cell: ({ row }: { row: Row<Company> }) => <span>{row.original.cuit}</span>,
+      cell: ({ row }: { row: Row<Company> }) => (
+        <span>{row.original.cuit}</span>
+      ),
     },
     {
       accessorKey: "businessName",
       header: "Razón social",
-      cell: ({ row }: { row: Row<Company> }) => <span>{row.original.businessName || "-"}</span>,
+      cell: ({ row }: { row: Row<Company> }) => (
+        <span>{row.original.businessName || "-"}</span>
+      ),
     },
     {
       accessorKey: "businessCategory.name",
       header: "Rubro",
-      cell: ({ row }: { row: Row<Company> }) => <span>{row.original.businessCategory?.name || "-"}</span>,
+      cell: ({ row }: { row: Row<Company> }) => (
+        <span>{row.original.businessCategory?.name || "-"}</span>
+      ),
     },
     {
       id: "actions",

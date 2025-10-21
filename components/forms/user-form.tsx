@@ -19,7 +19,7 @@ import {
   UserFormData,
   UpdateUserFormData,
 } from "@/lib/validations/auth";
-import { Role } from "@/types/enums";
+import { Role } from "@/lib/types/enums";
 
 interface UserFormProps {
   onSubmit: (data: UserFormData | UpdateUserFormData) => void;

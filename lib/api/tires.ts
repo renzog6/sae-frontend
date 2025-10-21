@@ -14,6 +14,8 @@ import {
   TireRecap,
   TireInspection,
   TireEvent,
+  EquipmentAxle,
+  TirePositionConfig,
   CreateTireDto,
   UpdateTireDto,
   CreateTireSizeDto,
@@ -36,8 +38,8 @@ import {
   TireOverRecappedReport,
   TireBrandRankingReport,
   TireYearlyRecapReport,
-} from "@/types/tire";
-import { PaginatedResponse, ApiResponse } from "@/types/api";
+} from "@/lib/types/tire";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
 
 function unwrap<T>(resp: any): T {
   if (resp && typeof resp === "object" && "data" in resp) {
@@ -57,6 +59,7 @@ export class TiresService {
       size?: string;
       page?: number;
       limit?: number;
+      q?: string;
     }
   ) {
     const query = new URLSearchParams();
@@ -65,13 +68,15 @@ export class TiresService {
     if (params?.size) query.set("size", params.size);
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.q) query.set("q", params.q);
     const qs = query.toString();
-    const response = await ApiClient.request<
-      TireSummary[] | PaginatedResponse<TireSummary>
-    >(`/tires${qs ? `?${qs}` : ""}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return unwrap<TireSummary[] | PaginatedResponse<TireSummary>>(response);
+    const response = await ApiClient.request<Tire[] | PaginatedResponse<Tire>>(
+      `/tires${qs ? `?${qs}` : ""}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
   }
 
   static async getTireById(id: number, accessToken: string) {
@@ -272,6 +277,175 @@ export class TireSizesService {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return "Tire size deleted";
+  }
+}
+
+// ===== EQUIPMENT AXLES =====
+
+export class EquipmentAxlesService {
+  static async getEquipmentAxles(
+    accessToken: string,
+    params?: { equipmentId?: number }
+  ) {
+    const query = new URLSearchParams();
+    if (params?.equipmentId)
+      query.set("equipmentId", String(params.equipmentId));
+    const qs = query.toString();
+
+    const response = await ApiClient.request<
+      EquipmentAxle[] | PaginatedResponse<EquipmentAxle>
+    >(`/equipment-axles${qs ? `?${qs}` : ""}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<EquipmentAxle[] | PaginatedResponse<EquipmentAxle>>(response);
+  }
+
+  static async getEquipmentAxleById(id: number, accessToken: string) {
+    const response = await ApiClient.request<
+      EquipmentAxle | ApiResponse<EquipmentAxle>
+    >(`/equipment-axles/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<EquipmentAxle>(response);
+  }
+
+  static async createEquipmentAxle(
+    data: {
+      equipmentId: number;
+      order: number;
+      axleType: string;
+      wheelCount: number;
+      description?: string;
+    },
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      EquipmentAxle | ApiResponse<EquipmentAxle>
+    >("/equipment-axles", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<EquipmentAxle>(response);
+  }
+
+  static async updateEquipmentAxle(
+    id: number,
+    data: Partial<{
+      equipmentId: number;
+      order: number;
+      axleType: string;
+      wheelCount: number;
+      description?: string;
+    }>,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      EquipmentAxle | ApiResponse<EquipmentAxle>
+    >(`/equipment-axles/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<EquipmentAxle>(response);
+  }
+
+  static async deleteEquipmentAxle(id: number, accessToken: string) {
+    await ApiClient.request(`/equipment-axles/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return "Equipment axle deleted";
+  }
+}
+
+// ===== TIRE POSITION CONFIGS =====
+
+export class TirePositionConfigsService {
+  static async getTirePositionConfigs(
+    accessToken: string,
+    params?: { axleId?: number }
+  ) {
+    const query = new URLSearchParams();
+    if (params?.axleId) query.set("axleId", String(params.axleId));
+    const qs = query.toString();
+
+    const response = await ApiClient.request<
+      TirePositionConfig[] | PaginatedResponse<TirePositionConfig>
+    >(`/tire-positions${qs ? `?${qs}` : ""}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<TirePositionConfig[] | PaginatedResponse<TirePositionConfig>>(
+      response
+    );
+  }
+
+  static async getTirePositionConfigById(id: number, accessToken: string) {
+    const response = await ApiClient.request<
+      TirePositionConfig | ApiResponse<TirePositionConfig>
+    >(`/tire-positions/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<TirePositionConfig>(response);
+  }
+
+  static async createTirePositionConfig(
+    data: {
+      axleId: number;
+      positionKey: string;
+      side: string;
+      isDual: boolean;
+    },
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      TirePositionConfig | ApiResponse<TirePositionConfig>
+    >("/tire-positions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<TirePositionConfig>(response);
+  }
+
+  static async updateTirePositionConfig(
+    id: number,
+    data: Partial<{
+      axleId: number;
+      positionKey: string;
+      side: string;
+      isDual: boolean;
+    }>,
+    accessToken: string
+  ) {
+    const response = await ApiClient.request<
+      TirePositionConfig | ApiResponse<TirePositionConfig>
+    >(`/tire-positions/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return unwrap<TirePositionConfig>(response);
+  }
+
+  static async deleteTirePositionConfig(id: number, accessToken: string) {
+    await ApiClient.request(`/tire-positions/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return "Tire position config deleted";
   }
 }
 

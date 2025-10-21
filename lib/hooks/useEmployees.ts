@@ -1,8 +1,12 @@
 // filepath: sae-frontend/lib/hooks/useEmployees.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { EmployeesService } from "@/lib/api/employees";
-import { Employee, EmployeeCategory, EmployeePosition } from "@/types/employee";
-import { PaginatedResponse } from "@/types/api";
+import {
+  Employee,
+  EmployeeCategory,
+  EmployeePosition,
+} from "@/lib/types/employee";
+import { PaginatedResponse } from "@/lib/types/api";
 import {
   CreateEmployeeFormData,
   UpdateEmployeeFormData,
@@ -18,7 +22,13 @@ export function useEmployeesList(
   params?: { page?: number; limit?: number; q?: string; status?: string }
 ) {
   return useQuery({
-    queryKey: ["employees", params?.page ?? 1, params?.limit ?? 10, params?.q ?? "", params?.status ?? ""],
+    queryKey: [
+      "employees",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.q ?? "",
+      params?.status ?? "",
+    ],
     queryFn: () => EmployeesService.getEmployees(accessToken, params),
     enabled: !!accessToken,
   });

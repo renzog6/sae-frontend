@@ -4,8 +4,14 @@
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { City } from "@/types/location";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { City } from "@/lib/types/location";
 import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "@/components/data-table";
@@ -26,7 +32,8 @@ export default function LocationsPage() {
   const accessToken = session?.accessToken || "";
 
   const { data: cities = [], isLoading, error } = useCities(accessToken);
-  const { mutate: deleteCity, isPending: deleting } = useDeleteCity(accessToken);
+  const { mutate: deleteCity, isPending: deleting } =
+    useDeleteCity(accessToken);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -54,24 +61,31 @@ export default function LocationsPage() {
 
   const cityCount = useMemo(() => cities.length, [cities]);
 
-  const columns = getCityColumns({ onEdit: handleEdit, onDelete: handleDelete });
+  const columns = getCityColumns({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+  });
 
   return (
     <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">Ciudades</h1>
-          <p className="text-sm text-muted-foreground">Administra las ciudades y provincias</p>
+          <h1 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
+            Ciudades
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Administra las ciudades y provincias
+          </p>
         </div>
-        <Button onClick={handleAdd}>
-          Nueva ciudad
-        </Button>
+        <Button onClick={handleAdd}>Nueva ciudad</Button>
       </div>
 
       {error && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6 text-red-600">
-            {error instanceof Error ? error.message : "Error al cargar ciudades"}
+            {error instanceof Error
+              ? error.message
+              : "Error al cargar ciudades"}
           </CardContent>
         </Card>
       )}
@@ -84,7 +98,16 @@ export default function LocationsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? <p>Cargando...</p> : <DataTable columns={columns} data={cities} searchableColumn="name" searchPlaceholder="Buscar ciudad..." />}
+          {isLoading ? (
+            <p>Cargando...</p>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={cities}
+              searchableColumn="name"
+              searchPlaceholder="Buscar ciudad..."
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -101,13 +124,12 @@ export default function LocationsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminar ciudad</AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Seguro que quieres eliminar la ciudad "{cityToDelete?.name}"? Esta acción no se puede deshacer.
+              ¿Seguro que quieres eliminar la ciudad "{cityToDelete?.name}"?
+              Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>
-              Cancelar
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               disabled={deleting}
               onClick={() => {

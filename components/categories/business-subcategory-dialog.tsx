@@ -6,7 +6,7 @@ import {
   useCreateBusinessSubcategory,
   useUpdateBusinessSubcategory,
 } from "@/lib/hooks/useCompanies";
-import type { BusinessSubcategory } from "@/types/company";
+import type { BusinessSubcategory } from "@/lib/types/company";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { BusinessSubcategoryForm } from "@/components/forms/business-subcategory-form";

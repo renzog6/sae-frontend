@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { TireModel } from "@/types/tire";
+import type { TireModel } from "@/lib/types/tire";
 import { useTireModels } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table";
 import { getTireModelColumns } from "./columns";

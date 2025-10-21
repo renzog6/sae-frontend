@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
-import type { EquipmentModel } from "@/types/equipment";
+import type { EquipmentModel } from "@/lib/types/equipment";
 import {
   useEquipmentModels,
   useEquipmentTypes,

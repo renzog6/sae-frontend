@@ -4,8 +4,14 @@
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brand } from "@/types/catalog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Brand } from "@/lib/types/catalog";
 import { useBrands, useDeleteBrand } from "@/lib/hooks/useCatalogs";
 import { DataTable } from "@/components/data-table";
 import { getBrandColumns } from "./columns";
@@ -28,13 +34,13 @@ export default function BrandsPage() {
   const { toast } = useToast();
 
   const { data: brands = [], isLoading, error } = useBrands(accessToken);
-  const { mutate: deleteBrand, isPending: deleting } = useDeleteBrand(accessToken);
+  const { mutate: deleteBrand, isPending: deleting } =
+    useDeleteBrand(accessToken);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
 
   const columns = useMemo(
     () =>
@@ -75,7 +81,12 @@ export default function BrandsPage() {
           <CardDescription>Gestión de marcas activas</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={brands} searchableColumn={"name"} searchPlaceholder="Buscar por nombre..." />
+          <DataTable
+            columns={columns}
+            data={brands}
+            searchableColumn={"name"}
+            searchPlaceholder="Buscar por nombre..."
+          />
         </CardContent>
       </Card>
 
@@ -101,16 +112,26 @@ export default function BrandsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (selectedBrand) {
                   deleteBrand(selectedBrand.id, {
                     onSuccess: () => {
-                      toast({ title: "Marca eliminada", description: `"${selectedBrand.name}" eliminada.`, variant: "success" });
+                      toast({
+                        title: "Marca eliminada",
+                        description: `"${selectedBrand.name}" eliminada.`,
+                        variant: "success",
+                      });
                     },
                     onError: (e: any) => {
-                      toast({ title: "Error al eliminar marca", description: e?.message || "Intenta nuevamente.", variant: "error" });
+                      toast({
+                        title: "Error al eliminar marca",
+                        description: e?.message || "Intenta nuevamente.",
+                        variant: "error",
+                      });
                     },
                     onSettled: () => {
                       setConfirmOpen(false);

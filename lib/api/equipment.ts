@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/api/equipment.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
 import { normalizeListResponse } from "@/lib/api/utils";
 import {
   Equipment,
@@ -15,7 +15,7 @@ import {
   UpdateEquipmentModelDto,
   CreateEquipmentDto,
   UpdateEquipmentDto,
-} from "@/types/equipment";
+} from "@/lib/types/equipment";
 
 function unwrap<T>(resp: any): T {
   if (resp && typeof resp === "object" && "data" in resp) {

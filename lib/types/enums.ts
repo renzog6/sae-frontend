@@ -152,3 +152,19 @@ export enum TireEventType {
   DISCARD = "DISCARD",
   OTHER = "OTHER",
 }
+
+// Axle types
+export enum AxleType {
+  FRONT = "FRONT",
+  DRIVE = "DRIVE",
+  TRAILER = "TRAILER",
+  TAG = "TAG",
+}
+
+// Tire side
+export enum TireSide {
+  LEFT = "LEFT",
+  RIGHT = "RIGHT",
+  INNER = "INNER",
+  OUTER = "OUTER",
+}

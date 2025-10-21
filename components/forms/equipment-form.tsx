@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EquipmentStatus } from "@/types/enums";
+import { EquipmentStatus } from "@/lib/types/enums";
 import {
   equipmentFormSchema,
   type EquipmentFormData,

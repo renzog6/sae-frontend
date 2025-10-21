@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { BusinessSubcategory } from "@/types/company";
+import type { BusinessSubcategory } from "@/lib/types/company";
 import { Button } from "@/components/ui/button";
 
 export function getBusinessSubcategoryColumns({

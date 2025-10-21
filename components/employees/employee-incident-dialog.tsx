@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { EmployeeIncident } from "@/types/history";
+import type { EmployeeIncident } from "@/lib/types/history";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import {

@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/api/users.ts
 import { ApiClient } from "./apiClient";
-import { User } from "@/types/user";
-import { PaginatedResponse, ApiResponse } from "@/types/api";
+import { User } from "@/lib/types/user";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
 import { UserFormData } from "@/lib/validations/auth";
 
 export class UsersService {
@@ -26,7 +26,7 @@ export class UsersService {
       const response = await ApiClient.request<User>(`/users/${id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-   
+
       return response; // Devuelve response directamente, no response.data
     } catch (error) {
       console.error(`Error fetching user with ID ${id}:`, error);
@@ -38,7 +38,7 @@ export class UsersService {
     userData: UserFormData,
     accessToken: string
   ): Promise<User> {
-    try {      
+    try {
       const response = await ApiClient.request<ApiResponse<User>>("/users", {
         method: "POST",
         headers: {
@@ -47,7 +47,7 @@ export class UsersService {
         },
         body: JSON.stringify(userData),
       });
-      
+
       return response.data;
     } catch (error) {
       console.error("Error creating user:", error);

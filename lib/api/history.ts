@@ -6,7 +6,7 @@ import {
   EmployeeIncident,
   CreateEmployeeIncidentDto,
   UpdateEmployeeIncidentDto,
-} from "@/types/history";
+} from "@/lib/types/history";
 
 function unwrap<T>(resp: any): T {
   if (resp && typeof resp === "object" && "data" in resp) {

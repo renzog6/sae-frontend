@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { EquipmentCategory } from "@/types/equipment";
+import type { EquipmentCategory } from "@/lib/types/equipment";
 import { useEquipmentCategories } from "@/lib/hooks/useEquipment";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentCategoryColumns } from "./columns";

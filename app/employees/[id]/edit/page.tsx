@@ -38,7 +38,7 @@ import {
   EmployeeStatus,
   Gender,
   MaritalStatus,
-} from "@/types/employee";
+} from "@/lib/types/employee";
 import {
   employeeToUpdateForm,
   updateEmployeeSchema,

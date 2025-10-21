@@ -1,8 +1,11 @@
 // filepath: sae-frontend/lib/api/persons.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
-import { Person } from "@/types/employee";
-import { CreatePersonFormData, UpdatePersonFormData } from "@/lib/validations/person";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
+import { Person } from "@/lib/types/employee";
+import {
+  CreatePersonFormData,
+  UpdatePersonFormData,
+} from "@/lib/validations/person";
 import { normalizeListResponse } from "@/lib/api/utils";
 
 function unwrap<T>(resp: any): T {
@@ -13,15 +16,19 @@ function unwrap<T>(resp: any): T {
 }
 
 export class PersonsService {
-  static async getPersons(accessToken: string, params?: { page?: number; limit?: number }) {
+  static async getPersons(
+    accessToken: string,
+    params?: { page?: number; limit?: number }
+  ) {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
-    const response = await ApiClient.request<Person[] | PaginatedResponse<Person>>(
-      `/persons${qs ? `?${qs}` : ""}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      Person[] | PaginatedResponse<Person>
+    >(`/persons${qs ? `?${qs}` : ""}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     const unwrapped = unwrap<Person[] | PaginatedResponse<Person>>(response);
     return normalizeListResponse<Person>(unwrapped);
   }
@@ -39,19 +46,29 @@ export class PersonsService {
       "/persons",
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       }
     );
     return unwrap<Person>(response);
   }
 
-  static async updatePerson(id: number, data: UpdatePersonFormData, accessToken: string) {
+  static async updatePerson(
+    id: number,
+    data: UpdatePersonFormData,
+    accessToken: string
+  ) {
     const response = await ApiClient.request<Person | ApiResponse<Person>>(
       `/persons/${id}`,
       {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       }
     );

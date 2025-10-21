@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
-import type { Equipment } from "@/types/equipment";
+import type { Equipment } from "@/lib/types/equipment";
 import {
   useEquipmentList,
   useEquipmentCategories,
@@ -29,7 +29,7 @@ import { DataTable } from "@/components/data-table";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { EquipmentStatus } from "@/types/enums";
+import { EquipmentStatus } from "@/lib/types/enums";
 
 export default function EquipmentListPage() {
   const { data: session } = useSession();

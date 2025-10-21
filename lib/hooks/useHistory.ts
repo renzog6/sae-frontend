@@ -6,7 +6,7 @@ import {
   EmployeeHistoryResponse,
   CreateEmployeeIncidentDto,
   UpdateEmployeeIncidentDto,
-} from "@/types/history";
+} from "@/lib/types/history";
 
 export function useEmployeeHistory(
   employeeId: number | undefined,

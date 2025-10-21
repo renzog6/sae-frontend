@@ -20,6 +20,8 @@ import {
   RefreshCcw,
   Wrench,
   FileBarChart,
+  Settings,
+  MapPin,
 } from "lucide-react";
 import { routes } from "@/lib/routes";
 
@@ -71,6 +73,18 @@ export default function TiresPage() {
       title: "Modelos",
       description: "Administra los modelos de neumáticos.",
       icon: <Ruler className="w-4 h-4" />,
+    },
+    {
+      href: routes.tires.equipmentAxles,
+      title: "Ejes de Equipos",
+      description: "Configura los ejes de los equipos.",
+      icon: <Settings className="w-4 h-4" />,
+    },
+    {
+      href: routes.tires.positionConfigs,
+      title: "Posiciones",
+      description: "Configura las posiciones de neumáticos.",
+      icon: <MapPin className="w-4 h-4" />,
     },
     {
       href: routes.tires.assignments,

@@ -43,6 +43,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     reports: "Reportes",
     settings: "Configuración",
     profile: "Perfil",
+    tires: "Neumáticos",
   };
 
   const segments = (pathname || "/")

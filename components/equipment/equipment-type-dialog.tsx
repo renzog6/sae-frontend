@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { EquipmentType } from "@/types/equipment";
+import type { EquipmentType } from "@/lib/types/equipment";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EquipmentTypeForm } from "@/components/forms/equipment-type-form";

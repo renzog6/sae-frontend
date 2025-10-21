@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { BusinessCategory } from "@/types/company";
+import type { BusinessCategory } from "@/lib/types/company";
 import { Button } from "@/components/ui/button";
 
 export function getBusinessCategoryColumns({
@@ -23,12 +23,16 @@ export function getBusinessCategoryColumns({
     {
       accessorKey: "code",
       header: "Código",
-      cell: ({ row }: { row: Row<BusinessCategory> }) => <span>{row.original.code || "-"}</span>,
+      cell: ({ row }: { row: Row<BusinessCategory> }) => (
+        <span>{row.original.code || "-"}</span>
+      ),
     },
     {
       accessorKey: "information",
       header: "Información",
-      cell: ({ row }: { row: Row<BusinessCategory> }) => <span>{row.original.information || "-"}</span>,
+      cell: ({ row }: { row: Row<BusinessCategory> }) => (
+        <span>{row.original.information || "-"}</span>
+      ),
     },
     {
       id: "actions",
@@ -37,10 +41,18 @@ export function getBusinessCategoryColumns({
         const category = row.original;
         return (
           <div className="flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => onEdit(category)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(category)}
+            >
               Editar
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onDelete(category)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(category)}
+            >
               Eliminar
             </Button>
           </div>

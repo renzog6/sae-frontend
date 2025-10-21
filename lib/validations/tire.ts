@@ -5,10 +5,8 @@ import { z } from "zod";
 // ===== TIRE VALIDATIONS =====
 
 export const createTireSchema = z.object({
-  serialNumber: z.string().min(1, "Serial number is required"),
-  brandId: z.number().optional(),
-  sizeId: z.number().optional(),
-  model: z.string().optional(),
+  serialNumber: z.string().optional(),
+  modelId: z.number().min(1, "Model ID is required"),
   position: z.string().optional(),
   status: z
     .enum(["IN_STOCK", "IN_USE", "UNDER_REPAIR", "RECAP", "DISCARDED"])
@@ -16,7 +14,9 @@ export const createTireSchema = z.object({
   totalKm: z.number().min(0).optional(),
 });
 
-export const updateTireSchema = createTireSchema.partial();
+export const updateTireSchema = createTireSchema.partial().extend({
+  createdAt: z.string().optional(),
+});
 
 export type CreateTireFormData = z.infer<typeof createTireSchema>;
 export type UpdateTireFormData = z.infer<typeof updateTireSchema>;

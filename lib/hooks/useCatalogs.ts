@@ -1,7 +1,7 @@
 // file: sae-frontend/lib/hooks/useCatalogs.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CatalogsService } from "@/lib/api/catalogs";
-import { Brand, Unit } from "@/types/catalog";
+import { Brand, Unit } from "@/lib/types/catalog";
 import {
   BrandFormData,
   UpdateBrandFormData,

@@ -28,7 +28,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { EmployeesService } from "@/lib/api/employees";
-import { EmployeeStatus, Gender, MaritalStatus } from "@/types/employee";
+import { EmployeeStatus, Gender, MaritalStatus } from "@/lib/types/employee";
 import {
   createPersonSchema,
   type CreatePersonFormInput,

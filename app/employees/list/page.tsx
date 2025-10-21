@@ -19,8 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { Employee } from "@/types/employee";
-import { EmployeeStatus } from "@/types/employee";
+import type { Employee } from "@/lib/types/employee";
+import { EmployeeStatus } from "@/lib/types/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table";

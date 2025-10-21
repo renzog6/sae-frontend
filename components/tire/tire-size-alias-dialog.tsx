@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { TireSize, TireSizeAlias } from "@/types/tire";
+import type { TireSize, TireSizeAlias } from "@/lib/types/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { TireSizeAliasForm } from "@/components/forms/tire-size-alias-form";

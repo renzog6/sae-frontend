@@ -1,8 +1,13 @@
 // file: sae-frontend/lib/api/catalogs.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/types/api";
-import { Brand, Unit } from "@/types/catalog";
-import { BrandFormData, UpdateBrandFormData, UnitFormData, UpdateUnitFormData } from "@/lib/validations/catalog";
+import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
+import { Brand, Unit } from "@/lib/types/catalog";
+import {
+  BrandFormData,
+  UpdateBrandFormData,
+  UnitFormData,
+  UpdateUnitFormData,
+} from "@/lib/validations/catalog";
 
 // Helper to unwrap responses that may come wrapped in { data }
 function unwrap<T>(resp: any): T {
@@ -15,10 +20,9 @@ function unwrap<T>(resp: any): T {
 export class CatalogsService {
   // ===== Brands =====
   static async getBrands(accessToken: string): Promise<Brand[]> {
-    const response = await ApiClient.request<Brand[] | PaginatedResponse<Brand>>(
-      "/brands",
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      Brand[] | PaginatedResponse<Brand>
+    >("/brands", { headers: { Authorization: `Bearer ${accessToken}` } });
     return unwrap<Brand[]>(response);
   }
 
@@ -30,7 +34,10 @@ export class CatalogsService {
     return unwrap<Brand>(response);
   }
 
-  static async createBrand(data: BrandFormData, accessToken: string): Promise<Brand> {
+  static async createBrand(
+    data: BrandFormData,
+    accessToken: string
+  ): Promise<Brand> {
     const response = await ApiClient.request<Brand | ApiResponse<Brand>>(
       "/brands",
       {
@@ -45,7 +52,11 @@ export class CatalogsService {
     return unwrap<Brand>(response);
   }
 
-  static async updateBrand(id: number, data: UpdateBrandFormData, accessToken: string): Promise<Brand> {
+  static async updateBrand(
+    id: number,
+    data: UpdateBrandFormData,
+    accessToken: string
+  ): Promise<Brand> {
     const response = await ApiClient.request<Brand | ApiResponse<Brand>>(
       `/brands/${id}`,
       {
@@ -61,10 +72,12 @@ export class CatalogsService {
   }
 
   static async deleteBrand(id: number, accessToken: string): Promise<string> {
-    const response = await ApiClient.request<{ message?: string } | ApiResponse<unknown>>(
-      `/brands/${id}`,
-      { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      { message?: string } | ApiResponse<unknown>
+    >(`/brands/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     if (response && typeof response === "object" && "message" in response) {
       return (response as { message?: string }).message || "Brand deleted";
     }
@@ -88,7 +101,10 @@ export class CatalogsService {
     return unwrap<Unit>(response);
   }
 
-  static async createUnit(data: UnitFormData, accessToken: string): Promise<Unit> {
+  static async createUnit(
+    data: UnitFormData,
+    accessToken: string
+  ): Promise<Unit> {
     const response = await ApiClient.request<Unit | ApiResponse<Unit>>(
       "/units",
       {
@@ -103,7 +119,11 @@ export class CatalogsService {
     return unwrap<Unit>(response);
   }
 
-  static async updateUnit(id: number, data: UpdateUnitFormData, accessToken: string): Promise<Unit> {
+  static async updateUnit(
+    id: number,
+    data: UpdateUnitFormData,
+    accessToken: string
+  ): Promise<Unit> {
     const response = await ApiClient.request<Unit | ApiResponse<Unit>>(
       `/units/${id}`,
       {
@@ -119,10 +139,12 @@ export class CatalogsService {
   }
 
   static async deleteUnit(id: number, accessToken: string): Promise<string> {
-    const response = await ApiClient.request<{ message?: string } | ApiResponse<unknown>>(
-      `/units/${id}`,
-      { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const response = await ApiClient.request<
+      { message?: string } | ApiResponse<unknown>
+    >(`/units/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     if (response && typeof response === "object" && "message" in response) {
       return (response as { message?: string }).message || "Unit deleted";
     }

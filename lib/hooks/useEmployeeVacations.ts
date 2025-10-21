@@ -6,7 +6,7 @@ import {
   EmployeeVacationFormData,
   UpdateEmployeeVacationFormData,
 } from "@/lib/validations/employeeVacation";
-import { EmployeeVacation } from "@/types/employee";
+import { EmployeeVacation } from "@/lib/types/employee";
 
 export function useEmployeeVacations(
   accessToken: string,

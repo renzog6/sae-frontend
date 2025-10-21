@@ -4,19 +4,38 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CompanyForm } from "@/components/companies/company-form";
-import type { Company } from "@/types/company";
-import type { CompanyFormData, UpdateCompanyFormData } from "@/lib/validations/company";
+import type { Company } from "@/lib/types/company";
+import type {
+  CompanyFormData,
+  UpdateCompanyFormData,
+} from "@/lib/validations/company";
 import { CompaniesService } from "@/lib/api/companies";
 import { Button } from "@/components/ui/button";
-import type { Address } from "@/types/location";
-import type { Contact } from "@/types/contact";
+import type { Address } from "@/lib/types/location";
+import type { Contact } from "@/lib/types/contact";
 import { useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
-import { useAddressesByCompany, useCreateAddress, useUpdateAddress, useDeleteAddress } from "@/lib/hooks/useLocations";
-import { useContactsByCompany, useCreateContact, useUpdateContact, useDeleteContact } from "@/lib/hooks/useContacts";
+import {
+  useAddressesByCompany,
+  useCreateAddress,
+  useUpdateAddress,
+  useDeleteAddress,
+} from "@/lib/hooks/useLocations";
+import {
+  useContactsByCompany,
+  useCreateContact,
+  useUpdateContact,
+  useDeleteContact,
+} from "@/lib/hooks/useContacts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,13 +67,20 @@ export default function CompanyDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [addressOpen, setAddressOpen] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<Address | undefined>(undefined);
+  const [editingAddress, setEditingAddress] = useState<Address | undefined>(
+    undefined
+  );
   const [contactOpen, setContactOpen] = useState(false);
-  const [editingContact, setEditingContact] = useState<Contact | undefined>(undefined);
+  const [editingContact, setEditingContact] = useState<Contact | undefined>(
+    undefined
+  );
 
   // Data via hooks
   const { data: addresses = [] } = useAddressesByCompany(accessToken, id ?? 0);
-  const { data: companyContacts = [] } = useContactsByCompany(accessToken, id ?? 0);
+  const { data: companyContacts = [] } = useContactsByCompany(
+    accessToken,
+    id ?? 0
+  );
 
   // Mutations
   const createAddressMut = useCreateAddress(accessToken);
@@ -139,10 +165,13 @@ export default function CompanyDetailPage() {
     currentCategoryId?: number | null;
     onUpdated?: (newId: number | undefined) => void;
   }) {
-    const { data: categories = [], isLoading } = useBusinessCategories(accessToken);
+    const { data: categories = [], isLoading } =
+      useBusinessCategories(accessToken);
     const [adding, setAdding] = useState(false);
     const [savingCat, setSavingCat] = useState(false);
-    const [selectedId, setSelectedId] = useState<number | "">(currentCategoryId ?? "");
+    const [selectedId, setSelectedId] = useState<number | "">(
+      currentCategoryId ?? ""
+    );
     const [confirmOpen, setConfirmOpen] = useState(false);
     const queryClient = useQueryClient();
 
@@ -151,7 +180,8 @@ export default function CompanyDetailPage() {
       setSavingCat(true);
       try {
         const payload: UpdateCompanyFormData = {
-          businessCategoryId: selectedId === "" ? undefined : Number(selectedId),
+          businessCategoryId:
+            selectedId === "" ? undefined : Number(selectedId),
         };
         await CompaniesService.updateCompany(companyId, payload, accessToken);
         onUpdated?.(payload.businessCategoryId);
@@ -202,7 +232,9 @@ export default function CompanyDetailPage() {
             <select
               className="w-64 h-10 px-2 border border-slate-200 rounded text-slate-700"
               value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value ? Number(e.target.value) : "")}
+              onChange={(e) =>
+                setSelectedId(e.target.value ? Number(e.target.value) : "")
+              }
             >
               <option value="">Sin categoría</option>
               {categories.map((c) => (
@@ -237,7 +269,11 @@ export default function CompanyDetailPage() {
                 onClick={async () => {
                   // Ejecutar eliminación
                   setSelectedId("");
-                  await CompaniesService.updateCompany(companyId, { businessCategoryId: undefined }, accessToken);
+                  await CompaniesService.updateCompany(
+                    companyId,
+                    { businessCategoryId: undefined },
+                    accessToken
+                  );
                   onUpdated?.(undefined);
                   // Refresh companies list page caches
                   queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -253,13 +289,27 @@ export default function CompanyDetailPage() {
     );
   }
 
-  function AddressList({ addresses, onAdd, onEdit }: { addresses?: Address[]; onAdd: () => void; onEdit: (addr: Address) => void }) {
+  function AddressList({
+    addresses,
+    onAdd,
+    onEdit,
+  }: {
+    addresses?: Address[];
+    onAdd: () => void;
+    onEdit: (addr: Address) => void;
+  }) {
     if (!addresses?.length) {
       return (
         <section className="border-t border-slate-200 pt-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-slate-700">Direcciones</h2>
-            <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50" onClick={onAdd}>
+            <h2 className="text-lg font-semibold text-slate-700">
+              Direcciones
+            </h2>
+            <Button
+              variant="outline"
+              className="border-amber-500 text-amber-600 hover:bg-amber-50"
+              onClick={onAdd}
+            >
               + Agregar
             </Button>
           </div>
@@ -271,7 +321,11 @@ export default function CompanyDetailPage() {
       <section className="border-t border-slate-200 pt-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold text-slate-700">Direcciones</h2>
-          <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50" onClick={onAdd}>
+          <Button
+            variant="outline"
+            className="border-amber-500 text-amber-600 hover:bg-amber-50"
+            onClick={onAdd}
+          >
             + Agregar
           </Button>
         </div>
@@ -286,11 +340,17 @@ export default function CompanyDetailPage() {
                 {addr.street ?? ""} {addr.number ?? ""}
                 {addr.floor ? `, ${addr.floor}` : ""}
                 {addr.apartment ? ` ${addr.apartment}` : ""}
-                {addr.city?.name ? ` - ${addr.city.name}` : ""}                
+                {addr.city?.name ? ` - ${addr.city.name}` : ""}
                 {addr.city?.postalCode ? ` (${addr.city.postalCode})` : ""}
-                {addr.city?.province?.name ? ` - ${addr.city.province.name}` : ""}
+                {addr.city?.province?.name
+                  ? ` - ${addr.city.province.name}`
+                  : ""}
               </span>
-              <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => onEdit(addr)}>
+              <Button
+                size="sm"
+                className="bg-amber-500 hover:bg-amber-600 text-white"
+                onClick={() => onEdit(addr)}
+              >
                 Editar
               </Button>
             </div>
@@ -300,12 +360,24 @@ export default function CompanyDetailPage() {
     );
   }
 
-  function ContactList({ contacts, onAdd, onEdit }: { contacts?: Contact[]; onAdd: () => void; onEdit: (c: Contact) => void }) {
+  function ContactList({
+    contacts,
+    onAdd,
+    onEdit,
+  }: {
+    contacts?: Contact[];
+    onAdd: () => void;
+    onEdit: (c: Contact) => void;
+  }) {
     return (
       <section className="border-t border-slate-200 pt-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold text-slate-700">Contactos</h2>
-          <Button variant="outline" className="border-amber-500 text-amber-600 hover:bg-amber-50" onClick={onAdd}>
+          <Button
+            variant="outline"
+            className="border-amber-500 text-amber-600 hover:bg-amber-50"
+            onClick={onAdd}
+          >
             + Agregar
           </Button>
         </div>
@@ -324,9 +396,15 @@ export default function CompanyDetailPage() {
                   <span>{c.label ?? "Sin etiqueta"}</span>
                   <span className="text-slate-400">·</span>
                   <span className="font-mono">{c.value}</span>
-                  {c.information && <span className="text-slate-500">— {c.information}</span>}
+                  {c.information && (
+                    <span className="text-slate-500">— {c.information}</span>
+                  )}
                 </div>
-                <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => onEdit(c)}>
+                <Button
+                  size="sm"
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  onClick={() => onEdit(c)}
+                >
                   Editar
                 </Button>
               </div>
@@ -341,22 +419,25 @@ export default function CompanyDetailPage() {
 
   return (
     <div className="p-4 space-y-4">
-      
       <Card>
-      <div className="flex items-center justify-between">
-        <CardHeader>
-          <CardTitle className="text-slate-800">Detalle y edición</CardTitle>
-          <CardDescription className="text-slate-500">
-            Visualiza y edita la información de la empresa
-          </CardDescription>
-        </CardHeader>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.back()}>Volver</Button>
-        </div>
+        <div className="flex items-center justify-between">
+          <CardHeader>
+            <CardTitle className="text-slate-800">Detalle y edición</CardTitle>
+            <CardDescription className="text-slate-500">
+              Visualiza y edita la información de la empresa
+            </CardDescription>
+          </CardHeader>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => router.back()}>
+              Volver
+            </Button>
+          </div>
         </div>
         <CardContent className="space-y-8">
           {error && (
-            <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">{error}</div>
+            <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+              {error}
+            </div>
           )}
 
           {/* Formulario base */}
@@ -372,7 +453,9 @@ export default function CompanyDetailPage() {
           )}
 
           {loading && (
-            <div className="text-sm text-slate-500">Cargando datos de la empresa...</div>
+            <div className="text-sm text-slate-500">
+              Cargando datos de la empresa...
+            </div>
           )}
 
           {/* Categorías (rubros) */}
@@ -381,7 +464,13 @@ export default function CompanyDetailPage() {
               companyId={id}
               accessToken={accessToken}
               currentCategoryId={company.businessCategoryId}
-              onUpdated={(newId) => setCompany((prev) => (prev ? { ...prev, businessCategoryId: newId ?? undefined } : prev))}
+              onUpdated={(newId) =>
+                setCompany((prev) =>
+                  prev
+                    ? { ...prev, businessCategoryId: newId ?? undefined }
+                    : prev
+                )
+              }
             />
           )}
 
@@ -414,19 +503,27 @@ export default function CompanyDetailPage() {
           if (!v) setEditingAddress(undefined);
           setAddressOpen(v);
         }}
-        initial={editingAddress ? {
-          street: editingAddress.street,
-          number: editingAddress.number,
-          floor: editingAddress.floor,
-          apartment: editingAddress.apartment,
-          neighborhood: editingAddress.neighborhood,
-          reference: editingAddress.reference,
-          cityId: editingAddress.cityId,
-          personId: editingAddress.personId ?? undefined,
-          companyId: editingAddress.companyId ?? undefined,
-        } : undefined}
+        initial={
+          editingAddress
+            ? {
+                street: editingAddress.street,
+                number: editingAddress.number,
+                floor: editingAddress.floor,
+                apartment: editingAddress.apartment,
+                neighborhood: editingAddress.neighborhood,
+                reference: editingAddress.reference,
+                cityId: editingAddress.cityId,
+                personId: editingAddress.personId ?? undefined,
+                companyId: editingAddress.companyId ?? undefined,
+              }
+            : undefined
+        }
         accessToken={accessToken}
-        onDelete={editingAddress?.id ? () => deleteAddressMut.mutate(editingAddress.id!) : undefined}
+        onDelete={
+          editingAddress?.id
+            ? () => deleteAddressMut.mutate(editingAddress.id!)
+            : undefined
+        }
         onSave={(data) => {
           if (!id) return;
           if (editingAddress?.id) {
@@ -443,13 +540,21 @@ export default function CompanyDetailPage() {
           if (!v) setEditingContact(undefined);
           setContactOpen(v);
         }}
-        initial={editingContact ? {
-          type: editingContact.type,
-          value: editingContact.value,
-          label: editingContact.label ?? undefined,
-          information: editingContact.information ?? undefined,
-        } : undefined}
-        onDelete={editingContact?.id ? () => deleteContactMut.mutate(editingContact.id!) : undefined}
+        initial={
+          editingContact
+            ? {
+                type: editingContact.type,
+                value: editingContact.value,
+                label: editingContact.label ?? undefined,
+                information: editingContact.information ?? undefined,
+              }
+            : undefined
+        }
+        onDelete={
+          editingContact?.id
+            ? () => deleteContactMut.mutate(editingContact.id!)
+            : undefined
+        }
         onSave={(data) => {
           if (editingContact?.id) {
             updateContactMut.mutate({ id: editingContact.id, data });

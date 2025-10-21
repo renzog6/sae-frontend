@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/validations/employee.ts
 import { z } from "zod";
-import { EmployeeStatus } from "@/types/employee";
-import type { Employee } from "@/types/employee";
+import { EmployeeStatus } from "@/lib/types/employee";
+import type { Employee } from "@/lib/types/employee";
 
 // Match backend CreateEmployeeDto constraints
 export const createEmployeeSchema = z.object({

@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { Unit } from "@/types/catalog";
+import type { Unit } from "@/lib/types/catalog";
 import { Button } from "@/components/ui/button";
 
 export function getUnitColumns({
@@ -23,7 +23,9 @@ export function getUnitColumns({
     {
       accessorKey: "abbreviation",
       header: "Abreviatura",
-      cell: ({ row }: { row: Row<Unit> }) => <span>{row.original.abbreviation}</span>,
+      cell: ({ row }: { row: Row<Unit> }) => (
+        <span>{row.original.abbreviation}</span>
+      ),
     },
     {
       id: "actions",
@@ -35,7 +37,11 @@ export function getUnitColumns({
             <Button variant="outline" size="sm" onClick={() => onEdit(unit)}>
               Editar
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onDelete(unit)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(unit)}
+            >
               Eliminar
             </Button>
           </div>

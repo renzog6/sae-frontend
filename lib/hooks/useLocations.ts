@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/hooks/useLocations.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { LocationsService } from "@/lib/api/locations";
-import { City, Province, Address } from "@/types/location";
+import { City, Province, Address } from "@/lib/types/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
 // List all cities
@@ -41,7 +41,8 @@ export function useProvinceByCode(accessToken: string, code: string) {
 export function useProvincesByCountry(accessToken: string, countryId: number) {
   return useQuery<Province[], Error>({
     queryKey: ["provincesByCountry", countryId],
-    queryFn: () => LocationsService.getProvincesByCountryId(countryId, accessToken),
+    queryFn: () =>
+      LocationsService.getProvincesByCountryId(countryId, accessToken),
     enabled: !!accessToken && !!countryId,
   });
 }
@@ -78,10 +79,14 @@ export function useCreateAddress(accessToken: string) {
       queryClient.invalidateQueries({ queryKey: ["addressesByPerson"] });
       // Optional: if we have companyId in the payload, we can target it as well
       if (variables?.companyId) {
-        queryClient.invalidateQueries({ queryKey: ["addressesByCompany", variables.companyId] });
+        queryClient.invalidateQueries({
+          queryKey: ["addressesByCompany", variables.companyId],
+        });
       }
       if (variables?.personId) {
-        queryClient.invalidateQueries({ queryKey: ["addressesByPerson", variables.personId] });
+        queryClient.invalidateQueries({
+          queryKey: ["addressesByPerson", variables.personId],
+        });
       }
     },
   });
@@ -131,7 +136,8 @@ export function useAddressesByCity(accessToken: string, cityId: number) {
 export function useAddressesByCompany(accessToken: string, companyId: number) {
   return useQuery<Address[], Error>({
     queryKey: ["addressesByCompany", companyId],
-    queryFn: () => LocationsService.getAddressesByCompany(companyId, accessToken),
+    queryFn: () =>
+      LocationsService.getAddressesByCompany(companyId, accessToken),
     enabled: !!accessToken && !!companyId,
   });
 }

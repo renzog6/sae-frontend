@@ -1,11 +1,17 @@
 // filepath: sae-frontend/lib/hooks/usePersons.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PersonsService } from "@/lib/api/persons";
-import { Person } from "@/types/employee";
-import { PaginatedResponse } from "@/types/api";
-import { CreatePersonFormData, UpdatePersonFormData } from "@/lib/validations/person";
+import { Person } from "@/lib/types/employee";
+import { PaginatedResponse } from "@/lib/types/api";
+import {
+  CreatePersonFormData,
+  UpdatePersonFormData,
+} from "@/lib/validations/person";
 
-export function usePersonsList(accessToken: string, params?: { page?: number; limit?: number }) {
+export function usePersonsList(
+  accessToken: string,
+  params?: { page?: number; limit?: number }
+) {
   return useQuery({
     queryKey: ["persons", params],
     queryFn: () => PersonsService.getPersons(accessToken, params),
@@ -25,7 +31,8 @@ export function useCreatePerson(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["persons", "create"],
-    mutationFn: (data: CreatePersonFormData) => PersonsService.createPerson(data, accessToken),
+    mutationFn: (data: CreatePersonFormData) =>
+      PersonsService.createPerson(data, accessToken),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["persons"] });
     },

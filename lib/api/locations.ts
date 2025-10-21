@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/api/locations.ts
 import { ApiClient } from "./apiClient";
-import { PaginatedResponse, ApiResponse } from "@/types/api";
-import { City, Province, Address } from "@/types/location";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
+import { City, Province, Address } from "@/lib/types/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
 // Helper to unwrap responses that may come wrapped in { data }
@@ -17,12 +17,11 @@ export class LocationsService {
   static async getCities(accessToken: string): Promise<City[]> {
     try {
       // Backend likely returns City[] directly. If wrapped, unwrap will handle it.
-      const response = await ApiClient.request<City[] | PaginatedResponse<City>>(
-        "/locations/cities",
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
+      const response = await ApiClient.request<
+        City[] | PaginatedResponse<City>
+      >("/locations/cities", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<City[]>(response);
     } catch (error) {
       console.error("Error fetching cities:", error);
@@ -92,13 +91,12 @@ export class LocationsService {
 
   static async deleteCity(id: number, accessToken: string): Promise<string> {
     try {
-      const response = await ApiClient.request<{ message?: string } | ApiResponse<unknown>>(
-        `/locations/cities/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
+      const response = await ApiClient.request<
+        { message?: string } | ApiResponse<unknown>
+      >(`/locations/cities/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       // Try to return a human-readable message if provided
       if (response && typeof response === "object" && "message" in response) {
         return (response as { message?: string }).message || "City deleted";
@@ -113,10 +111,11 @@ export class LocationsService {
   // Provinces (read-only per backend controller)
   static async getProvinces(accessToken: string): Promise<Province[]> {
     try {
-      const response = await ApiClient.request<Province[] | PaginatedResponse<Province>>(
-        "/locations/provinces",
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Province[] | PaginatedResponse<Province>
+      >("/locations/provinces", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Province[]>(response);
     } catch (error) {
       console.error("Error fetching provinces:", error);
@@ -124,12 +123,16 @@ export class LocationsService {
     }
   }
 
-  static async getProvinceById(id: number, accessToken: string): Promise<Province> {
+  static async getProvinceById(
+    id: number,
+    accessToken: string
+  ): Promise<Province> {
     try {
-      const response = await ApiClient.request<Province | ApiResponse<Province>>(
-        `/locations/provinces/${id}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Province | ApiResponse<Province>
+      >(`/locations/provinces/${id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Province>(response);
     } catch (error) {
       console.error(`Error fetching province with ID ${id}:`, error);
@@ -137,12 +140,16 @@ export class LocationsService {
     }
   }
 
-  static async getProvinceByCode(code: string, accessToken: string): Promise<Province> {
+  static async getProvinceByCode(
+    code: string,
+    accessToken: string
+  ): Promise<Province> {
     try {
-      const response = await ApiClient.request<Province | ApiResponse<Province>>(
-        `/locations/provinces/code/${code}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Province | ApiResponse<Province>
+      >(`/locations/provinces/code/${code}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Province>(response);
     } catch (error) {
       console.error(`Error fetching province with code ${code}:`, error);
@@ -150,15 +157,22 @@ export class LocationsService {
     }
   }
 
-  static async getProvincesByCountryId(countryId: number, accessToken: string): Promise<Province[]> {
+  static async getProvincesByCountryId(
+    countryId: number,
+    accessToken: string
+  ): Promise<Province[]> {
     try {
-      const response = await ApiClient.request<Province[] | PaginatedResponse<Province>>(
-        `/locations/countries/${countryId}/provinces`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Province[] | PaginatedResponse<Province>
+      >(`/locations/countries/${countryId}/provinces`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Province[]>(response);
     } catch (error) {
-      console.error(`Error fetching provinces for country ${countryId}:`, error);
+      console.error(
+        `Error fetching provinces for country ${countryId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -166,10 +180,11 @@ export class LocationsService {
   // Addresses
   static async getAddresses(accessToken: string): Promise<Address[]> {
     try {
-      const response = await ApiClient.request<Address[] | PaginatedResponse<Address>>(
-        "/locations/addresses",
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Address[] | PaginatedResponse<Address>
+      >("/locations/addresses", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Address[]>(response);
     } catch (error) {
       console.error("Error fetching addresses:", error);
@@ -177,7 +192,10 @@ export class LocationsService {
     }
   }
 
-  static async getAddressById(id: number, accessToken: string): Promise<Address> {
+  static async getAddressById(
+    id: number,
+    accessToken: string
+  ): Promise<Address> {
     try {
       const response = await ApiClient.request<Address | ApiResponse<Address>>(
         `/locations/addresses/${id}`,
@@ -239,13 +257,12 @@ export class LocationsService {
 
   static async deleteAddress(id: number, accessToken: string): Promise<string> {
     try {
-      const response = await ApiClient.request<{ message?: string } | ApiResponse<unknown>>(
-        `/locations/addresses/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
+      const response = await ApiClient.request<
+        { message?: string } | ApiResponse<unknown>
+      >(`/locations/addresses/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       if (response && typeof response === "object" && "message" in response) {
         return (response as { message?: string }).message || "Address deleted";
       }
@@ -256,12 +273,16 @@ export class LocationsService {
     }
   }
 
-  static async getAddressesByCity(cityId: number, accessToken: string): Promise<Address[]> {
+  static async getAddressesByCity(
+    cityId: number,
+    accessToken: string
+  ): Promise<Address[]> {
     try {
-      const response = await ApiClient.request<Address[] | PaginatedResponse<Address>>(
-        `/locations/addresses/city/${cityId}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Address[] | PaginatedResponse<Address>
+      >(`/locations/addresses/city/${cityId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Address[]>(response);
     } catch (error) {
       console.error(`Error fetching addresses for city ${cityId}:`, error);
@@ -269,25 +290,36 @@ export class LocationsService {
     }
   }
 
-  static async getAddressesByCompany(companyId: number, accessToken: string): Promise<Address[]> {
+  static async getAddressesByCompany(
+    companyId: number,
+    accessToken: string
+  ): Promise<Address[]> {
     try {
-      const response = await ApiClient.request<Address[] | PaginatedResponse<Address>>(
-        `/locations/addresses/company/${companyId}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Address[] | PaginatedResponse<Address>
+      >(`/locations/addresses/company/${companyId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Address[]>(response);
     } catch (error) {
-      console.error(`Error fetching addresses for company ${companyId}:`, error);
+      console.error(
+        `Error fetching addresses for company ${companyId}:`,
+        error
+      );
       throw error;
     }
   }
 
-  static async getAddressesByPerson(personId: number, accessToken: string): Promise<Address[]> {
+  static async getAddressesByPerson(
+    personId: number,
+    accessToken: string
+  ): Promise<Address[]> {
     try {
-      const response = await ApiClient.request<Address[] | PaginatedResponse<Address>>(
-        `/locations/addresses/person/${personId}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const response = await ApiClient.request<
+        Address[] | PaginatedResponse<Address>
+      >(`/locations/addresses/person/${personId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       return unwrap<Address[]>(response);
     } catch (error) {
       console.error(`Error fetching addresses for person ${personId}:`, error);

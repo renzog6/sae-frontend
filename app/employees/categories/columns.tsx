@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { EmployeeCategory } from "@/types/employee";
+import type { EmployeeCategory } from "@/lib/types/employee";
 import { Button } from "@/components/ui/button";
 
 export function getEmployeeCategoryColumns({
@@ -21,12 +21,16 @@ export function getEmployeeCategoryColumns({
     {
       accessorKey: "code",
       header: "Código",
-      cell: ({ row }: { row: Row<EmployeeCategory> }) => <span>{row.original.code || "-"}</span>,
+      cell: ({ row }: { row: Row<EmployeeCategory> }) => (
+        <span>{row.original.code || "-"}</span>
+      ),
     },
     {
       accessorKey: "information",
       header: "Información",
-      cell: ({ row }: { row: Row<EmployeeCategory> }) => <span>{row.original.information || "-"}</span>,
+      cell: ({ row }: { row: Row<EmployeeCategory> }) => (
+        <span>{row.original.information || "-"}</span>
+      ),
     },
     {
       id: "actions",

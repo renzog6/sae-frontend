@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { FileDown, FilePenLine } from "lucide-react";
-import type { EmployeeVacation } from "@/types/employee";
-import { VacationType, AvailableYear } from "@/types/employee";
+import type { EmployeeVacation } from "@/lib/types/employee";
+import { VacationType, AvailableYear } from "@/lib/types/employee";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
 import { vacationTypeLabels } from "@/lib/constants";
 import {

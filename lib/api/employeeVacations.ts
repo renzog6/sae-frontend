@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/api/employeeVacations.ts
 import { ApiClient } from "./apiClient";
-import { EmployeeVacation } from "@/types/employee";
-import { PaginatedResponse, ApiResponse } from "@/types/api";
+import { EmployeeVacation } from "@/lib/types/employee";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
 import {
   EmployeeVacationFormData,
   UpdateEmployeeVacationFormData,

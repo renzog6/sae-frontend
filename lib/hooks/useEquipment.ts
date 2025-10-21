@@ -14,8 +14,8 @@ import {
   UpdateEquipmentModelDto,
   CreateEquipmentDto,
   UpdateEquipmentDto,
-} from "@/types/equipment";
-import { PaginatedResponse } from "@/types/api";
+} from "@/lib/types/equipment";
+import { PaginatedResponse } from "@/lib/types/api";
 
 // Categories
 export function useEquipmentCategories(accessToken: string) {

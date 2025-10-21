@@ -1,6 +1,6 @@
 # SAE Frontend - Sistema de Administración Empresarial
 
-Aplicación web completa para gestión empresarial desarrollada con Next.js 15, TypeScript y Tailwind CSS. Incluye autenticación JWT, gestión de usuarios, empresas, empleados, contactos, ubicaciones y catálogos.
+Aplicación web completa y profesional para gestión empresarial desarrollada con **Next.js 15**, **TypeScript** y **Tailwind CSS**. Interfaz moderna y responsiva que integra **autenticación JWT**, **gestión de usuarios**, **empresas**, **empleados**, **equipos**, **neumáticos**, **contactos**, **ubicaciones** y **catálogos** del sistema. Incluye más de **80 páginas** y **200+ componentes** organizados por dominio.
 
 ## 📋 Tabla de Contenidos
 
@@ -15,80 +15,99 @@ Aplicación web completa para gestión empresarial desarrollada con Next.js 15, 
 
 ## 🚀 Descripción
 
-SAE Frontend es una aplicación web moderna construida con Next.js 15 (App Router), que proporciona una interfaz completa para el sistema de administración empresarial. Integra autenticación segura, formularios validados, gestión de estado eficiente y una UI accesible basada en shadcn/ui.
+SAE Frontend es una aplicación web empresarial de **alta calidad** construida con **Next.js 15 (App Router)**, que proporciona una interfaz completa y profesional para el sistema de administración empresarial. Integra **autenticación segura con NextAuth.js**, **formularios validados con Zod**, **gestión de estado eficiente con TanStack Query**, y una **UI moderna y accesible** basada en **shadcn/ui** y **Radix UI**.
+
+### 🎯 Características Principales
+
+- **Interfaz Profesional**: Más de 80 páginas organizadas por módulos
+- **200+ Componentes**: Reutilizables y tipados con TypeScript
+- **Gestión Completa**: RRHH, Flota, Neumáticos, Catálogos, etc.
+- **Autenticación Robusta**: JWT con refresh tokens y roles
+- **Validaciones Avanzadas**: Zod + React Hook Form
+- **Estado Eficiente**: TanStack Query para server/client state
+- **UI Moderna**: shadcn/ui + Tailwind CSS + Tema dinámico
+- **Responsive**: Diseño adaptativo desktop/móvil
+- **Performance**: Optimizado con Turbopack y Next.js 15
 
 - **Versión**: 1.0.0
 - **Autor**: Renzo O. Gorosito
 - **Licencia**: MIT
+- **Última Actualización**: Octubre 2025
 
 ## ✨ Características
 
-### Autenticación y Seguridad
+### 🔐 Autenticación y Seguridad Empresarial
 
-- Autenticación JWT con NextAuth.js
-- Middleware de protección de rutas
-- Gestión de sesiones y tokens de refresh
-- Roles y permisos (USER, ADMIN)
-- Navegación basada en roles (filtrado de menú)
+- **NextAuth.js Completo**: Autenticación JWT con providers múltiples
+- **Middleware Avanzado**: Protección de rutas con Next.js middleware
+- **Gestión de Sesiones**: Tokens de access/refresh con expiración automática
+- **Sistema de Roles**: USER, ADMIN con permisos jerárquicos
+- **Navegación Dinámica**: Menú filtrado por roles de usuario
+- **Protección CSRF**: Configurado para seguridad adicional
 
-### Gestión de Datos
+### 📊 Gestión de Datos Completa
 
-- **Usuarios**: CRUD completo con roles
-- **Empresas**: Gestión de compañías con categorías y subcategorías
-- **Empleados**: Empleados con categorías, posiciones y vacaciones
-- **Contactos**: Contactos polimórficos (empresas/personas)
-- **Personas y Familia**: Gestión de personas físicas y relaciones familiares
-- **Ubicaciones**: Países, provincias, ciudades y direcciones
-- **Catálogos**: Marcas, unidades, equipos y categorías
-- **Historial**: Incidentes, mantenimientos y eventos
+- **👥 Usuarios**: CRUD completo con roles y permisos
+- **🏢 Empresas**: Gestión integral con categorías y subcategorías de negocio
+- **👷 Empleados**: RRHH completo con categorías, posiciones, vacaciones y documentos
+- **📞 Contactos**: Sistema polimórfico para empresas y personas
+- **👤 Personas y Familia**: Gestión de personas físicas con relaciones familiares
+- **📍 Ubicaciones**: Sistema geográfico completo (países, provincias, ciudades, direcciones)
+- **🏷️ Catálogos**: Marcas, unidades, equipos, categorías y tipos
+- **🛞 Neumáticos**: Gestión especializada del ciclo de vida completo
+- **📋 Historial**: Incidentes, mantenimientos, eventos y auditoría
 
-### Interfaz de Usuario
+### 🎨 Interfaz de Usuario Profesional
 
-- UI moderna con shadcn/ui y Tailwind CSS
-- Tema oscuro/claro con next-themes
-- Formularios validados con Zod y React Hook Form
-- Tablas interactivas con TanStack Table (ordenamiento, búsqueda múltiple)
-- Notificaciones toast con Framer Motion
-- Diseño responsivo y accesible
-- Sidebar móvil con navegación
+- **UI Moderna**: shadcn/ui + Radix UI para componentes accesibles
+- **Tema Dinámico**: Claro/oscuro con next-themes y persistencia
+- **Formularios Avanzados**: Validación en tiempo real con Zod + React Hook Form
+- **Tablas Interactivas**: TanStack Table con ordenamiento, filtros y paginación
+- **Notificaciones**: Sistema toast con Framer Motion y animaciones
+- **Responsive Design**: Layout adaptativo desktop/tablet/móvil
+- **Sidebar Inteligente**: Navegación móvil con colapso automático
+- **Búsqueda Global**: Command palette para navegación rápida
 
-### Arquitectura Técnica
+### 🏗️ Arquitectura Técnica Avanzada
 
-- Next.js 15 con App Router
-- TypeScript para tipado fuerte
-- TanStack Query para gestión de estado servidor
-- Axios para llamadas HTTP
-- Componentes modulares y reutilizables
-- Hooks personalizados para lógica de negocio
-- Validaciones con Zod
-- Constantes y etiquetas para enums
+- **Next.js 15 App Router**: Routing moderno con layouts anidados
+- **TypeScript Estricto**: Tipado fuerte en 200+ archivos
+- **TanStack Query**: Gestión optimizada de estado servidor/cliente
+- **Axios Interceptors**: Cliente HTTP con manejo automático de tokens
+- **Componentes Modulares**: 200+ componentes reutilizables y tipados
+- **Hooks Personalizados**: Lógica de negocio separada y testeable
+- **Validaciones Robustas**: Zod schemas para type safety completo
+- **Constantes Centralizadas**: Enums y labels organizados por dominio
 
 ## 🏗 Arquitectura del Sistema
 
-### Patrón de Arquitectura
+### 🏛️ Patrón de Arquitectura Empresarial
 
-El proyecto sigue una arquitectura modular y escalable:
+El proyecto implementa una **arquitectura modular y escalable** siguiendo las mejores prácticas de Next.js 15:
 
-- **App Router**: Estructura de rutas basada en directorios
-- **Componentes Reutilizables**: UI components con shadcn/ui
-- **Separación de Concerns**: API, hooks, validaciones y constantes separados
-- **Type Safety**: TypeScript completo con tipos compartidos
-- **State Management**: TanStack Query para server state, React Query para client state
+#### **Estructura por Dominios**
 
-### Flujo de Datos
+- **App Router**: Rutas organizadas por directorios con layouts anidados
+- **Componentes por Módulo**: UI components agrupados por funcionalidad
+- **Separación de Concerns**: API, hooks, validaciones y constantes en capas
+- **Type Safety Completo**: TypeScript estricto con tipos compartidos
+- **State Management Híbrido**: TanStack Query para server state, Zustand para client state
 
-1. **Autenticación**: NextAuth.js maneja login/logout y sesiones
-2. **API Calls**: Axios client con interceptores para tokens
-3. **State Management**: TanStack Query para cache y sincronización
-4. **UI Updates**: React hooks personalizados para lógica de negocio
-5. **Validations**: Zod schemas para forms y API responses
+#### **Flujo de Datos Optimizado**
 
-### Seguridad
+1. **🔐 Autenticación**: NextAuth.js maneja sesiones y tokens JWT
+2. **📡 API Calls**: Axios con interceptores automáticos para tokens
+3. **💾 State Management**: TanStack Query para cache inteligente y sincronización
+4. **🔄 UI Updates**: React hooks personalizados para lógica de negocio
+5. **✅ Validations**: Zod schemas para type safety en forms y API
 
-- **Middleware**: Protección de rutas en Next.js
-- **JWT Tokens**: Autenticación stateless
-- **Role-based Access**: Filtrado de navegación y acciones
-- **Input Validation**: Validaciones en cliente y servidor
+#### **🛡️ Seguridad Empresarial**
+
+- **Middleware Avanzado**: Protección granular de rutas en Next.js
+- **JWT Stateless**: Autenticación sin estado con refresh tokens
+- **RBAC Completo**: Role-based access con permisos jerárquicos
+- **Input Validation**: Validaciones cliente/servidor con feedback visual
+- **XSS Protection**: Sanitización automática de inputs
 
 ## 📁 Estructura del Proyecto
 
@@ -216,49 +235,53 @@ sae-frontend/
 
 ## 🛠 Tecnologías Utilizadas
 
-### Core Framework
+### 🚀 Core Framework Empresarial
 
-- **Next.js** 15.5.3 - React framework con App Router
-- **React** 19.1.0 - Biblioteca de interfaz de usuario
-- **TypeScript** 5.1.3 - Tipado estático
+- **Next.js** 15.5.3 - React framework con App Router y Turbopack
+- **React** 19.1.0 - Biblioteca de UI con concurrent features
+- **TypeScript** 5.1.3 - Tipado estático estricto en todo el proyecto
 
-### UI y Estilos
+### 🎨 UI y Estilos Profesionales
 
-- **Tailwind CSS** 4.0.0-alpha.66 - Framework CSS utilitario
-- **shadcn/ui** - Componentes UI accesibles y personalizables
-- **Radix UI** - Primitivas UI headless
-- **Lucide React** 0.544.0 - Iconografía
-- **Framer Motion** 12.23.19 - Animaciones
-- **next-themes** 0.4.6 - Gestión de temas
+- **Tailwind CSS** 4.0.0-alpha.66 - Framework CSS utilitario de última generación
+- **shadcn/ui** - Componentes UI accesibles y personalizables (200+ componentes)
+- **Radix UI** - Primitivas headless para máxima accesibilidad
+- **Lucide React** 0.544.0 - Iconografía consistente y moderna
+- **Framer Motion** 12.23.19 - Animaciones fluidas y profesionales
+- **next-themes** 0.4.6 - Gestión de temas con persistencia automática
 
-### Gestión de Estado y Datos
+### 📊 Gestión de Estado y Datos Avanzada
 
-- **TanStack Query** 5.89.0 - Gestión de estado del servidor
-- **Axios** 1.6.0 - Cliente HTTP
-- **@tanstack/react-table** 8.21.3 - Tablas de datos
+- **TanStack Query** 5.89.0 - Gestión inteligente de estado servidor/cliente
+- **Axios** 1.6.0 - Cliente HTTP con interceptores y manejo de errores
+- **@tanstack/react-table** 8.21.3 - Tablas de datos con virtualización y filtros
 
-### Formularios y Validación
+### 📝 Formularios y Validación Robusta
 
-- **React Hook Form** 7.62.0 - Gestión de formularios
-- **@hookform/resolvers** 5.2.1 - Resolvers para RHF
-- **Zod** 4.1.9 - Validación de esquemas
+- **React Hook Form** 7.62.0 - Gestión de formularios performante
+- **@hookform/resolvers** 5.2.1 - Integración Zod con RHF
+- **Zod** 4.1.9 - Validación de esquemas con type inference
 
-### Autenticación
+### 🔐 Autenticación Empresarial
 
-- **NextAuth.js** 4.24.11 - Autenticación completa
+- **NextAuth.js** 4.24.11 - Autenticación completa con múltiples providers
+- **JWT Management**: Access/refresh tokens con renovación automática
+- **Session Handling**: Gestión de sesiones con persistencia
 
-### Utilidades
+### 🛠️ Utilidades y Herramientas
 
-- **class-variance-authority** 0.7.1 - Sistema de variantes CSS
-- **clsx** 2.1.1 - Utilidades de clases condicionales
+- **class-variance-authority** 0.7.1 - Sistema de variantes CSS dinámicas
+- **clsx** 2.1.1 - Utilidades de clases condicionales optimizadas
 - **tailwind-merge** 3.3.1 - Fusión inteligente de clases Tailwind
-- **cmdk** 1.1.1 - Command palette para búsqueda
+- **cmdk** 1.1.1 - Command palette para búsqueda global
+- **date-fns** - Manipulación de fechas (importado desde backend)
 
-### Desarrollo
+### 💻 Desarrollo y Calidad
 
-- **ESLint** - Linting de código
-- **Prettier** - Formateo de código
-- **Turbopack** - Empaquetador rápido para desarrollo
+- **ESLint** - Linting avanzado con reglas personalizadas
+- **Prettier** - Formateo automático consistente
+- **Turbopack** - Empaquetador ultra-rápido para desarrollo
+- **TypeScript Strict** - Configuración estricta para máxima type safety
 
 ## 🚀 Instalación y Configuración
 
@@ -317,6 +340,7 @@ npm start
 - **Empresas**: Gestión completa de compañías, categorías y subcategorías de negocio
 - **Empleados**: Administración de personal, categorías, posiciones y vacaciones
 - **Equipos**: Gestión de equipos, categorías, modelos, tipos y mantenimientos
+- **Neumáticos**: Gestión completa de neumáticos, medidas, modelos y ciclo de vida
 - **Configuración**: Catálogos del sistema (marcas, unidades, ubicaciones)
 - **Reportes**: Generación de reportes y estadísticas
 

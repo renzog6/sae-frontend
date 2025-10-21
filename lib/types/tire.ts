@@ -1,7 +1,48 @@
 // filepath: sae-frontend/types/tire.ts
 
 // Import enums from shared location
-import { TireStatus, TirePosition, TireEventType } from "./enums";
+import {
+  TireStatus,
+  TirePosition,
+  TireEventType,
+  AxleType,
+  TireSide,
+} from "./enums";
+
+// ===== Equipment Axle and Position Config =====
+
+export interface EquipmentAxle {
+  id: number;
+  equipmentId: number;
+  order: number; // Eje 1, Eje 2, etc.
+  axleType: AxleType;
+  wheelCount: number;
+  description?: string | null;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  equipment: {
+    id: number;
+    name?: string | null;
+    internalCode?: string | null;
+  };
+  tirePositions?: TirePositionConfig[];
+}
+
+export interface TirePositionConfig {
+  id: number;
+  axleId: number;
+  positionKey: string; // Ej: "E1I", "E1D", "E2II", etc.
+  side: TireSide;
+  isDual: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations
+  axle: EquipmentAxle;
+  assignments?: TireAssignment[];
+}
 
 // ===== Tire domain types =====
 
@@ -83,8 +124,7 @@ export interface Tire {
 export interface TireAssignment {
   id: number;
   tireId: number;
-  equipmentId: number;
-  position: TirePosition;
+  positionConfigId: number; // Changed from equipmentId + position
   startDate: string;
   endDate?: string | null;
   kmAtStart?: number | null;
@@ -92,11 +132,7 @@ export interface TireAssignment {
 
   // Relations
   tire: Tire;
-  equipment: {
-    id: number;
-    name?: string | null;
-    internalCode?: string | null;
-  };
+  positionConfig: TirePositionConfig; // Changed from direct equipment
 }
 
 // Tire Rotation (position/equipment changes)
@@ -171,7 +207,9 @@ export interface CreateTireDto {
   totalKm?: number;
 }
 
-export interface UpdateTireDto extends Partial<CreateTireDto> {}
+export interface UpdateTireDto extends Partial<CreateTireDto> {
+  createdAt?: string;
+}
 
 // Tire Sizes
 export interface CreateTireSizeDto {
@@ -212,10 +250,13 @@ export interface UpdateTireSizeAliasDto
 // Assignments
 export interface MountTireDto {
   tireId: number;
-  equipmentId: number;
-  position: string; // TirePosition as string
+  positionConfigId: number; // Changed from equipmentId + position
   kmAtStart?: number;
   note?: string;
+
+  // Deprecated fields for backward compatibility
+  equipmentId?: number;
+  position?: string;
 }
 
 export interface UnmountTireDto {
@@ -335,7 +376,7 @@ export interface TireSummary {
   totalKm?: number;
   lastAssignment?: {
     equipment: string;
-    position: TirePosition;
+    position: string; // positionKey from TirePositionConfig
     startDate: string;
   };
 }

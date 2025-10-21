@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { City } from "@/types/location";
+import type { City } from "@/lib/types/location";
 import { Button } from "@/components/ui/button";
 
 export function getCityColumns({
@@ -23,7 +23,9 @@ export function getCityColumns({
     {
       accessorKey: "postalCode",
       header: "Código Postal",
-      cell: ({ row }: { row: Row<City> }) => <span>{row.original.postalCode || "-"}</span>,
+      cell: ({ row }: { row: Row<City> }) => (
+        <span>{row.original.postalCode || "-"}</span>
+      ),
     },
     {
       accessorKey: "province",
@@ -42,7 +44,11 @@ export function getCityColumns({
             <Button variant="outline" size="sm" onClick={() => onEdit(city)}>
               Editar
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onDelete(city)}>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(city)}
+            >
               Eliminar
             </Button>
           </div>

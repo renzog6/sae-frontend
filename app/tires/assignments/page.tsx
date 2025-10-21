@@ -1,10 +1,21 @@
-// filepath: sae-frontend/app/tires/events/page.tsx
+// app/tires/assignments/page.tsx
+"use client";
+
+import { TireAssignmentsContainer } from "./TireAssignmentsContainer";
 
 export default function TireAssignmentsPage() {
   return (
-    <div>
-      <h1>Tire Events Page</h1>
-      <p>Welcome to the Tire Events section of our website.</p>
+    <div className="container p-6 mx-auto space-y-6">
+      <header>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Asignaciones de Neumáticos
+        </h1>
+        <p className="text-muted-foreground">
+          Gestiona la asignación y rotación de neumáticos en tus equipos
+        </p>
+      </header>
+
+      <TireAssignmentsContainer />
     </div>
   );
 }

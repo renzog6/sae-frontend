@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EmployeePosition } from "@/types/employee";
+import type { EmployeePosition } from "@/lib/types/employee";
 import { useEmployeePositions } from "@/lib/hooks/useEmployees";
 import { DataTable } from "@/components/data-table";
 import { getEmployeePositionColumns } from "./columns";
