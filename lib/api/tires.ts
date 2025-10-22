@@ -363,6 +363,37 @@ export class EquipmentAxlesService {
     });
     return "Equipment axle deleted";
   }
+
+  static async createWithPositions(
+    data: {
+      axle: {
+        equipmentId: number;
+        order: number;
+        axleType: string;
+        wheelCount: number;
+        description?: string;
+      };
+      positions: Array<{
+        positionKey: string;
+        side: string;
+        isDual: boolean;
+      }>;
+    },
+    accessToken: string
+  ) {
+    const response = await ApiClient.request(
+      "/equipment-axles/with-positions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    return unwrap<any>(response);
+  }
 }
 
 // ===== TIRE POSITION CONFIGS =====

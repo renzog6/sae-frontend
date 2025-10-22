@@ -208,7 +208,7 @@ export const AxleConfigurator: React.FC<Props> = ({
       isDual: pos.isDual,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      axle: previewAxle,
+      axle: null as any, // Avoid circular reference in preview
     })
   );
 
