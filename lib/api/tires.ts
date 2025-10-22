@@ -386,6 +386,20 @@ export class TirePositionConfigsService {
     );
   }
 
+  static async getTirePositionConfigsByEquipment(
+    accessToken: string,
+    equipmentId: number
+  ) {
+    const response = await ApiClient.request<
+      TirePositionConfig[] | PaginatedResponse<TirePositionConfig>
+    >(`/equipment-axles/positions/equipment/${equipmentId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return unwrap<TirePositionConfig[] | PaginatedResponse<TirePositionConfig>>(
+      response
+    );
+  }
+
   static async getTirePositionConfigById(id: number, accessToken: string) {
     const response = await ApiClient.request<
       TirePositionConfig | ApiResponse<TirePositionConfig>

@@ -252,6 +252,7 @@ export interface MountTireDto {
   tireId: number;
   positionConfigId: number; // Changed from equipmentId + position
   kmAtStart?: number;
+  mountDate?: string;
   note?: string;
 
   // Deprecated fields for backward compatibility
@@ -262,6 +263,8 @@ export interface MountTireDto {
 export interface UnmountTireDto {
   assignmentId: number;
   kmAtEnd?: number;
+  unmountDate?: string;
+  newStatus?: "IN_STOCK" | "UNDER_REPAIR" | "RECAP" | "DISCARDED";
   note?: string;
 }
 

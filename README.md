@@ -47,15 +47,15 @@ SAE Frontend es una aplicación web empresarial de **alta calidad** construida c
 
 ### 📊 Gestión de Datos Completa
 
-- **👥 Usuarios**: CRUD completo con roles y permisos
+- **👥 Usuarios**: CRUD completo con roles y permisos (USER, ADMIN)
 - **🏢 Empresas**: Gestión integral con categorías y subcategorías de negocio
 - **👷 Empleados**: RRHH completo con categorías, posiciones, vacaciones y documentos
-- **📞 Contactos**: Sistema polimórfico para empresas y personas
+- **📞 Contactos**: Sistema polimórfico para empresas y personas (email, teléfono, WhatsApp, etc.)
 - **👤 Personas y Familia**: Gestión de personas físicas con relaciones familiares
 - **📍 Ubicaciones**: Sistema geográfico completo (países, provincias, ciudades, direcciones)
 - **🏷️ Catálogos**: Marcas, unidades, equipos, categorías y tipos
-- **🛞 Neumáticos**: Gestión especializada del ciclo de vida completo
-- **📋 Historial**: Incidentes, mantenimientos, eventos y auditoría
+- **🛞 Neumáticos**: Gestión especializada del ciclo de vida completo con asignaciones, rotaciones, recapados e inspecciones
+- **📋 Historial**: Incidentes, mantenimientos, eventos y auditoría completa
 
 ### 🎨 Interfaz de Usuario Profesional
 
@@ -340,7 +340,7 @@ npm start
 - **Empresas**: Gestión completa de compañías, categorías y subcategorías de negocio
 - **Empleados**: Administración de personal, categorías, posiciones y vacaciones
 - **Equipos**: Gestión de equipos, categorías, modelos, tipos y mantenimientos
-- **Neumáticos**: Gestión completa de neumáticos, medidas, modelos y ciclo de vida
+- **Neumáticos**: Gestión completa de neumáticos, medidas, modelos y ciclo de vida con diagrama visual de ejes
 - **Configuración**: Catálogos del sistema (marcas, unidades, ubicaciones)
 - **Reportes**: Generación de reportes y estadísticas
 
@@ -353,6 +353,8 @@ npm start
 - **Responsive Design**: Interfaz adaptativa para desktop y móvil
 - **Role-based Access**: Control de acceso basado en roles de usuario
 - **Tema Dinámico**: Soporte para temas claro y oscuro
+- **Diagrama Visual de Ejes**: Visualización interactiva de posiciones de neumáticos por eje
+- **Gestión de Asignaciones**: Montaje/desmontaje visual de neumáticos en equipos
 
 ### API Integration
 
@@ -363,6 +365,8 @@ El frontend se conecta con el backend SAE mediante:
 - **Endpoints RESTful**: Convenciones REST para todas las operaciones
 - **Error Handling**: Manejo robusto de errores con feedback al usuario
 - **Caching**: TanStack Query para optimización de performance
+- **Gestión de Ejes**: Endpoint específico para obtener posiciones por equipo (`/equipment-axles/positions/equipment/:equipmentId`)
+- **Diagrama Interactivo**: Visualización de neumáticos montados con estados visuales
 
 ## 🔧 Desarrollo y Contribución
 
@@ -391,6 +395,8 @@ npm run lint         # Linting del código
 - **UI**: Primitivas shadcn/ui en `/components/ui`
 - **Forms**: Validaciones Zod en `/lib/validations`
 - **API**: Servicios en `/lib/api`, hooks en `/lib/hooks`
+- **Diagrama de Ejes**: Componente `AxleDiagram` con lógica de agrupación dual
+- **Gestión de Estado**: TanStack Query para estado de posiciones de neumáticos
 
 ## 📄 Licencia
 

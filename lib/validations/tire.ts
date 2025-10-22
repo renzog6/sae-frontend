@@ -78,12 +78,17 @@ export const mountTireSchema = z.object({
   equipmentId: z.number().min(1, "Equipment ID is required"),
   position: z.string().min(1, "Position is required"),
   kmAtStart: z.number().min(0).optional(),
+  mountDate: z.string().optional(),
   note: z.string().optional(),
 });
 
 export const unmountTireSchema = z.object({
   assignmentId: z.number().min(1, "Assignment ID is required"),
   kmAtEnd: z.number().min(0).optional(),
+  unmountDate: z.string().optional(),
+  newStatus: z
+    .enum(["IN_STOCK", "UNDER_REPAIR", "RECAP", "DISCARDED"])
+    .optional(),
   note: z.string().optional(),
 });
 

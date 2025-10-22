@@ -1,3 +1,4 @@
+// filepath: sae-frontend/components/tire/tire-axle-diagram.tsx
 "use client";
 
 import React, { useMemo } from "react";
@@ -5,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Settings } from "lucide-react";
 import type { EquipmentAxle, TirePositionConfig } from "@/lib/types/tire";
 import { tireStatusColors } from "@/lib/utils/tires";
+import { TireSide } from "@/lib/types/enums";
 
 interface Props {
   axles: EquipmentAxle[];
@@ -12,6 +14,7 @@ interface Props {
   selectedPosition: TirePositionConfig | null;
   setSelectedPosition: (p: TirePositionConfig | null) => void;
   isLoading?: boolean;
+  refreshTrigger?: number;
 }
 
 export const AxleDiagram: React.FC<Props> = ({
@@ -20,8 +23,9 @@ export const AxleDiagram: React.FC<Props> = ({
   selectedPosition,
   setSelectedPosition,
   isLoading = false,
+  refreshTrigger,
 }) => {
-  // Agrupamos las posiciones por eje
+  // Agrupamos posiciones por eje (sin cambios)
   const positionsByAxle = useMemo(() => {
     const grouped: Record<number, TirePositionConfig[]> = {};
     for (const pos of positions) {
@@ -29,17 +33,34 @@ export const AxleDiagram: React.FC<Props> = ({
       grouped[pos.axleId].push(pos);
     }
     return grouped;
-  }, [positions]);
+  }, [positions, refreshTrigger]);
 
-  // Orden visual: izquierda primero, luego derecha
+  // Orden de posiciones: izquierda -> derecha, con duales agrupados
   const sortPositions = (arr: TirePositionConfig[]) => {
-    const order = { LEFT: 1, INNER: 2, OUTER: 3, RIGHT: 4 };
+    const orderMap: Record<TireSide, number> = {
+      LEFT: 1,
+      OUTER: 2, // Para duales: outer left
+      INNER: 3, // inner left
+      RIGHT: 4,
+    };
     return [...arr].sort(
-      (a, b) => (order[a.side] ?? 99) - (order[b.side] ?? 99)
+      (a, b) => (orderMap[a.side] ?? 99) - (orderMap[b.side] ?? 99)
     );
   };
 
-  // Agrupación de duales (INNER+OUTER)
+  // Agrupación por lados: left group | right group
+  const groupBySide = (arr: TirePositionConfig[]) => {
+    const leftGroup: TirePositionConfig[] = arr.filter(
+      (p) => p.side === "LEFT" || p.side === "OUTER" || p.side === "INNER"
+    ); // Asume left incluye duales
+    const rightGroup: TirePositionConfig[] = arr.filter(
+      (p) => p.side === "RIGHT" || p.side === "INNER" || p.side === "OUTER"
+    ); // Ajusta según convención
+
+    return { left: groupDuals(leftGroup), right: groupDuals(rightGroup) };
+  };
+
+  // Agrupación de duales (ahora horizontal)
   const groupDuals = (arr: TirePositionConfig[]) => {
     const groups: (TirePositionConfig | TirePositionConfig[])[] = [];
     const used = new Set<number>();
@@ -48,17 +69,17 @@ export const AxleDiagram: React.FC<Props> = ({
       if (used.has(pos.id)) continue;
 
       if (pos.isDual) {
-        // Buscar su pareja dual (mismo eje, mismo lado)
         const pair = arr.find(
           (p) =>
             p.id !== pos.id &&
             p.isDual &&
-            p.side !== pos.side && // uno INNER, otro OUTER
-            p.positionKey.startsWith(pos.positionKey.substring(0, 2)) // ej: E1DI + E1DD
+            !used.has(p.id) &&
+            p.positionKey.substring(0, 3) === pos.positionKey.substring(0, 3) &&
+            p.positionKey !== pos.positionKey
         );
 
         if (pair) {
-          groups.push([pos, pair]);
+          groups.push([pos, pair]); // Grupo como array para render dual
           used.add(pos.id);
           used.add(pair.id);
           continue;
@@ -96,84 +117,48 @@ export const AxleDiagram: React.FC<Props> = ({
     <div className="space-y-6">
       {axles.map((axle) => {
         const axlePositions = sortPositions(positionsByAxle[axle.id] ?? []);
-        const groupedPositions = groupDuals(axlePositions);
+        const { left, right } = groupBySide(axlePositions);
 
         return (
-          <div key={axle.id} className="p-4 border rounded-lg">
-            {/* Cabecera del eje */}
-            <div className="flex items-center justify-between mb-4">
+          <div key={axle.id} className="relative p-4 border rounded-lg">
+            {/* Línea horizontal simulando el eje */}
+            <div className="absolute left-0 right-0 z-0 h-1 -translate-y-1/2 bg-gray-200 top-1/2" />
+
+            {/* Cabecera */}
+            <div className="relative z-10 flex items-center justify-between mb-4">
               <h3 className="font-semibold">
                 Eje {axle.order} - {axle.axleType}
               </h3>
               <Badge variant="outline">{axle.wheelCount} ruedas</Badge>
             </div>
 
-            {/* Diagrama del eje */}
-            <div className="flex flex-wrap justify-center gap-4">
-              {groupedPositions.map((item, idx) => {
-                if (Array.isArray(item)) {
-                  // Duales (INNER + OUTER)
-                  return (
-                    <div
-                      key={`dual-${idx}`}
-                      className="flex flex-col items-center space-y-1"
-                    >
-                      <div className="flex flex-col">
-                        {item.map((pos) => {
-                          const isSelected = selectedPosition?.id === pos.id;
-                          const colorClass = tireStatusColors["DEFAULT"];
-                          return (
-                            <button
-                              key={pos.id}
-                              onClick={() => setSelectedPosition(pos)}
-                              title={`${pos.positionKey} (${pos.side})`}
-                              className={`flex items-center justify-center w-12 h-12 mb-1 transition-colors border-2 rounded-lg cursor-pointer border-dashed
-                                ${
-                                  isSelected
-                                    ? "ring-2 ring-offset-2 ring-blue-400"
-                                    : "hover:border-blue-500"
-                                }`}
-                            >
-                              <div
-                                className={`w-8 h-8 rounded-full ${colorClass}`}
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        Dual
-                      </span>
-                    </div>
-                  );
-                } else {
-                  // Simple
-                  const pos = item;
-                  const isSelected = selectedPosition?.id === pos.id;
-                  const colorClass = tireStatusColors["DEFAULT"];
-                  return (
-                    <button
-                      key={pos.id}
-                      onClick={() => setSelectedPosition(pos)}
-                      title={`${pos.positionKey} (${pos.side})`}
-                      className={`flex items-center justify-center w-12 h-12 transition-colors border-2 rounded-lg cursor-pointer border-dashed
-                        ${
-                          isSelected
-                            ? "ring-2 ring-offset-2 ring-blue-400"
-                            : "hover:border-blue-500"
-                        }`}
-                    >
-                      <div className={`w-8 h-8 rounded-full ${colorClass}`} />
-                    </button>
-                  );
-                }
-              })}
+            {/* Diagrama horizontal */}
+            <div className="relative z-10 flex items-center justify-between">
+              {/* Lado izquierdo */}
+              <div className="flex gap-1">
+                {" "}
+                {/* Gap pequeño para duales */}
+                {left.map((item, idx) =>
+                  renderPosition(
+                    item,
+                    selectedPosition,
+                    setSelectedPosition,
+                    idx
+                  )
+                )}
+              </div>
 
-              {groupedPositions.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Sin posiciones definidas
-                </p>
-              )}
+              {/* Lado derecho (con separación mayor) */}
+              <div className="flex gap-1">
+                {right.map((item, idx) =>
+                  renderPosition(
+                    item,
+                    selectedPosition,
+                    setSelectedPosition,
+                    idx
+                  )
+                )}
+              </div>
             </div>
 
             {axle.description && (
@@ -186,4 +171,61 @@ export const AxleDiagram: React.FC<Props> = ({
       })}
     </div>
   );
+};
+
+// Función helper para renderizar posición o dual
+const renderPosition = (
+  item: TirePositionConfig | TirePositionConfig[],
+  selectedPosition: TirePositionConfig | null,
+  setSelectedPosition: (p: TirePositionConfig | null) => void,
+  idx: number
+) => {
+  if (Array.isArray(item)) {
+    // Dual: horizontal, círculos más cercanos
+    return (
+      <div key={`dual-${idx}`} className="flex gap-0.5 items-center">
+        {" "}
+        {/* Gap mínimo para duales */}
+        {item.map((pos) => {
+          const isSelected = selectedPosition?.id === pos.id;
+          const colorClass = tireStatusColors["DEFAULT"];
+          return (
+            <button
+              key={pos.id}
+              onClick={() => setSelectedPosition(pos)}
+              title={`${pos.positionKey} (${pos.side})`}
+              className={`flex items-center justify-center w-10 h-10 transition-colors border-2 rounded-full cursor-pointer border-dashed  // Cambié a rounded-full para mejor look
+                ${
+                  isSelected
+                    ? "ring-2 ring-offset-2 ring-blue-400"
+                    : "hover:border-blue-500"
+                }`}
+            >
+              <div className={`w-6 h-6 rounded-full ${colorClass}`} />
+            </button>
+          );
+        })}
+      </div>
+    );
+  } else {
+    // Single
+    const pos = item;
+    const isSelected = selectedPosition?.id === pos.id;
+    const colorClass = tireStatusColors["DEFAULT"];
+    return (
+      <button
+        key={pos.id}
+        onClick={() => setSelectedPosition(pos)}
+        title={`${pos.positionKey} (${pos.side})`}
+        className={`flex items-center justify-center w-12 h-12 transition-colors border-2 rounded-full cursor-pointer border-dashed
+          ${
+            isSelected
+              ? "ring-2 ring-offset-2 ring-blue-400"
+              : "hover:border-blue-500"
+          }`}
+      >
+        <div className={`w-8 h-8 rounded-full ${colorClass}`} />
+      </button>
+    );
+  }
 };

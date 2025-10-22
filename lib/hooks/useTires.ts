@@ -366,6 +366,21 @@ export function useTirePositionConfigs(
   });
 }
 
+export function useTirePositionConfigsByEquipment(
+  accessToken: string,
+  equipmentId?: number
+) {
+  return useQuery({
+    queryKey: ["tire-position-configs-equipment", equipmentId ?? ""],
+    queryFn: () =>
+      TirePositionConfigsService.getTirePositionConfigsByEquipment(
+        accessToken,
+        equipmentId as number
+      ),
+    enabled: !!accessToken && !!equipmentId,
+  });
+}
+
 export function useTirePositionConfigDetail(
   id: number | undefined,
   accessToken: string

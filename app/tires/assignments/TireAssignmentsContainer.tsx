@@ -11,6 +11,7 @@ import { useEquipmentList } from "@/lib/hooks/useEquipment";
 import {
   useEquipmentAxles,
   useTirePositionConfigs,
+  useTirePositionConfigsByEquipment,
 } from "@/lib/hooks/useTires";
 
 import { TireActionsPanel } from "@/components/tire/tire-actions-panel";
@@ -32,6 +33,7 @@ export function TireAssignmentsContainer() {
   const [selectedPosition, setSelectedPosition] =
     useState<TirePositionConfig | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Data fetching (hooks existentes)
   const {
@@ -62,9 +64,9 @@ export function TireAssignmentsContainer() {
   }, [axlesData]);
 
   const { data: positionsData, isLoading: isLoadingPositions } =
-    useTirePositionConfigs(
+    useTirePositionConfigsByEquipment(
       accessToken,
-      axles.length > 0 ? { axleId: axles[0]?.id } : undefined
+      selectedEquipmentId || undefined
     );
 
   const positions: TirePositionConfig[] = useMemo(() => {
@@ -101,6 +103,10 @@ export function TireAssignmentsContainer() {
 
   const onSelectPosition = useCallback((pos: TirePositionConfig | null) => {
     setSelectedPosition(pos);
+  }, []);
+
+  const onRefreshDiagram = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1);
   }, []);
 
   // Loading UX: skeletons / empty states
@@ -150,6 +156,7 @@ export function TireAssignmentsContainer() {
               selectedPosition={selectedPosition}
               setSelectedPosition={onSelectPosition}
               isLoading={isLoadingAxles || isLoadingPositions}
+              refreshTrigger={refreshTrigger}
             />
           </div>
 
@@ -157,11 +164,7 @@ export function TireAssignmentsContainer() {
             <TireActionsPanel
               selectedPosition={selectedPosition}
               selectedEquipment={selectedEquipment}
-              equipments={equipments}
-              selectedEquipmentId={selectedEquipmentId}
-              setSelectedEquipmentId={onSelectEquipment}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
+              onRefreshDiagram={onRefreshDiagram}
             />
           </div>
         </div>
