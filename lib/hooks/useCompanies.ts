@@ -20,28 +20,27 @@ import {
 } from "@/lib/validations/company";
 
 // ========== Business Categories ==========
-export function useBusinessCategories(accessToken: string) {
+export function useBusinessCategories() {
   return useQuery<BusinessCategory[], Error>({
     queryKey: ["business-categories"],
     queryFn: async () => {
-      const resp = await BusinessCategoriesService.getCategories(accessToken);
+      const resp = await BusinessCategoriesService.getCategories();
       return Array.isArray(resp) ? resp : resp.data; // soporta paginado o arreglo plano
     },
-    enabled: !!accessToken,
   });
 }
 
-export function useCreateBusinessCategory(accessToken: string) {
+export function useCreateBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: BusinessCategoryFormData) =>
-      BusinessCategoriesService.createCategory(data, accessToken),
+      BusinessCategoriesService.createCategory(data),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["business-categories"] }),
   });
 }
 
-export function useUpdateBusinessCategory(accessToken: string) {
+export function useUpdateBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -50,7 +49,7 @@ export function useUpdateBusinessCategory(accessToken: string) {
     }: {
       id: number;
       data: UpdateBusinessCategoryFormData;
-    }) => BusinessCategoriesService.updateCategory(id, data, accessToken),
+    }) => BusinessCategoriesService.updateCategory(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -58,11 +57,10 @@ export function useUpdateBusinessCategory(accessToken: string) {
   });
 }
 
-export function useDeleteBusinessCategory(accessToken: string) {
+export function useDeleteBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      BusinessCategoriesService.deleteCategory(id, accessToken),
+    mutationFn: (id: number) => BusinessCategoriesService.deleteCategory(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -71,34 +69,27 @@ export function useDeleteBusinessCategory(accessToken: string) {
 }
 
 // ========== Business Subcategories ==========
-export function useBusinessSubcategories(
-  accessToken: string,
-  params?: { categoryId?: number }
-) {
+export function useBusinessSubcategories(params?: { categoryId?: number }) {
   return useQuery<BusinessSubcategory[], Error>({
     queryKey: ["business-subcategories", params?.categoryId ?? "all"],
     queryFn: async () => {
-      const resp = await BusinessSubcategoriesService.getSubcategories(
-        accessToken,
-        params
-      );
+      const resp = await BusinessSubcategoriesService.getSubcategories(params);
       return Array.isArray(resp) ? resp : resp.data;
     },
-    enabled: !!accessToken,
   });
 }
 
-export function useCreateBusinessSubcategory(accessToken: string) {
+export function useCreateBusinessSubcategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: BusinessSubcategoryFormData) =>
-      BusinessSubcategoriesService.createSubcategory(data, accessToken),
+      BusinessSubcategoriesService.createSubcategory(data),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] }),
   });
 }
 
-export function useUpdateBusinessSubcategory(accessToken: string) {
+export function useUpdateBusinessSubcategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -107,7 +98,7 @@ export function useUpdateBusinessSubcategory(accessToken: string) {
     }: {
       id: number;
       data: UpdateBusinessSubcategoryFormData;
-    }) => BusinessSubcategoriesService.updateSubcategory(id, data, accessToken),
+    }) => BusinessSubcategoriesService.updateSubcategory(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({ queryKey: ["business-subcategory", id] });
@@ -115,11 +106,11 @@ export function useUpdateBusinessSubcategory(accessToken: string) {
   });
 }
 
-export function useDeleteBusinessSubcategory(accessToken: string) {
+export function useDeleteBusinessSubcategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) =>
-      BusinessSubcategoriesService.deleteSubcategory(id, accessToken),
+      BusinessSubcategoriesService.deleteSubcategory(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({ queryKey: ["business-subcategory", id] });
@@ -128,34 +119,29 @@ export function useDeleteBusinessSubcategory(accessToken: string) {
 }
 
 // ========== Companies ==========
-export function useCompanies(
-  accessToken: string,
-  params?: { page?: number; limit?: number }
-) {
+export function useCompanies(params?: { page?: number; limit?: number }) {
   return useQuery<Company[], Error>({
     queryKey: ["companies", params?.page ?? 1, params?.limit ?? 50],
     queryFn: async () => {
-      const resp = await CompaniesService.getCompanies(accessToken, params);
+      const resp = await CompaniesService.getCompanies(params);
       return Array.isArray(resp) ? resp : resp.data;
     },
-    enabled: !!accessToken,
   });
 }
 
-export function useCreateCompany(accessToken: string) {
+export function useCreateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CompanyFormData) =>
-      CompaniesService.createCompany(data, accessToken),
+    mutationFn: (data: CompanyFormData) => CompaniesService.createCompany(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["companies"] }),
   });
 }
 
-export function useUpdateCompany(accessToken: string) {
+export function useUpdateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateCompanyFormData }) =>
-      CompaniesService.updateCompany(id, data, accessToken),
+      CompaniesService.updateCompany(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       queryClient.invalidateQueries({ queryKey: ["company", id] });
@@ -163,10 +149,10 @@ export function useUpdateCompany(accessToken: string) {
   });
 }
 
-export function useDeleteCompany(accessToken: string) {
+export function useDeleteCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => CompaniesService.deleteCompany(id, accessToken),
+    mutationFn: (id: number) => CompaniesService.deleteCompany(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       queryClient.invalidateQueries({ queryKey: ["company", id] });

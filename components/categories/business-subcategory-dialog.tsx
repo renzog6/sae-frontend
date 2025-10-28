@@ -29,9 +29,9 @@ export function BusinessSubcategoryDialog({
 }: BusinessSubcategoryDialogProps) {
   const { toast } = useToast();
   const { mutate: createSub, isPending: creating } =
-    useCreateBusinessSubcategory(accessToken);
+    useCreateBusinessSubcategory();
   const { mutate: updateSub, isPending: updating } =
-    useUpdateBusinessSubcategory(accessToken);
+    useUpdateBusinessSubcategory();
 
   const onSubmit = (data: BusinessSubcategoryFormData) => {
     if (mode === "create") {

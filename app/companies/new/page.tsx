@@ -4,7 +4,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CompanyForm } from "@/components/companies/company-form";
 import type { CompanyFormData } from "@/lib/validations/company";
@@ -25,7 +31,7 @@ export default function NewCompanyPage() {
     setSaving(true);
     setError(null);
     try {
-      const created = await CompaniesService.createCompany(data, accessToken);
+      const created = await CompaniesService.createCompany(data);
       // Invalidate list so it shows the new company later
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       // Go to edit/detail page of the newly created company
@@ -45,13 +51,17 @@ export default function NewCompanyPage() {
     <div className="p-4 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
         <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Crear empresa</CardTitle>
-          <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.back()}>Volver</Button>
-        </div>
+          <div className="flex items-center justify-between">
+            <CardTitle>Crear empresa</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => router.back()}>
+                Volver
+              </Button>
+            </div>
           </div>
-          <CardDescription>Completa los datos para crear una nueva empresa</CardDescription>
+          <CardDescription>
+            Completa los datos para crear una nueva empresa
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <CompanyForm

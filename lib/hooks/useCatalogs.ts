@@ -10,38 +10,36 @@ import {
 } from "@/lib/validations/catalog";
 
 // ===== Brands =====
-export function useBrands(accessToken: string) {
+export function useBrands() {
   return useQuery<Brand[], Error>({
     queryKey: ["brands"],
-    queryFn: () => CatalogsService.getBrands(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => CatalogsService.getBrands(),
   });
 }
 
-export function useBrand(accessToken: string, id: number) {
+export function useBrand(id: number) {
   return useQuery<Brand, Error>({
     queryKey: ["brand", id],
-    queryFn: () => CatalogsService.getBrandById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => CatalogsService.getBrandById(id),
+    enabled: !!id,
   });
 }
 
-export function useCreateBrand(accessToken: string) {
+export function useCreateBrand() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: BrandFormData) =>
-      CatalogsService.createBrand(data, accessToken),
+    mutationFn: (data: BrandFormData) => CatalogsService.createBrand(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
     },
   });
 }
 
-export function useUpdateBrand(accessToken: string) {
+export function useUpdateBrand() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateBrandFormData }) =>
-      CatalogsService.updateBrand(id, data, accessToken),
+      CatalogsService.updateBrand(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
       queryClient.invalidateQueries({ queryKey: ["brand", variables.id] });
@@ -49,10 +47,10 @@ export function useUpdateBrand(accessToken: string) {
   });
 }
 
-export function useDeleteBrand(accessToken: string) {
+export function useDeleteBrand() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => CatalogsService.deleteBrand(id, accessToken),
+    mutationFn: (id: number) => CatalogsService.deleteBrand(id),
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
       queryClient.invalidateQueries({ queryKey: ["brand", id] });
@@ -61,38 +59,36 @@ export function useDeleteBrand(accessToken: string) {
 }
 
 // ===== Units =====
-export function useUnits(accessToken: string) {
+export function useUnits() {
   return useQuery<Unit[], Error>({
     queryKey: ["units"],
-    queryFn: () => CatalogsService.getUnits(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => CatalogsService.getUnits(),
   });
 }
 
-export function useUnit(accessToken: string, id: number) {
+export function useUnit(id: number) {
   return useQuery<Unit, Error>({
     queryKey: ["unit", id],
-    queryFn: () => CatalogsService.getUnitById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => CatalogsService.getUnitById(id),
+    enabled: !!id,
   });
 }
 
-export function useCreateUnit(accessToken: string) {
+export function useCreateUnit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: UnitFormData) =>
-      CatalogsService.createUnit(data, accessToken),
+    mutationFn: (data: UnitFormData) => CatalogsService.createUnit(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
     },
   });
 }
 
-export function useUpdateUnit(accessToken: string) {
+export function useUpdateUnit() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateUnitFormData }) =>
-      CatalogsService.updateUnit(id, data, accessToken),
+      CatalogsService.updateUnit(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["unit", variables.id] });
@@ -100,10 +96,10 @@ export function useUpdateUnit(accessToken: string) {
   });
 }
 
-export function useDeleteUnit(accessToken: string) {
+export function useDeleteUnit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => CatalogsService.deleteUnit(id, accessToken),
+    mutationFn: (id: number) => CatalogsService.deleteUnit(id),
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["unit", id] });

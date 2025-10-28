@@ -5,13 +5,13 @@ import { useState, useMemo, useCallback } from "react";
 import { useSession } from "next-auth/react";
 
 import type { Equipment } from "@/lib/types/equipment";
-import type { EquipmentAxle, TirePositionConfig } from "@/lib/types/tire";
+import type { TirePositionConfig } from "@/lib/types/tire";
+import type { EquipmentAxle } from "@/lib/types/equipment";
 
-import { useEquipmentList } from "@/lib/hooks/useEquipment";
+import { useEquipmentList, useEquipmentAxles } from "@/lib/hooks/useEquipment";
 import {
-  useEquipmentAxles,
-  useTirePositionConfigs,
   useTirePositionConfigsByEquipment,
+  useTireAssignments,
 } from "@/lib/hooks/useTires";
 
 import { TireActionsPanel } from "@/components/tire/tire-actions-panel";
@@ -40,9 +40,10 @@ export function TireAssignmentsContainer() {
     data: equipmentsData,
     isLoading: isLoadingEquipments,
     isError: isErrorEquipments,
-  } = useEquipmentList(accessToken, {
-    page: 1,
-    limit: 100,
+  } = useEquipmentList({
+    skip: 0,
+    take: 1000,
+    status: "ACTIVE",
   });
 
   // Normalizamos el payload para manejar ambos shapes (array o {data:[]})
@@ -54,7 +55,6 @@ export function TireAssignmentsContainer() {
   }, [equipmentsData]);
 
   const { data: axlesData, isLoading: isLoadingAxles } = useEquipmentAxles(
-    accessToken,
     selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
   );
 
@@ -64,10 +64,7 @@ export function TireAssignmentsContainer() {
   }, [axlesData]);
 
   const { data: positionsData, isLoading: isLoadingPositions } =
-    useTirePositionConfigsByEquipment(
-      accessToken,
-      selectedEquipmentId || undefined
-    );
+    useTirePositionConfigsByEquipment(selectedEquipmentId || undefined);
 
   const positions: TirePositionConfig[] = useMemo(() => {
     if (!positionsData) return [];
@@ -76,24 +73,24 @@ export function TireAssignmentsContainer() {
       : (positionsData as any).data ?? [];
   }, [positionsData]);
 
+  // Fetch current assignments for the selected equipment (only when equipment is selected)
+  const { data: assignmentsData, isLoading: isLoadingAssignments } =
+    useTireAssignments(
+      selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
+    );
+
+  const assignments = useMemo(() => {
+    if (!assignmentsData) return [];
+    return Array.isArray(assignmentsData)
+      ? assignmentsData
+      : (assignmentsData as any).data ?? [];
+  }, [assignmentsData]);
+
   // selectedEquipment memoizado para evitar find en cada render
   const selectedEquipment = useMemo(
     () => equipments.find((e) => e.id === selectedEquipmentId) ?? null,
     [equipments, selectedEquipmentId]
   );
-
-  // Filtrado simple para el selector
-  const filteredEquipments = useMemo(() => {
-    if (!searchTerm) return equipments;
-    const q = searchTerm.toLowerCase();
-    return equipments.filter((equipment) =>
-      `${equipment.name ?? ""} ${equipment.model?.brand?.name ?? ""} ${
-        equipment.model?.name ?? ""
-      } ${equipment.year ?? ""} ${equipment.licensePlate ?? ""}`
-        .toLowerCase()
-        .includes(q)
-    );
-  }, [equipments, searchTerm]);
 
   // Callbacks
   const onSelectEquipment = useCallback((id: number | null) => {
@@ -153,9 +150,12 @@ export function TireAssignmentsContainer() {
             <AxleDiagram
               axles={axles}
               positions={positions}
+              assignments={assignments}
               selectedPosition={selectedPosition}
               setSelectedPosition={onSelectPosition}
-              isLoading={isLoadingAxles || isLoadingPositions}
+              isLoading={
+                isLoadingAxles || isLoadingPositions || isLoadingAssignments
+              }
               refreshTrigger={refreshTrigger}
             />
           </div>

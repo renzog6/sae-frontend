@@ -52,8 +52,8 @@ export function EquipmentForm({
   isEdit = false,
 }: EquipmentFormProps) {
   const { toast } = useToast();
-  const { data: categories = [] } = useEquipmentCategories(accessToken);
-  const { data: companies = [] } = useCompanies(accessToken);
+  const { data: categories = [] } = useEquipmentCategories();
+  const { data: companies = [] } = useCompanies();
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentFormSchema),
@@ -81,21 +81,13 @@ export function EquipmentForm({
   const selectedCategoryId = form.watch("categoryId");
   const selectedTypeId = form.watch("typeId");
 
-  const { data: typesResponse } = useEquipmentTypes(accessToken, {
-    limit: 100,
+  const { data: types = [] } = useEquipmentTypes({
+    categoryId: selectedCategoryId,
   });
-  const types =
-    typesResponse?.data.filter(
-      (type) => !selectedCategoryId || type.categoryId === selectedCategoryId
-    ) || [];
 
-  const { data: modelsResponse } = useEquipmentModels(accessToken, {
-    limit: 100,
+  const { data: models = [] } = useEquipmentModels({
+    typeId: selectedTypeId,
   });
-  const models =
-    modelsResponse?.data.filter(
-      (model) => !selectedTypeId || model.typeId === selectedTypeId
-    ) || [];
 
   const { mutate: createEquipment, isPending } =
     useCreateEquipment(accessToken);

@@ -31,9 +31,8 @@ export default function LocationsPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
-  const { data: cities = [], isLoading, error } = useCities(accessToken);
-  const { mutate: deleteCity, isPending: deleting } =
-    useDeleteCity(accessToken);
+  const { data: cities = [], isLoading, error } = useCities();
+  const { mutate: deleteCity, isPending: deleting } = useDeleteCity();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -67,7 +66,7 @@ export default function LocationsPage() {
   });
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">

@@ -33,9 +33,8 @@ export default function BrandsPage() {
   const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
-  const { data: brands = [], isLoading, error } = useBrands(accessToken);
-  const { mutate: deleteBrand, isPending: deleting } =
-    useDeleteBrand(accessToken);
+  const { data: brands = [], isLoading, error } = useBrands();
+  const { mutate: deleteBrand, isPending: deleting } = useDeleteBrand();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

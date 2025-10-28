@@ -14,9 +14,10 @@ function unwrap<T>(resp: any): T {
   return resp as T;
 }
 export class EmployeeVacationsService {
+  private static basePath = "/employee-vacations";
+
   // Fetch all employee vacations with optional pagination
   static async getEmployeeVacations(
-    accessToken: string,
     page?: number,
     limit?: number
   ): Promise<EmployeeVacation[]> {
@@ -24,15 +25,13 @@ export class EmployeeVacationsService {
       const query = new URLSearchParams();
       if (page) query.append("page", page.toString());
       if (limit) query.append("limit", limit.toString());
-      const url = `/employee-vacations${
+      const url = `${this.basePath}${
         query.toString() ? `?${query.toString()}` : ""
       }`;
-      const response = await ApiClient.request<
-        PaginatedResponse<EmployeeVacation>
-      >(url, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      return response.data;
+      const response = await ApiClient.get<PaginatedResponse<EmployeeVacation>>(
+        url
+      );
+      return response.data || [];
     } catch (error) {
       console.error("Error fetching employee vacations:", error);
       throw error;
@@ -40,18 +39,12 @@ export class EmployeeVacationsService {
   }
 
   // Fetch a single employee vacation by ID
-  static async getEmployeeVacationById(
-    id: number,
-    accessToken: string
-  ): Promise<EmployeeVacation> {
+  static async getEmployeeVacationById(id: number): Promise<EmployeeVacation> {
     try {
-      const response = await ApiClient.request<ApiResponse<EmployeeVacation>>(
-        `/employee-vacations/${id}`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
+      const response = await ApiClient.get<EmployeeVacation>(
+        `${this.basePath}/${id}`
       );
-      return response.data;
+      return response;
     } catch (error) {
       console.error(`Error fetching employee vacation with ID ${id}:`, error);
       throw error;
@@ -59,22 +52,13 @@ export class EmployeeVacationsService {
   }
 
   // Create a new employee vacation
-  static async createVacation(
-    data: EmployeeVacationFormData,
-    accessToken: string
-  ) {
+  static async createVacation(data: EmployeeVacationFormData) {
     try {
-      const response = await ApiClient.request<
-        EmployeeVacation | ApiResponse<EmployeeVacation>
-      >(`/employee-vacations`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      return unwrap<EmployeeVacation>(response);
+      const response = await ApiClient.post<EmployeeVacation>(
+        this.basePath,
+        data
+      );
+      return response;
     } catch (error) {
       console.error("Error creating vacation:", error);
       throw error;
@@ -84,21 +68,14 @@ export class EmployeeVacationsService {
   // Update an existing employee vacation
   static async updateVacation(
     id: number,
-    data: UpdateEmployeeVacationFormData,
-    accessToken: string
+    data: UpdateEmployeeVacationFormData
   ) {
     try {
-      const response = await ApiClient.request<
-        EmployeeVacation | ApiResponse<EmployeeVacation>
-      >(`/employee-vacations/${id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      return unwrap<EmployeeVacation>(response);
+      const response = await ApiClient.put<EmployeeVacation>(
+        `${this.basePath}/${id}`,
+        data
+      );
+      return response;
     } catch (error) {
       console.error("Error updating vacation:", error);
       throw error;
@@ -106,19 +83,10 @@ export class EmployeeVacationsService {
   }
 
   // Delete an employee vacation
-  static async deleteVacation(
-    id: number,
-    accessToken: string
-  ): Promise<string> {
+  static async deleteVacation(id: number): Promise<string> {
     try {
-      const response = await ApiClient.request<{ message: string }>(
-        `/employee-vacations/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-      return response.message;
+      await ApiClient.delete(`${this.basePath}/${id}`);
+      return "Vacation deleted";
     } catch (error) {
       console.error("Error deleting vacation:", error);
       throw error;
@@ -126,11 +94,8 @@ export class EmployeeVacationsService {
   }
 
   // Download vacation details as a PDF
-  static async downloadVacationPdf(id: number, accessToken: string) {
-    const blob = await ApiClient.requestBlob(`/employee-vacations/${id}/pdf`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async downloadVacationPdf(id: number) {
+    const blob = await ApiClient.getBlob(`${this.basePath}/${id}/pdf`);
 
     const filename = `Vacaciones_${id}.pdf`;
     const link = document.createElement("a");
@@ -144,13 +109,9 @@ export class EmployeeVacationsService {
   }
 
   // Export vacations to Excel for a specific employee
-  static async exportVacationsToExcel(employeeId: number, accessToken: string) {
-    const blob = await ApiClient.requestBlob(
-      `/employee-vacations/${employeeId}/exportVacations/excel`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
+  static async exportVacationsToExcel(employeeId: number) {
+    const blob = await ApiClient.getBlob(
+      `${this.basePath}/${employeeId}/exportVacations/excel`
     );
 
     const filename = `vacaciones.xlsx`;
@@ -165,13 +126,9 @@ export class EmployeeVacationsService {
   }
 
   // Export employees vacations summary to Excel
-  static async exportEmployeesVacationsToExcel(accessToken: string) {
-    const blob = await ApiClient.requestBlob(
-      `/employee-vacations/exportEmployees/excel`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
+  static async exportEmployeesVacationsToExcel() {
+    const blob = await ApiClient.getBlob(
+      `${this.basePath}/exportEmployees/excel`
     );
 
     const filename = `empleados_vacaciones.xlsx`;

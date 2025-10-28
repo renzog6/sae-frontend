@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Search } from "lucide-react";
 import type { Equipment } from "@/lib/types/equipment";
-import type { EquipmentAxle, TirePositionConfig } from "@/lib/types/tire";
+import type { TirePositionConfig } from "@/lib/types/tire";
+import type { EquipmentAxle } from "@/lib/types/equipment";
 import { EquipmentSelectorDialog } from "./equipment-selector-dialog";
 
 interface Props {

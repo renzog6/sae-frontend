@@ -5,71 +5,66 @@ import { City, Province, Address } from "@/lib/types/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
 // List all cities
-export function useCities(accessToken: string) {
+export function useCities() {
   return useQuery<City[], Error>({
     queryKey: ["cities"],
-    queryFn: () => LocationsService.getCities(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => LocationsService.getCities(),
   });
 }
 
 // ===== Provinces (read-only) =====
-export function useProvinces(accessToken: string) {
+export function useProvinces() {
   return useQuery<Province[], Error>({
     queryKey: ["provinces"],
-    queryFn: () => LocationsService.getProvinces(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => LocationsService.getProvinces(),
   });
 }
 
-export function useProvince(accessToken: string, id: number) {
+export function useProvince(id: number) {
   return useQuery<Province, Error>({
     queryKey: ["province", id],
-    queryFn: () => LocationsService.getProvinceById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => LocationsService.getProvinceById(id),
+    enabled: !!id,
   });
 }
 
-export function useProvinceByCode(accessToken: string, code: string) {
+export function useProvinceByCode(code: string) {
   return useQuery<Province, Error>({
     queryKey: ["provinceByCode", code],
-    queryFn: () => LocationsService.getProvinceByCode(code, accessToken),
-    enabled: !!accessToken && !!code,
+    queryFn: () => LocationsService.getProvinceByCode(code),
+    enabled: !!code,
   });
 }
 
-export function useProvincesByCountry(accessToken: string, countryId: number) {
+export function useProvincesByCountry(countryId: number) {
   return useQuery<Province[], Error>({
     queryKey: ["provincesByCountry", countryId],
-    queryFn: () =>
-      LocationsService.getProvincesByCountryId(countryId, accessToken),
-    enabled: !!accessToken && !!countryId,
+    queryFn: () => LocationsService.getProvincesByCountryId(countryId),
+    enabled: !!countryId,
   });
 }
 
 // ===== Addresses =====
-export function useAddresses(accessToken: string) {
+export function useAddresses() {
   return useQuery<Address[], Error>({
     queryKey: ["addresses"],
-    queryFn: () => LocationsService.getAddresses(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => LocationsService.getAddresses(),
   });
 }
 
-export function useAddress(accessToken: string, id: number) {
+export function useAddress(id: number) {
   return useQuery<Address, Error>({
     queryKey: ["address", id],
-    queryFn: () => LocationsService.getAddressById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => LocationsService.getAddressById(id),
+    enabled: !!id,
   });
 }
 
-export function useCreateAddress(accessToken: string) {
+export function useCreateAddress() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: AddressFormData) =>
-      LocationsService.createAddress(data, accessToken),
+    mutationFn: (data: AddressFormData) => LocationsService.createAddress(data),
     onSuccess: (_data, variables) => {
       // Invalidate generic addresses and all company-scoped address lists
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
@@ -92,12 +87,12 @@ export function useCreateAddress(accessToken: string) {
   });
 }
 
-export function useUpdateAddress(accessToken: string) {
+export function useUpdateAddress() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Address> }) =>
-      LocationsService.updateAddress(id, data, accessToken),
+      LocationsService.updateAddress(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
       queryClient.invalidateQueries({ queryKey: ["address", variables.id] });
@@ -109,11 +104,11 @@ export function useUpdateAddress(accessToken: string) {
   });
 }
 
-export function useDeleteAddress(accessToken: string) {
+export function useDeleteAddress() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => LocationsService.deleteAddress(id, accessToken),
+    mutationFn: (id: number) => LocationsService.deleteAddress(id),
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
       queryClient.invalidateQueries({ queryKey: ["address", id] });
@@ -125,47 +120,46 @@ export function useDeleteAddress(accessToken: string) {
   });
 }
 
-export function useAddressesByCity(accessToken: string, cityId: number) {
+export function useAddressesByCity(cityId: number) {
   return useQuery<Address[], Error>({
     queryKey: ["addressesByCity", cityId],
-    queryFn: () => LocationsService.getAddressesByCity(cityId, accessToken),
-    enabled: !!accessToken && !!cityId,
+    queryFn: () => LocationsService.getAddressesByCity(cityId),
+    enabled: !!cityId,
   });
 }
 
-export function useAddressesByCompany(accessToken: string, companyId: number) {
+export function useAddressesByCompany(companyId: number) {
   return useQuery<Address[], Error>({
     queryKey: ["addressesByCompany", companyId],
-    queryFn: () =>
-      LocationsService.getAddressesByCompany(companyId, accessToken),
-    enabled: !!accessToken && !!companyId,
+    queryFn: () => LocationsService.getAddressesByCompany(companyId),
+    enabled: !!companyId,
   });
 }
 
-export function useAddressesByPerson(accessToken: string, personId: number) {
+export function useAddressesByPerson(personId: number) {
   return useQuery<Address[], Error>({
     queryKey: ["addressesByPerson", personId],
-    queryFn: () => LocationsService.getAddressesByPerson(personId, accessToken),
-    enabled: !!accessToken && !!personId,
+    queryFn: () => LocationsService.getAddressesByPerson(personId),
+    enabled: !!personId,
   });
 }
 
 // Get a single city by ID
-export function useCity(accessToken: string, id: number) {
+export function useCity(id: number) {
   return useQuery<City, Error>({
     queryKey: ["city", id],
-    queryFn: () => LocationsService.getCityById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => LocationsService.getCityById(id),
+    enabled: !!id,
   });
 }
 
 // Create a city
-export function useCreateCity(accessToken: string) {
+export function useCreateCity() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (cityData: CityFormData) =>
-      LocationsService.createCity(cityData, accessToken),
+      LocationsService.createCity(cityData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cities"] });
     },
@@ -173,12 +167,12 @@ export function useCreateCity(accessToken: string) {
 }
 
 // Update a city
-export function useUpdateCity(accessToken: string) {
+export function useUpdateCity() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, cityData }: { id: number; cityData: Partial<City> }) =>
-      LocationsService.updateCity(id, cityData, accessToken),
+      LocationsService.updateCity(id, cityData),
     onSuccess: (_data, variables) => {
       // Invalidate list and the specific city cache
       queryClient.invalidateQueries({ queryKey: ["cities"] });
@@ -188,11 +182,11 @@ export function useUpdateCity(accessToken: string) {
 }
 
 // Delete a city
-export function useDeleteCity(accessToken: string) {
+export function useDeleteCity() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => LocationsService.deleteCity(id, accessToken),
+    mutationFn: (id: number) => LocationsService.deleteCity(id),
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["cities"] });
       queryClient.invalidateQueries({ queryKey: ["city", id] });

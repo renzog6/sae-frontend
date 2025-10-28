@@ -55,21 +55,12 @@ export default function EquipmentTypesPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
-  const {
-    data: typesResponse,
-    isLoading,
-    error,
-  } = useEquipmentTypes(accessToken, {
-    page,
-    limit,
-  });
+  const { data: types, isLoading, error } = useEquipmentTypes();
 
-  const types = useMemo(() => {
-    return (typesResponse?.data || []).sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-  }, [typesResponse?.data]);
-  const totalPages = typesResponse?.meta?.totalPages ?? 1;
+  const sortedTypes = useMemo(() => {
+    return (types || []).sort((a, b) => a.name.localeCompare(b.name));
+  }, [types]);
+  const totalPages = 1; // No pagination for now
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -163,7 +154,10 @@ export default function EquipmentTypesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<EquipmentType, unknown> columns={columns} data={types} />
+            <DataTable<EquipmentType, unknown>
+              columns={columns}
+              data={sortedTypes}
+            />
           )}
           {/* Pagination controls */}
           <div className="mt-4">

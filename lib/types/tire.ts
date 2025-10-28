@@ -1,35 +1,10 @@
 // filepath: sae-frontend/types/tire.ts
 
 // Import enums from shared location
-import {
-  TireStatus,
-  TirePosition,
-  TireEventType,
-  AxleType,
-  TireSide,
-} from "./enums";
+import { TireStatus, TirePosition, TireEventType, TireSide } from "./enums";
+import { EquipmentAxle } from "./equipment";
 
-// ===== Equipment Axle and Position Config =====
-
-export interface EquipmentAxle {
-  id: number;
-  equipmentId: number;
-  order: number; // Eje 1, Eje 2, etc.
-  axleType: AxleType;
-  wheelCount: number;
-  description?: string | null;
-  createdAt: string;
-  updatedAt: string;
-
-  // Relations
-  equipment: {
-    id: number;
-    name?: string | null;
-    internalCode?: string | null;
-  };
-  tirePositions?: TirePositionConfig[];
-}
-
+// ===== Tire Position Config =====
 export interface TirePositionConfig {
   id: number;
   axleId: number;

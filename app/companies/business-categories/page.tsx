@@ -26,10 +26,9 @@ export default function BusinessCategoriesPage() {
   const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
-  const { data: categories = [], isLoading } =
-    useBusinessCategories(accessToken);
+  const { data: categories = [], isLoading } = useBusinessCategories();
   const { mutate: deleteCategory, isPending: deleting } =
-    useDeleteBusinessCategory(accessToken);
+    useDeleteBusinessCategory();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

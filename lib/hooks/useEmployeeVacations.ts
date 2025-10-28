@@ -8,34 +8,27 @@ import {
 } from "@/lib/validations/employeeVacation";
 import { EmployeeVacation } from "@/lib/types/employee";
 
-export function useEmployeeVacations(
-  accessToken: string,
-  page?: number,
-  limit?: number
-) {
+export function useEmployeeVacations(page?: number, limit?: number) {
   return useQuery<EmployeeVacation[], Error>({
     queryKey: ["employeeVacations", page, limit],
-    queryFn: () =>
-      EmployeeVacationsService.getEmployeeVacations(accessToken, page, limit),
-    enabled: !!accessToken, // solo se ejecuta si hay token
+    queryFn: () => EmployeeVacationsService.getEmployeeVacations(page, limit),
   });
 }
 
-export function useEmployeeVacation(accessToken: string, id: number) {
+export function useEmployeeVacation(id: number) {
   return useQuery<EmployeeVacation, Error>({
     queryKey: ["employeeVacation", id],
-    queryFn: () =>
-      EmployeeVacationsService.getEmployeeVacationById(id, accessToken),
-    enabled: !!accessToken && !!id, // solo se ejecuta si hay token e ID
+    queryFn: () => EmployeeVacationsService.getEmployeeVacationById(id),
+    enabled: !!id,
   });
 }
 
-export function useCreateEmployeeVacation(accessToken: string) {
+export function useCreateEmployeeVacation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (vacationData: EmployeeVacationFormData) =>
-      EmployeeVacationsService.createVacation(vacationData, accessToken),
+      EmployeeVacationsService.createVacation(vacationData),
     onSuccess: () => {
       // Invalidar y refetch la lista de vacaciones de empleados
       queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
@@ -43,7 +36,7 @@ export function useCreateEmployeeVacation(accessToken: string) {
   });
 }
 
-export function useUpdateEmployeeVacation(accessToken: string) {
+export function useUpdateEmployeeVacation() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -53,8 +46,7 @@ export function useUpdateEmployeeVacation(accessToken: string) {
     }: {
       id: number;
       vacationData: UpdateEmployeeVacationFormData;
-    }) =>
-      EmployeeVacationsService.updateVacation(id, vacationData, accessToken),
+    }) => EmployeeVacationsService.updateVacation(id, vacationData),
     onSuccess: () => {
       // Invalidar tanto la lista de vacaciones como la vacación individual
       queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
@@ -63,35 +55,34 @@ export function useUpdateEmployeeVacation(accessToken: string) {
   });
 }
 
-export function useDeleteEmployeeVacation(accessToken: string) {
+export function useDeleteEmployeeVacation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) =>
-      EmployeeVacationsService.deleteVacation(id, accessToken),
+    mutationFn: (id: number) => EmployeeVacationsService.deleteVacation(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
     },
   });
 }
 
-export function useDownloadVacationPdf(accessToken: string) {
+export function useDownloadVacationPdf() {
   return useMutation({
     mutationFn: (id: number) =>
-      EmployeeVacationsService.downloadVacationPdf(id, accessToken),
+      EmployeeVacationsService.downloadVacationPdf(id),
   });
 }
 
-export function useExportVacationsToExcel(accessToken: string) {
+export function useExportVacationsToExcel() {
   return useMutation({
     mutationFn: (employeeId: number) =>
-      EmployeeVacationsService.exportVacationsToExcel(employeeId, accessToken),
+      EmployeeVacationsService.exportVacationsToExcel(employeeId),
   });
 }
 
-export function useExportEmployeesVacationsToExcel(accessToken: string) {
+export function useExportEmployeesVacationsToExcel() {
   return useMutation({
     mutationFn: () =>
-      EmployeeVacationsService.exportEmployeesVacationsToExcel(accessToken),
+      EmployeeVacationsService.exportEmployeesVacationsToExcel(),
   });
 }

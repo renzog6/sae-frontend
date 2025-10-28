@@ -24,12 +24,9 @@ export default function EditUserPage() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const { data: user, isLoading: isLoadingUser } = useUser(
-    session?.accessToken || "",
-    userId
-  );
+  const { data: user, isLoading: isLoadingUser } = useUser(userId);
 
-  const updateUserMutation = useUpdateUser(session?.accessToken || "");
+  const updateUserMutation = useUpdateUser();
 
   const handleSubmit = async (data: UserFormData) => {
     try {

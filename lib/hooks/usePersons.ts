@@ -8,43 +8,39 @@ import {
   UpdatePersonFormData,
 } from "@/lib/validations/person";
 
-export function usePersonsList(
-  accessToken: string,
-  params?: { page?: number; limit?: number }
-) {
+export function usePersonsList(params?: { page?: number; limit?: number }) {
   return useQuery({
     queryKey: ["persons", params],
-    queryFn: () => PersonsService.getPersons(accessToken, params),
-    enabled: !!accessToken,
+    queryFn: () => PersonsService.getPersons(params),
   });
 }
 
-export function usePersonDetail(id: number | undefined, accessToken: string) {
+export function usePersonDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["persons", id],
-    queryFn: () => PersonsService.getPersonById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
+    queryFn: () => PersonsService.getPersonById(id as number),
+    enabled: typeof id === "number",
   });
 }
 
-export function useCreatePerson(accessToken: string) {
+export function useCreatePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["persons", "create"],
     mutationFn: (data: CreatePersonFormData) =>
-      PersonsService.createPerson(data, accessToken),
+      PersonsService.createPerson(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["persons"] });
     },
   });
 }
 
-export function useUpdatePerson(accessToken: string) {
+export function useUpdatePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["persons", "update"],
     mutationFn: (vars: { id: number; data: UpdatePersonFormData }) =>
-      PersonsService.updatePerson(vars.id, vars.data, accessToken),
+      PersonsService.updatePerson(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["persons"] });
       qc.invalidateQueries({ queryKey: ["persons", vars.id] });
@@ -52,11 +48,11 @@ export function useUpdatePerson(accessToken: string) {
   });
 }
 
-export function useDeletePerson(accessToken: string) {
+export function useDeletePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["persons", "delete"],
-    mutationFn: (id: number) => PersonsService.deletePerson(id, accessToken),
+    mutationFn: (id: number) => PersonsService.deletePerson(id),
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ["persons"] });
       qc.invalidateQueries({ queryKey: ["persons", id] });

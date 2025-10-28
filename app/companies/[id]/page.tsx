@@ -76,19 +76,16 @@ export default function CompanyDetailPage() {
   );
 
   // Data via hooks
-  const { data: addresses = [] } = useAddressesByCompany(accessToken, id ?? 0);
-  const { data: companyContacts = [] } = useContactsByCompany(
-    accessToken,
-    id ?? 0
-  );
+  const { data: addresses = [] } = useAddressesByCompany(id ?? 0);
+  const { data: companyContacts = [] } = useContactsByCompany(id ?? 0);
 
   // Mutations
-  const createAddressMut = useCreateAddress(accessToken);
-  const updateAddressMut = useUpdateAddress(accessToken);
-  const deleteAddressMut = useDeleteAddress(accessToken);
-  const createContactMut = useCreateContact(accessToken);
-  const updateContactMut = useUpdateContact(accessToken);
-  const deleteContactMut = useDeleteContact(accessToken);
+  const createAddressMut = useCreateAddress();
+  const updateAddressMut = useUpdateAddress();
+  const deleteAddressMut = useDeleteAddress();
+  const createContactMut = useCreateContact();
+  const updateContactMut = useUpdateContact();
+  const deleteContactMut = useDeleteContact();
 
   useEffect(() => {
     let ignore = false;
@@ -97,7 +94,7 @@ export default function CompanyDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await CompaniesService.getCompanyById(id, accessToken);
+        const data = await CompaniesService.getCompanyById(id);
         if (!ignore) setCompany(data);
       } catch (e: any) {
         if (!ignore) setError(e?.message || "Error al cargar la empresa");
@@ -116,7 +113,7 @@ export default function CompanyDetailPage() {
     setSaving(true);
     setError(null);
     try {
-      await CompaniesService.updateCompany(id, data, accessToken);
+      await CompaniesService.updateCompany(id, data);
       // Ensure companies list reflects latest data
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       router.push("/companies/list");
@@ -165,8 +162,7 @@ export default function CompanyDetailPage() {
     currentCategoryId?: number | null;
     onUpdated?: (newId: number | undefined) => void;
   }) {
-    const { data: categories = [], isLoading } =
-      useBusinessCategories(accessToken);
+    const { data: categories = [], isLoading } = useBusinessCategories();
     const [adding, setAdding] = useState(false);
     const [savingCat, setSavingCat] = useState(false);
     const [selectedId, setSelectedId] = useState<number | "">(
@@ -183,7 +179,7 @@ export default function CompanyDetailPage() {
           businessCategoryId:
             selectedId === "" ? undefined : Number(selectedId),
         };
-        await CompaniesService.updateCompany(companyId, payload, accessToken);
+        await CompaniesService.updateCompany(companyId, payload);
         onUpdated?.(payload.businessCategoryId);
         // Refresh companies list page caches
         queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -198,7 +194,7 @@ export default function CompanyDetailPage() {
     const current = categories.find((c) => c.id === currentCategoryId);
 
     return (
-      <section className="border-t border-slate-200 pt-4">
+      <section className="pt-4 border-t border-slate-200">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold text-slate-700">Categorías</h2>
           <Button
@@ -212,7 +208,7 @@ export default function CompanyDetailPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {currentCategoryId ? (
-            <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 text-slate-700 rounded-full">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700">
               <span>{current?.name ?? `Categoría #${currentCategoryId}`}</span>
               <button
                 className="text-amber-600 hover:text-amber-800"
@@ -228,9 +224,9 @@ export default function CompanyDetailPage() {
         </div>
 
         {adding && (
-          <div className="mt-3 flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-3">
             <select
-              className="w-64 h-10 px-2 border border-slate-200 rounded text-slate-700"
+              className="w-64 h-10 px-2 border rounded border-slate-200 text-slate-700"
               value={selectedId}
               onChange={(e) =>
                 setSelectedId(e.target.value ? Number(e.target.value) : "")
@@ -244,7 +240,7 @@ export default function CompanyDetailPage() {
               ))}
             </select>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="text-white bg-amber-500 hover:bg-amber-600"
               disabled={savingCat}
               onClick={handleSave}
             >
@@ -265,15 +261,13 @@ export default function CompanyDetailPage() {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="text-white bg-red-500 hover:bg-red-600"
                 onClick={async () => {
                   // Ejecutar eliminación
                   setSelectedId("");
-                  await CompaniesService.updateCompany(
-                    companyId,
-                    { businessCategoryId: undefined },
-                    accessToken
-                  );
+                  await CompaniesService.updateCompany(companyId, {
+                    businessCategoryId: undefined,
+                  });
                   onUpdated?.(undefined);
                   // Refresh companies list page caches
                   queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -300,7 +294,7 @@ export default function CompanyDetailPage() {
   }) {
     if (!addresses?.length) {
       return (
-        <section className="border-t border-slate-200 pt-4">
+        <section className="pt-4 border-t border-slate-200">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold text-slate-700">
               Direcciones
@@ -318,7 +312,7 @@ export default function CompanyDetailPage() {
       );
     }
     return (
-      <section className="border-t border-slate-200 pt-4">
+      <section className="pt-4 border-t border-slate-200">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold text-slate-700">Direcciones</h2>
           <Button
@@ -333,7 +327,7 @@ export default function CompanyDetailPage() {
           {addresses.map((addr) => (
             <div
               key={addr.id ?? `${addr.street}-${addr.number}-${addr.cityId}`}
-              className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50"
+              className="flex items-center justify-between p-3 border rounded-lg border-slate-200 bg-slate-50"
             >
               <span className="text-slate-700">
                 {addr.reference ? `${addr.reference} : ` : ""}
@@ -348,7 +342,7 @@ export default function CompanyDetailPage() {
               </span>
               <Button
                 size="sm"
-                className="bg-amber-500 hover:bg-amber-600 text-white"
+                className="text-white bg-amber-500 hover:bg-amber-600"
                 onClick={() => onEdit(addr)}
               >
                 Editar
@@ -370,7 +364,7 @@ export default function CompanyDetailPage() {
     onEdit: (c: Contact) => void;
   }) {
     return (
-      <section className="border-t border-slate-200 pt-4">
+      <section className="pt-4 border-t border-slate-200">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold text-slate-700">Contactos</h2>
           <Button
@@ -386,7 +380,7 @@ export default function CompanyDetailPage() {
             contacts.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50"
+                className="flex items-center justify-between p-3 border rounded-lg border-slate-200 bg-slate-50"
               >
                 <div className="flex items-center gap-2 text-slate-700">
                   <span className="font-medium">
@@ -402,7 +396,7 @@ export default function CompanyDetailPage() {
                 </div>
                 <Button
                   size="sm"
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="text-white bg-amber-500 hover:bg-amber-600"
                   onClick={() => onEdit(c)}
                 >
                   Editar

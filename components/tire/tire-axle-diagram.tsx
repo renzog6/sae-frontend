@@ -4,13 +4,15 @@
 import React, { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Settings } from "lucide-react";
-import type { EquipmentAxle, TirePositionConfig } from "@/lib/types/tire";
+import type { TirePositionConfig } from "@/lib/types/tire";
+import type { EquipmentAxle } from "@/lib/types/equipment";
 import { tireStatusColors } from "@/lib/utils/tires";
 import { TireSide } from "@/lib/types/enums";
 
 interface Props {
   axles: EquipmentAxle[];
   positions: TirePositionConfig[];
+  assignments?: any[];
   selectedPosition: TirePositionConfig | null;
   setSelectedPosition: (p: TirePositionConfig | null) => void;
   isLoading?: boolean;
@@ -20,12 +22,13 @@ interface Props {
 export const AxleDiagram: React.FC<Props> = ({
   axles,
   positions,
+  assignments = [],
   selectedPosition,
   setSelectedPosition,
   isLoading = false,
   refreshTrigger,
 }) => {
-  // Agrupamos posiciones por eje (sin cambios)
+  // Agrupamos posiciones por eje
   const positionsByAxle = useMemo(() => {
     const grouped: Record<number, TirePositionConfig[]> = {};
     for (const pos of positions) {
@@ -34,6 +37,16 @@ export const AxleDiagram: React.FC<Props> = ({
     }
     return grouped;
   }, [positions, refreshTrigger]);
+
+  // Función para determinar si una posición está ocupada
+  const getPositionStatus = useMemo(() => {
+    return (positionId: number) => {
+      const assignment = assignments.find(
+        (a: any) => a.positionConfigId === positionId
+      );
+      return assignment ? "IN_USE" : "DEFAULT";
+    };
+  }, [assignments]);
 
   // Orden de posiciones: izquierda -> derecha, con duales agrupados
   const sortPositions = (arr: TirePositionConfig[]) => {
@@ -143,6 +156,7 @@ export const AxleDiagram: React.FC<Props> = ({
                     item,
                     selectedPosition,
                     setSelectedPosition,
+                    getPositionStatus,
                     idx
                   )
                 )}
@@ -155,6 +169,7 @@ export const AxleDiagram: React.FC<Props> = ({
                     item,
                     selectedPosition,
                     setSelectedPosition,
+                    getPositionStatus,
                     idx
                   )
                 )}
@@ -178,6 +193,7 @@ const renderPosition = (
   item: TirePositionConfig | TirePositionConfig[],
   selectedPosition: TirePositionConfig | null,
   setSelectedPosition: (p: TirePositionConfig | null) => void,
+  getPositionStatus: (positionId: number) => string,
   idx: number
 ) => {
   if (Array.isArray(item)) {
@@ -188,13 +204,15 @@ const renderPosition = (
         {/* Gap mínimo para duales */}
         {item.map((pos) => {
           const isSelected = selectedPosition?.id === pos.id;
-          const colorClass = tireStatusColors["DEFAULT"];
+          const status = getPositionStatus(pos.id);
+          const colorClass =
+            tireStatusColors[status] || tireStatusColors["DEFAULT"];
           return (
             <button
               key={pos.id}
               onClick={() => setSelectedPosition(pos)}
               title={`${pos.positionKey} (${pos.side})`}
-              className={`flex items-center justify-center w-10 h-10 transition-colors border-2 rounded-full cursor-pointer border-dashed  // Cambié a rounded-full para mejor look
+              className={`flex items-center justify-center w-10 h-10 transition-colors border-2 rounded-full cursor-pointer border-dashed
                 ${
                   isSelected
                     ? "ring-2 ring-offset-2 ring-blue-400"
@@ -211,7 +229,8 @@ const renderPosition = (
     // Single
     const pos = item;
     const isSelected = selectedPosition?.id === pos.id;
-    const colorClass = tireStatusColors["DEFAULT"];
+    const status = getPositionStatus(pos.id);
+    const colorClass = tireStatusColors[status] || tireStatusColors["DEFAULT"];
     return (
       <button
         key={pos.id}

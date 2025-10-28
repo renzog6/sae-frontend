@@ -87,29 +87,23 @@ export default function EmployeeDetailPage() {
     data: employee,
     isLoading,
     error: fetchError,
-  } = useEmployeeDetail(id, accessToken);
-  const { data: categories = [] } = useEmployeeCategories(accessToken);
-  const { data: positions = [] } = useEmployeePositions(accessToken);
+  } = useEmployeeDetail(id);
+  const { data: categories = [] } = useEmployeeCategories();
+  const { data: positions = [] } = useEmployeePositions();
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Person-scoped lists and mutations
   const personId = employee?.personId;
-  const { data: personAddresses = [] } = useAddressesByPerson(
-    accessToken,
-    personId ?? 0
-  );
-  const { data: personContacts = [] } = useContactsByPerson(
-    accessToken,
-    personId ?? 0
-  );
-  const createAddressMut = useCreateAddress(accessToken);
-  const updateAddressMut = useUpdateAddress(accessToken);
-  const deleteAddressMut = useDeleteAddress(accessToken);
-  const createContactMut = useCreateContact(accessToken);
-  const updateContactMut = useUpdateContact(accessToken);
-  const deleteContactMut = useDeleteContact(accessToken);
+  const { data: personAddresses = [] } = useAddressesByPerson(personId ?? 0);
+  const { data: personContacts = [] } = useContactsByPerson(personId ?? 0);
+  const createAddressMut = useCreateAddress();
+  const updateAddressMut = useUpdateAddress();
+  const deleteAddressMut = useDeleteAddress();
+  const createContactMut = useCreateContact();
+  const updateContactMut = useUpdateContact();
+  const deleteContactMut = useDeleteContact();
 
   const [addressOpen, setAddressOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any | undefined>(
@@ -150,8 +144,7 @@ export default function EmployeeDetailPage() {
     try {
       await EmployeesService.updateEmployee(
         id,
-        data as unknown as UpdateEmployeeFormData,
-        accessToken
+        data as unknown as UpdateEmployeeFormData
       );
       // refresh caches
       queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -183,8 +176,7 @@ export default function EmployeeDetailPage() {
     try {
       await PersonsService.updatePerson(
         personId,
-        data as unknown as UpdatePersonFormData,
-        accessToken
+        data as unknown as UpdatePersonFormData
       );
       queryClient.invalidateQueries({ queryKey: ["persons", personId] });
       queryClient.invalidateQueries({ queryKey: ["employees", id] });

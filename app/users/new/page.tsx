@@ -21,7 +21,7 @@ export default function NewUserPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const createUserMutation = useCreateUser(session?.accessToken || "");
+  const createUserMutation = useCreateUser();
 
   const handleSubmit = async (data: UserFormData) => {
     try {

@@ -66,14 +66,14 @@ export default function EmployeeVacationsPage() {
     setPage(1);
   }, [debouncedQuery, status, limit]);
 
-  const { data: employeesData } = useEmployeesList(accessToken, {
+  const { data: employeesData } = useEmployeesList({
     page,
     limit,
     q: debouncedQuery || undefined,
     status: status === "ALL" ? undefined : status,
   });
 
-  const exportExcelMutation = useExportEmployeesVacationsToExcel(accessToken);
+  const exportExcelMutation = useExportEmployeesVacationsToExcel();
 
   const employees: Employee[] = Array.isArray(employeesData)
     ? employeesData

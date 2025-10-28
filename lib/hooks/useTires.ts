@@ -5,35 +5,34 @@ import {
   TireSizesService,
   TireSizeAliasesService,
   TireModelsService,
-  EquipmentAxlesService,
   TirePositionConfigsService,
+  TireAssignmentsService,
 } from "@/lib/api/tires";
+import { EquipmentService } from "@/lib/api/equipment";
 import {
-  Tire,
   CreateTireDto,
   UpdateTireDto,
-  TireSize,
   CreateTireSizeDto,
   UpdateTireSizeDto,
-  TireSizeAlias,
   CreateTireSizeAliasDto,
   UpdateTireSizeAliasDto,
-  TireModel,
   CreateTireModelDto,
   UpdateTireModelDto,
-  EquipmentAxle,
-  TirePositionConfig,
 } from "@/lib/types/tire";
-import { PaginatedResponse } from "@/lib/types/api";
 
 // Tire Models
 export function useTireModels(
   accessToken: string,
-  params?: { page?: number; limit?: number }
+  params?: { page?: number; limit?: number; brandId?: number }
 ) {
   return useQuery({
-    queryKey: ["tire-models", params?.page ?? 1, params?.limit ?? 10],
-    queryFn: () => TireModelsService.getTireModels(accessToken, params),
+    queryKey: [
+      "tire-models",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.brandId ?? "",
+    ],
+    queryFn: () => TireModelsService.getAll(params),
     enabled: !!accessToken,
   });
 }
@@ -44,8 +43,7 @@ export function useTireModelDetail(
 ) {
   return useQuery({
     queryKey: ["tire-models", id],
-    queryFn: () =>
-      TireModelsService.getTireModelById(id as number, accessToken),
+    queryFn: () => TireModelsService.getById(id as number),
     enabled: !!accessToken && typeof id === "number",
   });
 }
@@ -53,8 +51,7 @@ export function useTireModelDetail(
 export function useCreateTireModel(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateTireModelDto) =>
-      TireModelsService.createTireModel(data, accessToken),
+    mutationFn: (data: CreateTireModelDto) => TireModelsService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tire-models"] });
     },
@@ -65,7 +62,7 @@ export function useUpdateTireModel(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateTireModelDto }) =>
-      TireModelsService.updateTireModel(vars.id, vars.data, accessToken),
+      TireModelsService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["tire-models"] });
       qc.invalidateQueries({ queryKey: ["tire-models", vars.id] });
@@ -76,8 +73,7 @@ export function useUpdateTireModel(accessToken: string) {
 export function useDeleteTireModel(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      TireModelsService.deleteTireModel(id, accessToken),
+    mutationFn: (id: number) => TireModelsService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["tire-models"] });
       qc.invalidateQueries({ queryKey: ["tire-models", id] });
@@ -97,7 +93,7 @@ export function useTireSizes(
       params?.limit ?? 10,
       params?.query ?? "",
     ],
-    queryFn: () => TireSizesService.getTireSizes(accessToken, params),
+    queryFn: () => TireSizesService.getAll(params),
     enabled: !!accessToken,
   });
 }
@@ -105,7 +101,7 @@ export function useTireSizes(
 export function useTireSizeDetail(id: number | undefined, accessToken: string) {
   return useQuery({
     queryKey: ["tire-sizes", id],
-    queryFn: () => TireSizesService.getTireSizeById(id as number, accessToken),
+    queryFn: () => TireSizesService.getById(id as number),
     enabled: !!accessToken && typeof id === "number",
   });
 }
@@ -113,8 +109,7 @@ export function useTireSizeDetail(id: number | undefined, accessToken: string) {
 export function useCreateTireSize(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateTireSizeDto) =>
-      TireSizesService.createTireSize(data, accessToken),
+    mutationFn: (data: CreateTireSizeDto) => TireSizesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
     },
@@ -125,7 +120,7 @@ export function useUpdateTireSize(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateTireSizeDto }) =>
-      TireSizesService.updateTireSize(vars.id, vars.data, accessToken),
+      TireSizesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
       qc.invalidateQueries({ queryKey: ["tire-sizes", vars.id] });
@@ -136,8 +131,7 @@ export function useUpdateTireSize(accessToken: string) {
 export function useDeleteTireSize(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      TireSizesService.deleteTireSize(id, accessToken),
+    mutationFn: (id: number) => TireSizesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
       qc.invalidateQueries({ queryKey: ["tire-sizes", id] });
@@ -149,7 +143,7 @@ export function useDeleteTireSize(accessToken: string) {
 export function useTireSizeAliases(sizeId: number, accessToken: string) {
   return useQuery({
     queryKey: ["tire-size-aliases", sizeId],
-    queryFn: () => TireSizeAliasesService.getAliasesBySize(sizeId, accessToken),
+    queryFn: () => TireSizeAliasesService.getBySize(sizeId),
     enabled: !!accessToken && !!sizeId,
   });
 }
@@ -158,7 +152,7 @@ export function useCreateTireSizeAlias(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateTireSizeAliasDto) =>
-      TireSizeAliasesService.createTireSizeAlias(data, accessToken),
+      TireSizeAliasesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
       qc.invalidateQueries({ queryKey: ["tire-size-aliases"] });
@@ -170,11 +164,7 @@ export function useUpdateTireSizeAlias(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateTireSizeAliasDto }) =>
-      TireSizeAliasesService.updateTireSizeAlias(
-        vars.id,
-        vars.data,
-        accessToken
-      ),
+      TireSizeAliasesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
       qc.invalidateQueries({ queryKey: ["tire-size-aliases"] });
@@ -186,8 +176,7 @@ export function useUpdateTireSizeAlias(accessToken: string) {
 export function useDeleteTireSizeAlias(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      TireSizeAliasesService.deleteTireSizeAlias(id, accessToken),
+    mutationFn: (id: number) => TireSizeAliasesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["tire-sizes"] });
       qc.invalidateQueries({ queryKey: ["tire-size-aliases"] });
@@ -198,36 +187,28 @@ export function useDeleteTireSizeAlias(accessToken: string) {
 
 // ===== TIRES =====
 
-export function useTires(
-  accessToken: string,
-  params?: {
-    status?: string;
-    brand?: string;
-    size?: string;
-    page?: number;
-    limit?: number;
-    q?: string;
-  }
-) {
+export function useTires(params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  brandId?: number;
+}) {
   return useQuery({
     queryKey: [
       "tires",
-      params?.status ?? "",
-      params?.brand ?? "",
-      params?.size ?? "",
-      params?.q ?? "",
       params?.page ?? 1,
       params?.limit ?? 10,
+      params?.status ?? "",
+      params?.brandId ?? "",
     ],
-    queryFn: () => TiresService.getTires(accessToken, params),
-    enabled: !!accessToken,
+    queryFn: () => TiresService.getAll(params),
   });
 }
 
 export function useTireDetail(id: number | undefined, accessToken: string) {
   return useQuery({
     queryKey: ["tires", id],
-    queryFn: () => TiresService.getTireById(id as number, accessToken),
+    queryFn: () => TiresService.getById(id as number),
     enabled: !!accessToken && typeof id === "number",
   });
 }
@@ -235,8 +216,7 @@ export function useTireDetail(id: number | undefined, accessToken: string) {
 export function useCreateTire(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateTireDto) =>
-      TiresService.createTire(data, accessToken),
+    mutationFn: (data: CreateTireDto) => TiresService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tires"] });
     },
@@ -247,7 +227,7 @@ export function useUpdateTire(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateTireDto }) =>
-      TiresService.updateTire(vars.id, vars.data, accessToken),
+      TiresService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["tires"] });
       qc.invalidateQueries({ queryKey: ["tires", vars.id] });
@@ -258,96 +238,10 @@ export function useUpdateTire(accessToken: string) {
 export function useDeleteTire(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => TiresService.deleteTire(id, accessToken),
+    mutationFn: (id: number) => TiresService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["tires"] });
       qc.invalidateQueries({ queryKey: ["tires", id] });
-    },
-  });
-}
-
-export function useTireStats(accessToken: string) {
-  return useQuery({
-    queryKey: ["tire-stats"],
-    queryFn: () => TiresService.getTireStats(accessToken),
-    enabled: !!accessToken,
-  });
-}
-
-// ===== EQUIPMENT AXLES =====
-
-export function useEquipmentAxles(
-  accessToken: string,
-  params?: { equipmentId?: number }
-) {
-  return useQuery({
-    queryKey: ["equipment-axles", params?.equipmentId ?? ""],
-    queryFn: () => EquipmentAxlesService.getEquipmentAxles(accessToken, params),
-    enabled: !!accessToken,
-  });
-}
-
-export function useEquipmentAxleDetail(
-  id: number | undefined,
-  accessToken: string
-) {
-  return useQuery({
-    queryKey: ["equipment-axles", id],
-    queryFn: () =>
-      EquipmentAxlesService.getEquipmentAxleById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
-  });
-}
-
-export function useCreateEquipmentAxle(accessToken: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: {
-      equipmentId: number;
-      order: number;
-      axleType: string;
-      wheelCount: number;
-      description?: string;
-    }) => EquipmentAxlesService.createEquipmentAxle(data, accessToken),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-    },
-  });
-}
-
-export function useUpdateEquipmentAxle(accessToken: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: {
-      id: number;
-      data: Partial<{
-        equipmentId: number;
-        order: number;
-        axleType: string;
-        wheelCount: number;
-        description?: string;
-      }>;
-    }) =>
-      EquipmentAxlesService.updateEquipmentAxle(
-        vars.id,
-        vars.data,
-        accessToken
-      ),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-      qc.invalidateQueries({ queryKey: ["equipment-axles", vars.id] });
-    },
-  });
-}
-
-export function useDeleteEquipmentAxle(accessToken: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) =>
-      EquipmentAxlesService.deleteEquipmentAxle(id, accessToken),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-      qc.invalidateQueries({ queryKey: ["equipment-axles", id] });
     },
   });
 }
@@ -360,24 +254,27 @@ export function useTirePositionConfigs(
 ) {
   return useQuery({
     queryKey: ["tire-position-configs", params?.axleId ?? ""],
-    queryFn: () =>
-      TirePositionConfigsService.getTirePositionConfigs(accessToken, params),
+    queryFn: () => TirePositionConfigsService.getAll(params),
     enabled: !!accessToken,
   });
 }
 
-export function useTirePositionConfigsByEquipment(
-  accessToken: string,
-  equipmentId?: number
-) {
+export function useTirePositionConfigsByEquipment(equipmentId?: number) {
   return useQuery({
     queryKey: ["tire-position-configs-equipment", equipmentId ?? ""],
     queryFn: () =>
-      TirePositionConfigsService.getTirePositionConfigsByEquipment(
-        accessToken,
-        equipmentId as number
-      ),
-    enabled: !!accessToken && !!equipmentId,
+      TirePositionConfigsService.getByEquipment(equipmentId as number),
+    enabled: !!equipmentId,
+  });
+}
+
+// Hook to get positions by equipment using the new endpoint
+export function useTirePositionsByEquipment(equipmentId?: number) {
+  return useQuery({
+    queryKey: ["tire-positions-equipment", equipmentId ?? ""],
+    queryFn: () =>
+      EquipmentService.getEquipmentAxlePositions(equipmentId as number),
+    enabled: !!equipmentId,
   });
 }
 
@@ -387,11 +284,7 @@ export function useTirePositionConfigDetail(
 ) {
   return useQuery({
     queryKey: ["tire-position-configs", id],
-    queryFn: () =>
-      TirePositionConfigsService.getTirePositionConfigById(
-        id as number,
-        accessToken
-      ),
+    queryFn: () => TirePositionConfigsService.getById(id as number),
     enabled: !!accessToken && typeof id === "number",
   });
 }
@@ -404,8 +297,7 @@ export function useCreateTirePositionConfig(accessToken: string) {
       positionKey: string;
       side: string;
       isDual: boolean;
-    }) =>
-      TirePositionConfigsService.createTirePositionConfig(data, accessToken),
+    }) => TirePositionConfigsService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tire-position-configs"] });
     },
@@ -423,12 +315,7 @@ export function useUpdateTirePositionConfig(accessToken: string) {
         side: string;
         isDual: boolean;
       }>;
-    }) =>
-      TirePositionConfigsService.updateTirePositionConfig(
-        vars.id,
-        vars.data,
-        accessToken
-      ),
+    }) => TirePositionConfigsService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["tire-position-configs"] });
       qc.invalidateQueries({ queryKey: ["tire-position-configs", vars.id] });
@@ -439,11 +326,36 @@ export function useUpdateTirePositionConfig(accessToken: string) {
 export function useDeleteTirePositionConfig(accessToken: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      TirePositionConfigsService.deleteTirePositionConfig(id, accessToken),
+    mutationFn: (id: number) => TirePositionConfigsService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["tire-position-configs"] });
       qc.invalidateQueries({ queryKey: ["tire-position-configs", id] });
     },
+  });
+}
+
+// ===== TIRE ASSIGNMENTS =====
+
+export function useTireAssignments(params?: {
+  equipmentId?: number;
+  tireId?: number;
+  status?: string;
+}) {
+  return useQuery({
+    queryKey: [
+      "tire-assignments",
+      params?.equipmentId ?? "",
+      params?.tireId ?? "",
+      params?.status ?? "",
+    ],
+    queryFn: () => {
+      if (params?.equipmentId) {
+        // Get assignments for specific equipment
+        return TireAssignmentsService.getOpenByEquipment(params.equipmentId);
+      }
+      // Get all assignments with filters
+      return TireAssignmentsService.getAll(params);
+    },
+    enabled: !!params, // Only run if params are provided
   });
 }

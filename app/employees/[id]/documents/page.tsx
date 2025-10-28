@@ -84,19 +84,13 @@ export default function EmployeeDocumentsPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
-  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(
-    id,
-    accessToken
-  );
-  const { data: documentsData, isLoading: documentsLoading } = useDocuments(
-    accessToken,
-    {
-      employeeId: id,
-    }
-  );
-  const uploadMutation = useUploadDocument(accessToken);
-  const deleteMutation = useDeleteDocument(accessToken);
-  const downloadMutation = useDownloadDocument(accessToken);
+  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
+  const { data: documentsData, isLoading: documentsLoading } = useDocuments({
+    employeeId: id,
+  });
+  const uploadMutation = useUploadDocument();
+  const deleteMutation = useDeleteDocument();
+  const downloadMutation = useDownloadDocument();
 
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

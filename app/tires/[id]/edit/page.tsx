@@ -86,11 +86,7 @@ export default function TireEditPage() {
       const cleanData = Object.fromEntries(
         Object.entries(updateData).filter(([_, value]) => value !== undefined)
       );
-      await TiresService.updateTire(
-        id,
-        cleanData as UpdateTireDto,
-        accessToken
-      );
+      await TiresService.update(id, cleanData as UpdateTireDto);
       // refresh caches
       queryClient.invalidateQueries({ queryKey: ["tires"] });
       queryClient.invalidateQueries({ queryKey: ["tires", id] });

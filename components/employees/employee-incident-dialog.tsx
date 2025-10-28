@@ -34,9 +34,9 @@ export function EmployeeIncidentDialog({
 }: EmployeeIncidentDialogProps) {
   const { toast } = useToast();
   const { mutate: createIncident, isPending: creating } =
-    useCreateEmployeeIncident(accessToken);
+    useCreateEmployeeIncident();
   const { mutate: updateIncident, isPending: updating } =
-    useUpdateEmployeeIncident(accessToken);
+    useUpdateEmployeeIncident();
 
   const onSubmit = (data: EmployeeIncidentFormInput) => {
     if (mode === "create") {

@@ -47,7 +47,7 @@ export default function UsersPage() {
     try {
       setLoading(true);
       if (session?.accessToken) {
-        const data = await UsersService.getUsers(session.accessToken);
+        const data = await UsersService.getUsers();
         setUsers(data);
       }
     } catch (err) {

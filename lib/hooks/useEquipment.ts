@@ -17,12 +17,81 @@ import {
 } from "@/lib/types/equipment";
 import { PaginatedResponse } from "@/lib/types/api";
 
+// ===== EQUIPMENT AXLES =====
+
+export function useEquipmentAxles(params?: { equipmentId?: number }) {
+  return useQuery({
+    queryKey: ["equipment-axles", params?.equipmentId ?? ""],
+    queryFn: () => EquipmentService.getEquipmentAxles(params),
+    enabled: !!params?.equipmentId,
+  });
+}
+
+export function useEquipmentAxleDetail(
+  id: number | undefined,
+  accessToken: string
+) {
+  return useQuery({
+    queryKey: ["equipment-axles", id],
+    queryFn: () =>
+      EquipmentService.getEquipmentAxleById(id as number, accessToken),
+    enabled: !!accessToken && typeof id === "number",
+  });
+}
+
+export function useCreateEquipmentAxle(accessToken: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: {
+      equipmentId: number;
+      order: number;
+      axleType: string;
+      wheelCount: number;
+      description?: string;
+    }) => EquipmentService.createEquipmentAxle(data, accessToken),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
+    },
+  });
+}
+
+export function useUpdateEquipmentAxle(accessToken: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      id: number;
+      data: Partial<{
+        equipmentId: number;
+        order: number;
+        axleType: string;
+        wheelCount: number;
+        description?: string;
+      }>;
+    }) => EquipmentService.updateEquipmentAxle(vars.id, vars.data, accessToken),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
+      qc.invalidateQueries({ queryKey: ["equipment-axles", vars.id] });
+    },
+  });
+}
+
+export function useDeleteEquipmentAxle(accessToken: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) =>
+      EquipmentService.deleteEquipmentAxle(id, accessToken),
+    onSuccess: (_message, id) => {
+      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
+      qc.invalidateQueries({ queryKey: ["equipment-axles", id] });
+    },
+  });
+}
+
 // Categories
-export function useEquipmentCategories(accessToken: string) {
+export function useEquipmentCategories() {
   return useQuery<EquipmentCategory[], Error>({
     queryKey: ["equipment-categories"],
-    queryFn: () => EquipmentService.getCategories(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => EquipmentService.getCategories(),
   });
 }
 
@@ -62,14 +131,10 @@ export function useDeleteEquipmentCategory(accessToken: string) {
 }
 
 // Types
-export function useEquipmentTypes(
-  accessToken: string,
-  params?: { page?: number; limit?: number }
-) {
-  return useQuery({
-    queryKey: ["equipment-types", params?.page ?? 1, params?.limit ?? 10],
-    queryFn: () => EquipmentService.getTypes(accessToken, params),
-    enabled: !!accessToken,
+export function useEquipmentTypes(params?: { categoryId?: number }) {
+  return useQuery<EquipmentType[], Error>({
+    queryKey: ["equipment-types", params?.categoryId ?? ""],
+    queryFn: () => EquipmentService.getTypes(params),
   });
 }
 
@@ -130,14 +195,10 @@ export function useEquipmentTypesByCategory(
 }
 
 // Models
-export function useEquipmentModels(
-  accessToken: string,
-  params?: { page?: number; limit?: number }
-) {
-  return useQuery({
-    queryKey: ["equipment-models", params?.page ?? 1, params?.limit ?? 10],
-    queryFn: () => EquipmentService.getModels(accessToken, params),
-    enabled: !!accessToken,
+export function useEquipmentModels(params?: { typeId?: number }) {
+  return useQuery<EquipmentModel[], Error>({
+    queryKey: ["equipment-models", params?.typeId ?? ""],
+    queryFn: () => EquipmentService.getModels(params),
   });
 }
 
@@ -195,21 +256,31 @@ export function useEquipmentModelsByType(typeId: number, accessToken: string) {
 }
 
 // Equipment
-export function useEquipmentList(
-  accessToken: string,
-  params?: { page?: number; limit?: number; companyId?: number }
-) {
-  return useQuery({
+export function useEquipmentList(params?: {
+  skip?: number;
+  take?: number;
+  typeId?: number;
+  modelId?: number;
+  categoryId?: number;
+  year?: number;
+  status?: string;
+  search?: string;
+}) {
+  return useQuery<PaginatedResponse<Equipment>, Error>({
     queryKey: [
       "equipment",
-      params?.page ?? 1,
-      params?.limit ?? 10,
-      params?.companyId ?? "",
+      params?.skip ?? 0,
+      params?.take ?? 25,
+      params?.typeId ?? "",
+      params?.modelId ?? "",
+      params?.categoryId ?? "",
+      params?.year ?? "",
+      params?.status ?? "",
+      params?.search ?? "",
     ],
     queryFn: () => {
-      return EquipmentService.getEquipment(accessToken, params);
+      return EquipmentService.getEquipment(params);
     },
-    enabled: !!accessToken,
   });
 }
 

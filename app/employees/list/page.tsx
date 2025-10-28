@@ -59,7 +59,7 @@ export default function EmployeesPage() {
     setPage(1);
   }, [debouncedQuery, status, limit]);
 
-  const { data: employeesData } = useEmployeesList(accessToken, {
+  const { data: employeesData } = useEmployeesList({
     page,
     limit,
     q: debouncedQuery || undefined,

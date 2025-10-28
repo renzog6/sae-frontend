@@ -60,22 +60,23 @@ export function TireAssignmentsDialog({
 }: TireAssignmentsDialogProps) {
   const { data: session } = useSession();
   const { toast } = useToast();
-  const accessToken = session?.accessToken as string;
 
   const [selectedTireId, setSelectedTireId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Queries
-  const { data: tiresData, isLoading: tiresLoading } = useTires(accessToken, {
+  const { data: tiresData, isLoading: tiresLoading } = useTires({
     status: "IN_STOCK",
     page: 1,
     limit: 50,
   });
 
   const { data: equipmentData, isLoading: equipmentLoading } = useEquipmentList(
-    accessToken,
-    { page: 1, limit: 50 }
+    {
+      skip: 0,
+      take: 50,
+    }
   );
 
   // Form
@@ -104,16 +105,13 @@ export function TireAssignmentsDialog({
 
     setIsSubmitting(true);
     try {
-      await TireAssignmentsService.mountTire(
-        {
-          tireId: data.tireId,
-          positionConfigId: selectedPosition.id,
-          kmAtStart: data.kmAtStart || 0,
-          mountDate: data.mountDate,
-          note: data.note || "",
-        },
-        accessToken
-      );
+      await TireAssignmentsService.mount({
+        tireId: data.tireId,
+        positionConfigId: selectedPosition.id,
+        kmAtStart: data.kmAtStart || 0,
+        mountDate: data.mountDate,
+        note: data.note || "",
+      });
 
       toast({
         title: "Neumático asignado",

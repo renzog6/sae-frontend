@@ -65,17 +65,14 @@ export default function EquipmentModelsPage() {
     data: modelsResponse,
     isLoading,
     error,
-  } = useEquipmentModels(accessToken, {
-    page: 1,
-    limit: 1000, // Get all models to enable client-side filtering
+  } = useEquipmentModels({
+    // Get all models to enable client-side filtering
   });
 
-  const { data: brands = [] } = useBrands(accessToken);
-  const { data: typesResponse } = useEquipmentTypes(accessToken);
-  const types = typesResponse?.data || [];
-
+  const { data: brands = [] } = useBrands();
+  const { data: types = [] } = useEquipmentTypes();
   const models = useMemo(() => {
-    let filtered = modelsResponse?.data || [];
+    let filtered = modelsResponse || [];
 
     // Filter by search query (case-insensitive)
     if (debouncedQuery) {
@@ -101,7 +98,7 @@ export default function EquipmentModelsPage() {
 
     // Sort by name A-Z
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [modelsResponse?.data, debouncedQuery, selectedBrand, selectedType]);
+  }, [modelsResponse, debouncedQuery, selectedBrand, selectedType]);
 
   // Calculate pagination based on filtered data
   const totalFilteredItems = models.length;

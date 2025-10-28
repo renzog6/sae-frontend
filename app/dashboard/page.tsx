@@ -19,7 +19,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Bienvenida */}
-          <Card className="col-span-full border-laurel-200 bg-gradient-to-r from-laurel-50 to-white">
+          <Card className="col-span-full border-laurel-200 bg-linear-to-r from-laurel-50 to-white">
             <CardHeader>
               <CardTitle className="text-laurel-900">
                 ¡Bienvenido al Sistema!
@@ -33,7 +33,7 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-laurel-500"></div>
                 <span className="text-sm text-laurel-600">
-                  Sistema operativo RCM · SAE
+                  Sistema operativo SAE
                 </span>
               </div>
             </CardContent>

@@ -25,10 +25,8 @@ export function BrandDialog({
   brand,
 }: BrandDialogProps) {
   const { toast } = useToast();
-  const { mutate: createBrand, isPending: creating } =
-    useCreateBrand(accessToken);
-  const { mutate: updateBrand, isPending: updating } =
-    useUpdateBrand(accessToken);
+  const { mutate: createBrand, isPending: creating } = useCreateBrand();
+  const { mutate: updateBrand, isPending: updating } = useUpdateBrand();
 
   const onSubmit = (data: BrandFormData) => {
     if (mode === "create") {

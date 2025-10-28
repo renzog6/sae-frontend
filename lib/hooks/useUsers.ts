@@ -4,28 +4,26 @@ import { UsersService } from "@/lib/api/users";
 import { User } from "@/lib/types/user";
 import { UserFormData } from "@/lib/validations/auth";
 
-export function useUsers(accessToken: string) {
+export function useUsers() {
   return useQuery<User[], Error>({
     queryKey: ["users"],
-    queryFn: () => UsersService.getUsers(accessToken),
-    enabled: !!accessToken, // solo se ejecuta si hay token
+    queryFn: () => UsersService.getUsers(),
   });
 }
 
-export function useUser(accessToken: string, id: number) {
+export function useUser(id: number) {
   return useQuery<User, Error>({
     queryKey: ["user", id],
-    queryFn: () => UsersService.getUserById(id, accessToken),
-    enabled: !!accessToken && !!id, // solo se ejecuta si hay token e ID
+    queryFn: () => UsersService.getUserById(id),
+    enabled: !!id,
   });
 }
 
-export function useCreateUser(accessToken: string) {
+export function useCreateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userData: UserFormData) =>
-      UsersService.createUser(userData, accessToken),
+    mutationFn: (userData: UserFormData) => UsersService.createUser(userData),
     onSuccess: () => {
       // Invalidar y refetch la lista de usuarios
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -33,12 +31,12 @@ export function useCreateUser(accessToken: string) {
   });
 }
 
-export function useUpdateUser(accessToken: string) {
+export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, userData }: { id: number; userData: Partial<User> }) =>
-      UsersService.updateUser(id, userData, accessToken),
+      UsersService.updateUser(id, userData),
     onSuccess: () => {
       // Invalidar tanto la lista de usuarios como el usuario individual
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -47,11 +45,11 @@ export function useUpdateUser(accessToken: string) {
   });
 }
 
-export function useDeleteUser(accessToken: string) {
+export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => UsersService.deleteUser(id, accessToken),
+    mutationFn: (id: number) => UsersService.deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

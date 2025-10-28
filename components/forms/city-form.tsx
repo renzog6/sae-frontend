@@ -5,7 +5,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -35,7 +43,11 @@ export function CityForm({
   onCancel,
   error,
 }: CityFormProps) {
-  const { data: provinces, isLoading: provLoading, error: provError } = useProvinces(accessToken);
+  const {
+    data: provinces,
+    isLoading: provLoading,
+    error: provError,
+  } = useProvinces();
 
   const form = useForm<CityFormData>({
     resolver: zodResolver(CitySchema),
@@ -92,7 +104,11 @@ export function CityForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={provLoading ? "Cargando..." : "Selecciona una provincia"} />
+                    <SelectValue
+                      placeholder={
+                        provLoading ? "Cargando..." : "Selecciona una provincia"
+                      }
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -104,7 +120,9 @@ export function CityForm({
                 </SelectContent>
               </Select>
               {provError && (
-                <FormDescription className="text-red-600">Error al cargar provincias</FormDescription>
+                <FormDescription className="text-red-600">
+                  Error al cargar provincias
+                </FormDescription>
               )}
               <FormMessage />
             </FormItem>
@@ -113,16 +131,30 @@ export function CityForm({
 
         <div className="flex justify-end gap-3 pt-2">
           {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
               Cancelar
             </Button>
           )}
-          <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar" : "Crear"}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="text-white bg-emerald-600 hover:bg-emerald-700"
+          >
+            {isLoading
+              ? isEdit
+                ? "Guardando..."
+                : "Creando..."
+              : isEdit
+              ? "Guardar"
+              : "Crear"}
           </Button>
         </div>
       </form>
     </Form>
   );
 }
-

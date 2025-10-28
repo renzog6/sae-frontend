@@ -8,22 +8,17 @@ import {
 } from "@/lib/validations/contact";
 
 // ========== Queries ==========
-export function useContacts(
-  accessToken: string,
-  params?: { page?: number; limit?: number }
-) {
+export function useContacts(params?: { page?: number; limit?: number }) {
   return useQuery<Contact[], Error>({
     queryKey: ["contacts", params?.page ?? 1, params?.limit ?? 50],
     queryFn: async () => {
-      const resp = await ContactsService.getContacts(accessToken, params);
+      const resp = await ContactsService.getContacts(params);
       return Array.isArray(resp) ? resp : resp.data;
     },
-    enabled: !!accessToken,
   });
 }
 
 export function useContactsByPerson(
-  accessToken: string,
   personId: number,
   params?: { page?: number; limit?: number }
 ) {
@@ -35,11 +30,7 @@ export function useContactsByPerson(
       params?.limit ?? 50,
     ],
     queryFn: async () => {
-      const resp = await ContactsService.getContactsByPerson(
-        accessToken,
-        personId,
-        params
-      );
+      const resp = await ContactsService.getContactsByPerson(personId, params);
       if (Array.isArray(resp)) return resp as any as Contact[];
       if (
         resp &&
@@ -51,12 +42,11 @@ export function useContactsByPerson(
       }
       return [] as Contact[];
     },
-    enabled: !!accessToken && !!personId,
+    enabled: !!personId,
   });
 }
 
 export function useContactsByCompany(
-  accessToken: string,
   companyId: number,
   params?: { page?: number; limit?: number }
 ) {
@@ -69,7 +59,6 @@ export function useContactsByCompany(
     ],
     queryFn: async () => {
       const resp = await ContactsService.getContactsByCompany(
-        accessToken,
         companyId,
         params
       );
@@ -85,24 +74,23 @@ export function useContactsByCompany(
       }
       return [] as Contact[];
     },
-    enabled: !!accessToken && !!companyId,
+    enabled: !!companyId,
   });
 }
 
-export function useContact(accessToken: string, id: number) {
+export function useContact(id: number) {
   return useQuery<Contact, Error>({
     queryKey: ["contact", id],
-    queryFn: () => ContactsService.getContactById(id, accessToken),
-    enabled: !!accessToken && !!id,
+    queryFn: () => ContactsService.getContactById(id),
+    enabled: !!id,
   });
 }
 
 // ========== Mutations ==========
-export function useCreateContact(accessToken: string) {
+export function useCreateContact() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: ContactFormData) =>
-      ContactsService.createContact(data, accessToken),
+    mutationFn: (data: ContactFormData) => ContactsService.createContact(data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       // Invalidate all company-scoped contact lists
@@ -123,11 +111,11 @@ export function useCreateContact(accessToken: string) {
   });
 }
 
-export function useUpdateContact(accessToken: string) {
+export function useUpdateContact() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateContactFormData }) =>
-      ContactsService.updateContact(id, data, accessToken),
+      ContactsService.updateContact(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       queryClient.invalidateQueries({ queryKey: ["contact", id] });
@@ -137,10 +125,10 @@ export function useUpdateContact(accessToken: string) {
   });
 }
 
-export function useDeleteContact(accessToken: string) {
+export function useDeleteContact() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => ContactsService.deleteContact(id, accessToken),
+    mutationFn: (id: number) => ContactsService.deleteContact(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       queryClient.invalidateQueries({ queryKey: ["contact", id] });

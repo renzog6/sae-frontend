@@ -40,11 +40,11 @@ export function EmployeeCategoryDialog({
 }: EmployeeCategoryDialogProps) {
   const { toast } = useToast();
   const { mutate: createCategory, isPending: creating } =
-    useCreateEmployeeCategory(accessToken);
+    useCreateEmployeeCategory();
   const { mutate: updateCategory, isPending: updating } =
-    useUpdateEmployeeCategory(accessToken);
+    useUpdateEmployeeCategory();
   const { mutate: deleteCategory, isPending: deleting } =
-    useDeleteEmployeeCategory(accessToken);
+    useDeleteEmployeeCategory();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 

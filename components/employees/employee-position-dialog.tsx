@@ -40,11 +40,11 @@ export function EmployeePositionDialog({
 }: EmployeePositionDialogProps) {
   const { toast } = useToast();
   const { mutate: createPosition, isPending: creating } =
-    useCreateEmployeePosition(accessToken);
+    useCreateEmployeePosition();
   const { mutate: updatePosition, isPending: updating } =
-    useUpdateEmployeePosition(accessToken);
+    useUpdateEmployeePosition();
   const { mutate: deletePosition, isPending: deleting } =
-    useDeleteEmployeePosition(accessToken);
+    useDeleteEmployeePosition();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 

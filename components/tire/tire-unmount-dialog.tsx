@@ -63,7 +63,6 @@ export function TireUnmountDialog({
 }: TireUnmountDialogProps) {
   const { data: session } = useSession();
   const { toast } = useToast();
-  const accessToken = session?.accessToken as string;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,16 +110,13 @@ export function TireUnmountDialog({
         note: data.note || "",
       });
 
-      const result = await TireAssignmentsService.unmountTire(
-        {
-          assignmentId,
-          kmAtEnd: data.kmAtEnd || 0,
-          unmountDate: data.unmountDate,
-          newStatus: data.newStatus,
-          note: data.note || "",
-        },
-        accessToken
-      );
+      const result = await TireAssignmentsService.unmount(assignmentId, {
+        assignmentId,
+        kmAtEnd: data.kmAtEnd || 0,
+        unmountDate: data.unmountDate,
+        newStatus: data.newStatus,
+        note: data.note || "",
+      });
 
       console.log("Unmount result:", result);
 

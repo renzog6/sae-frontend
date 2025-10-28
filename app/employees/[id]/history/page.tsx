@@ -95,17 +95,14 @@ export default function EmployeeHistoryPage() {
   const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
-  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(
-    id,
-    accessToken
-  );
+  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
   const {
     data: historyData,
     isLoading: historyLoading,
     refetch,
-  } = useEmployeeHistory(id, accessToken);
+  } = useEmployeeHistory(id);
 
-  const deleteIncidentMutation = useDeleteEmployeeIncident(accessToken);
+  const deleteIncidentMutation = useDeleteEmployeeIncident();
 
   // Dialog states
   const [incidentDialogOpen, setIncidentDialogOpen] = useState(false);

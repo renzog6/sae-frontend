@@ -34,11 +34,7 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
-  const {
-    data: employee,
-    isLoading,
-    error,
-  } = useEmployeeDetail(id, accessToken);
+  const { data: employee, isLoading, error } = useEmployeeDetail(id);
 
   if (isLoading) {
     return (

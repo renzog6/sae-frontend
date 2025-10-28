@@ -8,76 +8,41 @@ import {
   UpdateEmployeeIncidentDto,
 } from "@/lib/types/history";
 
-function unwrap<T>(resp: any): T {
-  if (resp && typeof resp === "object" && "data" in resp) {
-    return resp.data as T;
-  }
-  return resp as T;
-}
-
 export class HistoryService {
+  private static employeeIncidentsPath = "/employee-incidents";
+
   static async getEmployeeHistory(
-    employeeId: number,
-    accessToken: string
+    employeeId: number
   ): Promise<EmployeeHistoryResponse> {
-    const response = await ApiClient.request<EmployeeHistoryResponse>(
-      `/employees/${employeeId}/history`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
+    const response = await ApiClient.get<EmployeeHistoryResponse>(
+      `/employees/${employeeId}/history`
     );
-    return unwrap<EmployeeHistoryResponse>(response);
+    return response;
   }
 
   // Employee Incidents CRUD
   static async createEmployeeIncident(
-    data: CreateEmployeeIncidentDto,
-    accessToken: string
+    data: CreateEmployeeIncidentDto
   ): Promise<EmployeeIncident> {
-    const response = await ApiClient.request<EmployeeIncident>(
-      "/employee-incidents",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
+    const response = await ApiClient.post<EmployeeIncident>(
+      this.employeeIncidentsPath,
+      data
     );
-    return unwrap<EmployeeIncident>(response);
+    return response;
   }
 
   static async updateEmployeeIncident(
     id: number,
-    data: UpdateEmployeeIncidentDto,
-    accessToken: string
+    data: UpdateEmployeeIncidentDto
   ): Promise<EmployeeIncident> {
-    const response = await ApiClient.request<EmployeeIncident>(
-      `/employee-incidents/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
+    const response = await ApiClient.put<EmployeeIncident>(
+      `${this.employeeIncidentsPath}/${id}`,
+      data
     );
-    return unwrap<EmployeeIncident>(response);
+    return response;
   }
 
-  static async deleteEmployeeIncident(
-    id: number,
-    accessToken: string
-  ): Promise<void> {
-    await ApiClient.request(`/employee-incidents/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  static async deleteEmployeeIncident(id: number): Promise<void> {
+    await ApiClient.delete(`${this.employeeIncidentsPath}/${id}`);
   }
 }

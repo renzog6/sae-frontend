@@ -7,15 +7,29 @@ import {
   EquipmentMaintenance,
   EquipmentPart,
 } from "./shared";
-import {
-  EquipmentStatus,
-  Gender,
-  MaritalStatus,
-  PersonStatus,
-  VacationType,
-  EmployeeStatus,
-} from "./enums";
+import { AxleType, EquipmentStatus } from "./enums";
 import { Company } from "./company";
+import { TirePositionConfig } from "./tire";
+
+// ===== Equipment Axle =====
+export interface EquipmentAxle {
+  id: number;
+  equipmentId: number;
+  order: number; // Eje 1, Eje 2, etc.
+  axleType: AxleType;
+  wheelCount: number;
+  description?: string | null;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  equipment: {
+    id: number;
+    name?: string | null;
+    internalCode?: string | null;
+  };
+  tirePositions?: TirePositionConfig[];
+}
 
 // ===== Equipment domain types =====
 export type EquipmentCategory = {

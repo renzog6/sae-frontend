@@ -1,6 +1,7 @@
 // filepath: sae-frontend/lib/api/utils.ts
 import { PaginatedResponse } from "@/lib/types/api";
 
+// Helper to normalize list responses into PaginatedResponse<T>
 export function normalizeListResponse<T>(
   resp: T[] | PaginatedResponse<T> | { items: T[]; meta: any }
 ): PaginatedResponse<T> {
@@ -20,4 +21,12 @@ export function normalizeListResponse<T>(
   }
   // Already paginated
   return resp as PaginatedResponse<T>;
+}
+
+// Helper to unwrap responses that may come wrapped in { data }
+export function unwrap<T>(resp: any): T {
+  if (resp && typeof resp === "object" && "data" in resp) {
+    return resp.data as T;
+  }
+  return resp as T;
 }

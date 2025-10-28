@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { Equipment } from "@/lib/types/equipment";
 import {
   useEquipmentList,
@@ -62,15 +62,13 @@ export default function EquipmentListPage() {
     data: equipmentResponse,
     isLoading,
     error,
-  } = useEquipmentList(accessToken, {
-    companyId: 1, // Default company ID for now
-    page: 1,
-    limit: 1000, // Get all equipment to enable client-side filtering
+  } = useEquipmentList({
+    skip: 0,
+    take: 1000, // Get all equipment to enable client-side filtering
   });
 
-  const { data: categories = [] } = useEquipmentCategories(accessToken);
-  const { data: typesResponse } = useEquipmentTypes(accessToken);
-  const types = typesResponse?.data || [];
+  const { data: categories = [] } = useEquipmentCategories();
+  const { data: types = [] } = useEquipmentTypes();
 
   const equipment = useMemo(() => {
     let filtered = equipmentResponse?.data || [];

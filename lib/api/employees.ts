@@ -15,191 +15,104 @@ import {
   EmployeePositionFormData,
   UpdateEmployeePositionFormData,
 } from "@/lib/validations/employee";
-
-function unwrap<T>(resp: any): T {
-  if (resp && typeof resp === "object" && "data" in resp) {
-    return resp.data as T;
-  }
-  return resp as T;
-}
-
+import { unwrap } from "@/lib/api/utils";
 export class EmployeesService {
   //Employees
-  static async getEmployees(
-    accessToken: string,
-    params?: { page?: number; limit?: number; q?: string; status?: string }
-  ) {
+  static async getEmployees(params?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+    status?: string;
+  }) {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     if (params?.q) query.set("q", params.q);
     if (params?.status) query.set("status", params.status);
     const qs = query.toString();
-    const response = await ApiClient.request<
-      Employee[] | PaginatedResponse<Employee>
-    >(`/employees${qs ? `?${qs}` : ""}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    // IMPORTANT: Do NOT unwrap here; we need meta for pagination
-    return normalizeListResponse<Employee>(response as any);
-  }
-
-  static async getEmployeeById(id: number, accessToken: string) {
-    const response = await ApiClient.request<Employee | ApiResponse<Employee>>(
-      `/employees/${id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+    const response = await ApiClient.get<PaginatedResponse<Employee>>(
+      `employees${qs ? `?${qs}` : ""}`
     );
-    return unwrap<Employee>(response);
+    return response;
   }
 
-  static async createEmployee(
-    data: CreateEmployeeFormData,
-    accessToken: string
-  ) {
-    const response = await ApiClient.request<Employee | ApiResponse<Employee>>(
-      "/employees",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    return unwrap<Employee>(response);
+  static async getEmployeeById(id: number) {
+    const response = await ApiClient.get<Employee>(`employees/${id}`);
+    return response;
   }
 
-  static async updateEmployee(
-    id: number,
-    data: UpdateEmployeeFormData,
-    accessToken: string
-  ) {
-    const response = await ApiClient.request<Employee | ApiResponse<Employee>>(
-      `/employees/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    return unwrap<Employee>(response);
+  static async createEmployee(data: CreateEmployeeFormData) {
+    const response = await ApiClient.post<Employee>("employees", data);
+    return response;
   }
 
-  static async deleteEmployee(id: number, accessToken: string) {
-    await ApiClient.request(`/employees/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async updateEmployee(id: number, data: UpdateEmployeeFormData) {
+    const response = await ApiClient.put<Employee>(`employees/${id}`, data);
+    return response;
+  }
+
+  static async deleteEmployee(id: number) {
+    await ApiClient.delete(`employees/${id}`);
     return "Employee deleted";
   }
 
   // Categories
-  static async getCategories(accessToken: string) {
-    const resp = await ApiClient.request<
-      EmployeeCategory[] | ApiResponse<EmployeeCategory[]>
-    >("/employee-categories", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return unwrap<EmployeeCategory[]>(resp);
+  static async getCategories() {
+    const resp = await ApiClient.get<EmployeeCategory[]>("employee-categories");
+    return resp;
   }
 
-  static async createCategory(
-    data: EmployeeCategoryFormData,
-    accessToken: string
-  ) {
-    const resp = await ApiClient.request<
-      EmployeeCategory | ApiResponse<EmployeeCategory>
-    >("/employee-categories", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return unwrap<EmployeeCategory>(resp);
+  static async createCategory(data: EmployeeCategoryFormData) {
+    const resp = await ApiClient.post<EmployeeCategory>(
+      "employee-categories",
+      data
+    );
+    return resp;
   }
 
   static async updateCategory(
     id: number,
-    data: UpdateEmployeeCategoryFormData,
-    accessToken: string
+    data: UpdateEmployeeCategoryFormData
   ) {
-    const resp = await ApiClient.request<
-      EmployeeCategory | ApiResponse<EmployeeCategory>
-    >(`/employee-categories/${id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return unwrap<EmployeeCategory>(resp);
+    const resp = await ApiClient.put<EmployeeCategory>(
+      `employee-categories/${id}`,
+      data
+    );
+    return resp;
   }
 
-  static async deleteCategory(id: number, accessToken: string) {
-    await ApiClient.request(`/employee-categories/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async deleteCategory(id: number) {
+    await ApiClient.delete(`employee-categories/${id}`);
     return "Category deleted";
   }
 
   // Positions
-  static async getPositions(accessToken: string) {
-    const resp = await ApiClient.request<
-      EmployeePosition[] | ApiResponse<EmployeePosition[]>
-    >("/employee-positions", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return unwrap<EmployeePosition[]>(resp);
+  static async getPositions() {
+    const resp = await ApiClient.get<EmployeePosition[]>("employee-positions");
+    return resp;
   }
 
-  static async createPosition(
-    data: EmployeePositionFormData,
-    accessToken: string
-  ) {
-    const resp = await ApiClient.request<
-      EmployeePosition | ApiResponse<EmployeePosition>
-    >("/employee-positions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return unwrap<EmployeePosition>(resp);
+  static async createPosition(data: EmployeePositionFormData) {
+    const resp = await ApiClient.post<EmployeePosition>(
+      "employee-positions",
+      data
+    );
+    return resp;
   }
 
   static async updatePosition(
     id: number,
-    data: UpdateEmployeePositionFormData,
-    accessToken: string
+    data: UpdateEmployeePositionFormData
   ) {
-    const resp = await ApiClient.request<
-      EmployeePosition | ApiResponse<EmployeePosition>
-    >(`/employee-positions/${id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    return unwrap<EmployeePosition>(resp);
+    const resp = await ApiClient.put<EmployeePosition>(
+      `employee-positions/${id}`,
+      data
+    );
+    return resp;
   }
 
-  static async deletePosition(id: number, accessToken: string) {
-    await ApiClient.request(`/employee-positions/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async deletePosition(id: number) {
+    await ApiClient.delete(`employee-positions/${id}`);
     return "Position deleted";
   }
 }

@@ -57,8 +57,7 @@ export default function EmployeeNewPage() {
     setError(null);
     try {
       const person = await PersonsService.createPerson(
-        data as CreatePersonFormData,
-        accessToken
+        data as CreatePersonFormData
       );
       const employeeData = {
         personId: person.id,
@@ -71,10 +70,7 @@ export default function EmployeeNewPage() {
         positionId: 9,
         status: EmployeeStatus.ACTIVE,
       };
-      const employee = await EmployeesService.createEmployee(
-        employeeData,
-        accessToken
-      );
+      const employee = await EmployeesService.createEmployee(employeeData);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       router.push(`/employees/${employee.id}/edit`);
     } catch (e: any) {

@@ -21,11 +21,7 @@ export default function EmployeePositionsPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
-  const {
-    data: positions = [],
-    isLoading,
-    error,
-  } = useEmployeePositions(accessToken);
+  const { data: positions = [], isLoading, error } = useEmployeePositions();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

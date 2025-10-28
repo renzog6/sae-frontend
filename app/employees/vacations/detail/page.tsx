@@ -44,15 +44,10 @@ export default function EmployeeVacationsDetailPage() {
     return Number.isNaN(n) ? undefined : n;
   }, [sp]);
 
-  const {
-    data: employee,
-    isLoading,
-    error,
-    refetch,
-  } = useEmployeeDetail(id, accessToken);
+  const { data: employee, isLoading, error, refetch } = useEmployeeDetail(id);
 
-  const downloadPdfMutation = useDownloadVacationPdf(accessToken);
-  const exportExcelMutation = useExportVacationsToExcel(accessToken);
+  const downloadPdfMutation = useDownloadVacationPdf();
+  const exportExcelMutation = useExportVacationsToExcel();
 
   // Dialog state
   const [openAssignAnnual, setOpenAssignAnnual] = useState(false); // ASSIGNED

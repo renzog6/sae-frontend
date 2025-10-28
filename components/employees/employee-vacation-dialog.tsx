@@ -44,11 +44,11 @@ export function EmployeeVacationDialog({
 }: EmployeeVacationDialogProps) {
   const { toast } = useToast();
   const { mutate: createVacation, isPending: creating } =
-    useCreateEmployeeVacation(accessToken);
+    useCreateEmployeeVacation();
   const { mutate: updateVacation, isPending: updating } =
-    useUpdateEmployeeVacation(accessToken);
+    useUpdateEmployeeVacation();
   const { mutate: deleteVacation, isPending: deleting } =
-    useDeleteEmployeeVacation(accessToken);
+    useDeleteEmployeeVacation();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 

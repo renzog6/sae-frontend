@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, RotateCcw, Wrench, Minus, Eye, Truck } from "lucide-react";
 import { TireAssignmentsDialog } from "./tire-assignments-dialog";
 import { TireUnmountDialog } from "./tire-unmount-dialog";
+import { TireRotateDialog } from "./tire-rotate-dialog";
 import { TireAssignmentsService } from "@/lib/api/tires";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
@@ -26,9 +27,10 @@ export const TireActionsPanel: React.FC<Props> = ({
   onRefreshDiagram,
 }) => {
   const { data: session } = useSession();
-  const accessToken = session?.accessToken as string;
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isUnmountDialogOpen, setIsUnmountDialogOpen] = React.useState(false);
+  const [isRotateDialogOpen, setIsRotateDialogOpen] = React.useState(false);
 
   // Fetch current assignment for this position
   const {
@@ -37,11 +39,11 @@ export const TireActionsPanel: React.FC<Props> = ({
     refetch: refetchAssignment,
   } = useQuery({
     queryKey: ["tire-assignment", selectedPosition?.id],
-    queryFn: () => TireAssignmentsService.getOpenAssignments(accessToken),
-    enabled: !!accessToken && !!selectedPosition?.id,
+    queryFn: () => TireAssignmentsService.getOpen(),
+    enabled: !!selectedPosition?.id,
     select: (data) => {
       // Find assignment for this specific position
-      const assignments = Array.isArray(data) ? data : data?.data || [];
+      const assignments = Array.isArray(data) ? data : [];
       return assignments.find(
         (assignment: any) =>
           assignment.positionConfigId === selectedPosition?.id
@@ -50,6 +52,13 @@ export const TireActionsPanel: React.FC<Props> = ({
   });
   const assignedTire = currentAssignment?.tire || null;
   const assignmentId = currentAssignment?.id || null;
+
+  const handleRotationSuccess = React.useCallback(() => {
+    // Refetch assignment data
+    refetchAssignment();
+    // Trigger diagram refresh
+    onRefreshDiagram?.();
+  }, [refetchAssignment, onRefreshDiagram]);
 
   return (
     <>
@@ -146,11 +155,13 @@ export const TireActionsPanel: React.FC<Props> = ({
                     <Plus className="w-4 h-4 mr-2" />
                     {assignedTire ? "Posición Ocupada" : "Asignar Neumático"}
                   </Button>
+                  {/*Button rotate tire*/}
                   <Button
                     variant="outline"
                     className="w-full"
                     size="sm"
                     disabled={!assignedTire} // Enable only if assigned
+                    onClick={() => setIsRotateDialogOpen(true)}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" /> Rotar
                   </Button>
@@ -223,6 +234,24 @@ export const TireActionsPanel: React.FC<Props> = ({
         selectedEquipment={selectedEquipment}
         assignedTire={assignedTire}
         assignmentId={assignmentId}
+      />
+
+      <TireRotateDialog
+        open={isRotateDialogOpen}
+        onOpenChange={(open) => {
+          setIsRotateDialogOpen(open);
+          if (!open) {
+            // Refetch assignment data when dialog closes
+            refetchAssignment();
+            // Refresh diagram to show updated tire assignments
+            onRefreshDiagram?.();
+          }
+        }}
+        selectedPosition={selectedPosition}
+        selectedEquipment={selectedEquipment}
+        assignedTire={assignedTire}
+        assignmentId={assignmentId}
+        onRotationSuccess={handleRotationSuccess}
       />
     </>
   );

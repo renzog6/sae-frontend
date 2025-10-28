@@ -75,16 +75,10 @@ export default function TiresPage() {
       icon: <Ruler className="w-4 h-4" />,
     },
     {
-      href: routes.tires.equipmentAxles,
-      title: "Ejes de Equipos",
-      description: "Configura los ejes de los equipos.",
+      href: routes.tires.axleConfigurator,
+      title: "Configurador de Ejes",
+      description: "Crea ejes completos con posiciones automáticamente.",
       icon: <Settings className="w-4 h-4" />,
-    },
-    {
-      href: routes.tires.positionConfigs,
-      title: "Posiciones",
-      description: "Configura las posiciones de neumáticos.",
-      icon: <MapPin className="w-4 h-4" />,
     },
     {
       href: routes.tires.assignments,

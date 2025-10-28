@@ -1,7 +1,7 @@
 // filepath: sae-frontend/types/auth.ts
 import { User } from "./user";
 
-export interface LoginDto {
+export interface LoginCredentials {
   email: string;
   password: string;
 }

@@ -48,9 +48,8 @@ export function EquipmentModelForm({
   error,
   accessToken,
 }: EquipmentModelFormProps) {
-  const { data: typesResponse } = useEquipmentTypes(accessToken);
-  const types = typesResponse?.data || [];
-  const { data: brands = [] } = useBrands(accessToken);
+  const { data: types = [] } = useEquipmentTypes();
+  const { data: brands = [] } = useBrands();
 
   const form = useForm<EquipmentModelFormData>({
     resolver: zodResolver(equipmentModelFormSchema),

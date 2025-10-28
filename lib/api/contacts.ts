@@ -1,37 +1,27 @@
 // file: sae-frontend/lib/api/contacts.ts
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
+import { PaginatedResponse } from "@/lib/types/api";
 import { Contact } from "@/lib/types/contact";
 import {
   ContactFormData,
   UpdateContactFormData,
 } from "@/lib/validations/contact";
-function unwrap<T>(resp: any): T {
-  if (resp && typeof resp === "object" && "data" in resp) {
-    return resp.data as T;
-  }
-  return resp as T;
-}
 
 export class ContactsService {
-  static async getContacts(
-    accessToken: string,
-    params?: { page?: number; limit?: number }
-  ) {
+  private static basePath = "/contacts";
+
+  static async getContacts(params?: { page?: number; limit?: number }) {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
-    const response = await ApiClient.request<
-      PaginatedResponse<Contact> | Contact[]
-    >(`/contacts${qs ? `?${qs}` : ""}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return unwrap<PaginatedResponse<Contact> | Contact[]>(response);
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(
+      `${this.basePath}${qs ? `?${qs}` : ""}`
+    );
+    return response;
   }
 
   static async getContactsByCompany(
-    accessToken: string,
     companyId: number,
     params?: { page?: number; limit?: number }
   ) {
@@ -39,15 +29,13 @@ export class ContactsService {
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
-    const response = await ApiClient.request<PaginatedResponse<Contact>>(
-      `/contacts/company/${companyId}${qs ? `?${qs}` : ""}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(
+      `${this.basePath}/company/${companyId}${qs ? `?${qs}` : ""}`
     );
-    return unwrap<PaginatedResponse<Contact>>(response);
+    return response;
   }
 
   static async getContactsByPerson(
-    accessToken: string,
     personId: number,
     params?: { page?: number; limit?: number }
   ) {
@@ -55,60 +43,32 @@ export class ContactsService {
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
-    const response = await ApiClient.request<PaginatedResponse<Contact>>(
-      `/contacts/person/${personId}${qs ? `?${qs}` : ""}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(
+      `${this.basePath}/person/${personId}${qs ? `?${qs}` : ""}`
     );
-    return unwrap<PaginatedResponse<Contact>>(response);
+    return response;
   }
 
-  static async getContactById(id: number, accessToken: string) {
-    const response = await ApiClient.request<Contact | ApiResponse<Contact>>(
-      `/contacts/${id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    return unwrap<Contact>(response);
+  static async getContactById(id: number) {
+    const response = await ApiClient.get<Contact>(`${this.basePath}/${id}`);
+    return response;
   }
 
-  static async createContact(data: ContactFormData, accessToken: string) {
-    const response = await ApiClient.request<Contact | ApiResponse<Contact>>(
-      "/contacts",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    return unwrap<Contact>(response);
+  static async createContact(data: ContactFormData) {
+    const response = await ApiClient.post<Contact>(this.basePath, data);
+    return response;
   }
 
-  static async updateContact(
-    id: number,
-    data: UpdateContactFormData,
-    accessToken: string
-  ) {
-    const response = await ApiClient.request<Contact | ApiResponse<Contact>>(
-      `/contacts/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
+  static async updateContact(id: number, data: UpdateContactFormData) {
+    const response = await ApiClient.put<Contact>(
+      `${this.basePath}/${id}`,
+      data
     );
-    return unwrap<Contact>(response);
+    return response;
   }
 
-  static async deleteContact(id: number, accessToken: string) {
-    await ApiClient.request(`/contacts/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async deleteContact(id: number) {
+    await ApiClient.delete(`${this.basePath}/${id}`);
     return "Contact deleted";
   }
 }

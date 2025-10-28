@@ -25,10 +25,8 @@ export function UnitDialog({
   unit,
 }: UnitDialogProps) {
   const { toast } = useToast();
-  const { mutate: createUnit, isPending: creating } =
-    useCreateUnit(accessToken);
-  const { mutate: updateUnit, isPending: updating } =
-    useUpdateUnit(accessToken);
+  const { mutate: createUnit, isPending: creating } = useCreateUnit();
+  const { mutate: updateUnit, isPending: updating } = useUpdateUnit();
 
   const onSubmit = (data: UnitFormData) => {
     if (mode === "create") {

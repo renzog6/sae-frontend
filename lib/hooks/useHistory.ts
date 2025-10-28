@@ -8,31 +8,27 @@ import {
   UpdateEmployeeIncidentDto,
 } from "@/lib/types/history";
 
-export function useEmployeeHistory(
-  employeeId: number | undefined,
-  accessToken: string
-) {
+export function useEmployeeHistory(employeeId: number | undefined) {
   return useQuery<EmployeeHistoryResponse, Error>({
     queryKey: ["employee-history", employeeId],
-    queryFn: () =>
-      HistoryService.getEmployeeHistory(employeeId as number, accessToken),
-    enabled: !!accessToken && typeof employeeId === "number",
+    queryFn: () => HistoryService.getEmployeeHistory(employeeId as number),
+    enabled: typeof employeeId === "number",
   });
 }
 
 // Employee Incident CRUD hooks
-export function useCreateEmployeeIncident(accessToken: string) {
+export function useCreateEmployeeIncident() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateEmployeeIncidentDto) =>
-      HistoryService.createEmployeeIncident(data, accessToken),
+      HistoryService.createEmployeeIncident(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-history"] });
     },
   });
 }
 
-export function useUpdateEmployeeIncident(accessToken: string) {
+export function useUpdateEmployeeIncident() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -41,18 +37,17 @@ export function useUpdateEmployeeIncident(accessToken: string) {
     }: {
       id: number;
       data: UpdateEmployeeIncidentDto;
-    }) => HistoryService.updateEmployeeIncident(id, data, accessToken),
+    }) => HistoryService.updateEmployeeIncident(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-history"] });
     },
   });
 }
 
-export function useDeleteEmployeeIncident(accessToken: string) {
+export function useDeleteEmployeeIncident() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      HistoryService.deleteEmployeeIncident(id, accessToken),
+    mutationFn: (id: number) => HistoryService.deleteEmployeeIncident(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-history"] });
     },

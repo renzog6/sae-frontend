@@ -21,16 +21,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Save, Settings, Eye, Plus, Trash2 } from "lucide-react";
 import { AxleDiagram } from "./tire-axle-diagram";
 import { EquipmentSelector } from "@/components/equipment/equipment-selector";
 import { useEquipmentList } from "@/lib/hooks/useEquipment";
 import { axleTypeLabels } from "@/lib/constants";
 import { AxleType, TireSide } from "@/lib/types/enums";
-import type { EquipmentAxle, TirePositionConfig } from "@/lib/types/tire";
-import type { Equipment } from "@/lib/types/equipment";
-import { EquipmentAxlesService } from "@/lib/api/tires";
+import type { TirePositionConfig } from "@/lib/types/tire";
+import type { Equipment, EquipmentAxle } from "@/lib/types/equipment";
+import { EquipmentService } from "@/lib/api/equipment";
+import { useEquipmentAxles } from "@/lib/hooks/useEquipment";
 
 interface Props {
   accessToken: string;
@@ -65,10 +65,15 @@ export const AxleConfigurator: React.FC<Props> = ({
 
   // Data fetching
   const { data: equipmentsData, isLoading: equipmentsLoading } =
-    useEquipmentList(accessToken, {
-      page: 1,
-      limit: 100,
+    useEquipmentList({
+      skip: 0,
+      take: 100,
     });
+
+  // Fetch existing axles for selected equipment
+  const { data: existingAxles, isLoading: axlesLoading } = useEquipmentAxles({
+    equipmentId: selectedEquipmentId || 0,
+  });
 
   const equipments: Equipment[] = Array.isArray(equipmentsData)
     ? equipmentsData
@@ -174,8 +179,8 @@ export const AxleConfigurator: React.FC<Props> = ({
   };
 
   // Preview axle data
-  const previewAxle: EquipmentAxle = useMemo(
-    () => ({
+  const previewAxle: EquipmentAxle = useMemo(() => {
+    const axle = {
       id: 0,
       equipmentId: selectedEquipmentId || 0,
       order: parseInt(axleForm.order) || 0,
@@ -185,22 +190,10 @@ export const AxleConfigurator: React.FC<Props> = ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       equipment: null as any, // Mock equipment for preview
-      tirePositions: positions.map((pos, index) => ({
-        id: index + 1,
-        axleId: 0,
-        positionKey: pos.positionKey,
-        side: pos.side as TireSide,
-        isDual: pos.isDual,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        axle: previewAxle,
-      })),
-    }),
-    [selectedEquipmentId, axleForm, positions]
-  );
+      tirePositions: [] as any[], // Will be populated below
+    };
 
-  const previewPositions: TirePositionConfig[] = positions.map(
-    (pos, index) => ({
+    axle.tirePositions = positions.map((pos, index) => ({
       id: index + 1,
       axleId: 0,
       positionKey: pos.positionKey,
@@ -208,13 +201,30 @@ export const AxleConfigurator: React.FC<Props> = ({
       isDual: pos.isDual,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      axle: null as any, // Avoid circular reference in preview
-    })
+      axle: axle,
+    }));
+
+    return axle;
+  }, [selectedEquipmentId, axleForm, positions]);
+
+  const previewPositions: TirePositionConfig[] = useMemo(
+    () =>
+      positions.map((pos, index) => ({
+        id: index + 1,
+        axleId: 0,
+        positionKey: pos.positionKey,
+        side: pos.side as TireSide,
+        isDual: pos.isDual,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        axle: null as any, // Avoid circular reference in preview
+      })),
+    [positions]
   );
 
   const handleSubmit = async () => {
     try {
-      const result = await EquipmentAxlesService.createWithPositions(
+      const result = await EquipmentService.createWithPositions(
         {
           axle: {
             equipmentId: selectedEquipmentId!,
@@ -224,6 +234,7 @@ export const AxleConfigurator: React.FC<Props> = ({
             description: axleForm.description,
           },
           positions: positions.map((pos) => ({
+            axleId: 0, // Will be set by backend after axle creation
             positionKey: pos.positionKey,
             side: pos.side,
             isDual: pos.isDual,
@@ -268,26 +279,72 @@ export const AxleConfigurator: React.FC<Props> = ({
     <div className="space-y-6">
       {/* Equipment Selection */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">1. Seleccionar Equipo</CardTitle>
-          <CardDescription>
-            Elige el equipo al que pertenece este eje
-          </CardDescription>
-        </CardHeader>
         <CardContent>
-          {equipmentsLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="text-muted-foreground">Cargando equipos...</div>
+          <div className="flex justify-between">
+            <div>
+              {equipmentsLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <div className="text-muted-foreground">
+                    Cargando equipos...
+                  </div>
+                </div>
+              ) : (
+                <EquipmentSelector
+                  equipments={equipments}
+                  selectedEquipmentId={selectedEquipmentId}
+                  setSelectedEquipmentId={setSelectedEquipmentId}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
+              )}
             </div>
-          ) : (
-            <EquipmentSelector
-              equipments={equipments}
-              selectedEquipmentId={selectedEquipmentId}
-              setSelectedEquipmentId={setSelectedEquipmentId}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          )}
+            {/* Info de Ejes*/}
+            <div className="flex flex-col items-start justify-center ml-4">
+              {selectedEquipmentId ? (
+                <div className="space-y-2">
+                  {axlesLoading ? (
+                    <p className="text-sm text-muted-foreground">
+                      Cargando información de ejes...
+                    </p>
+                  ) : existingAxles &&
+                    Array.isArray(existingAxles) &&
+                    existingAxles.length > 0 ? (
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-green-700">
+                        ✓ Tiene {existingAxles.length} eje
+                        {existingAxles.length !== 1 ? "s" : ""} configurado
+                        {existingAxles.length !== 1 ? "s" : ""}
+                      </p>
+                      <div className="space-y-1 text-xs text-muted-foreground">
+                        {existingAxles.map((axle: any) => (
+                          <div
+                            key={axle.id}
+                            className="flex items-center gap-2"
+                          >
+                            <span className="font-medium">
+                              Eje {axle.order}:
+                            </span>
+                            <span>{axle.wheelCount} ruedas</span>
+                            <Badge variant="outline" className="text-xs">
+                              {axleTypeLabels[axle.axleType as AxleType]}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-orange-600">
+                      ⚠ No tiene ejes configurados
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-red-600">
+                  Por favor, selecciona un equipo para continuar.
+                </p>
+              )}
+            </div>
+          </div>
         </CardContent>
       </Card>
 

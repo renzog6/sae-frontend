@@ -41,13 +41,10 @@ export default function UnitsPage() {
   const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
-  const { data: units = [], isLoading, error } = useUnits(accessToken);
-  const { mutate: createUnit, isPending: creating } =
-    useCreateUnit(accessToken);
-  const { mutate: updateUnit, isPending: updating } =
-    useUpdateUnit(accessToken);
-  const { mutate: deleteUnit, isPending: deleting } =
-    useDeleteUnit(accessToken);
+  const { data: units = [], isLoading, error } = useUnits();
+  const { mutate: createUnit, isPending: creating } = useCreateUnit();
+  const { mutate: updateUnit, isPending: updating } = useUpdateUnit();
+  const { mutate: deleteUnit, isPending: deleting } = useDeleteUnit();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

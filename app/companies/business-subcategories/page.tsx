@@ -26,10 +26,9 @@ export default function BusinessSubcategoriesPage() {
   const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
-  const { data: subcategories = [], isLoading } =
-    useBusinessSubcategories(accessToken);
+  const { data: subcategories = [], isLoading } = useBusinessSubcategories();
   const { mutate: deleteSubcategory, isPending: deleting } =
-    useDeleteBusinessSubcategory(accessToken);
+    useDeleteBusinessSubcategory();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

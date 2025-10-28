@@ -22,7 +22,7 @@ export default function CompaniesPage() {
   const accessToken = session?.accessToken || "";
   const router = useRouter();
 
-  const { data: companiesData } = useCompanies(accessToken);
+  const { data: companiesData } = useCompanies();
   const companies = Array.isArray(companiesData)
     ? companiesData
     : (companiesData as any)?.data ?? [];

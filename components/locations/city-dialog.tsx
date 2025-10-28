@@ -35,12 +35,12 @@ export function CityDialog({
     mutate: createCity,
     isPending: creating,
     error: createError,
-  } = useCreateCity(accessToken);
+  } = useCreateCity();
   const {
     mutate: updateCity,
     isPending: updating,
     error: updateError,
-  } = useUpdateCity(accessToken);
+  } = useUpdateCity();
   const prefersReducedMotion = useReducedMotion();
   const { toast } = useToast();
 

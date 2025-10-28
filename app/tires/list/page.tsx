@@ -62,10 +62,9 @@ export default function TiresPage() {
     data: tiresData,
     isLoading,
     error,
-  } = useTires(accessToken, {
+  } = useTires({
     page,
     limit,
-    q: debouncedQuery || undefined,
     status: status === "ALL" ? undefined : status,
   });
 

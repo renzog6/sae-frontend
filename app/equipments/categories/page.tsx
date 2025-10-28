@@ -59,7 +59,7 @@ export default function EquipmentCategoriesPage() {
     data: categoriesResponse,
     isLoading,
     error,
-  } = useEquipmentCategories(accessToken);
+  } = useEquipmentCategories();
 
   const categories = Array.isArray(categoriesResponse)
     ? categoriesResponse

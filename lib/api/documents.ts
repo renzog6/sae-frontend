@@ -1,94 +1,63 @@
 // filepath: sae-frontend/lib/api/documents.ts
 
 import { ApiClient } from "./apiClient";
-import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
-import { normalizeListResponse } from "@/lib/api/utils";
+import { PaginatedResponse } from "@/lib/types/api";
 import {
   Document,
   UploadDocumentData,
   CreateDocumentDto,
 } from "@/lib/types/document";
 
-function unwrap<T>(resp: any): T {
-  if (resp && typeof resp === "object" && "data" in resp) {
-    return resp.data as T;
-  }
-  return resp as T;
-}
-
 export class DocumentsService {
-  static async getDocuments(
-    accessToken: string,
-    filter?: { employeeId?: number; companyId?: number }
-  ) {
+  private static basePath = "/documents";
+
+  static async getDocuments(filter?: {
+    employeeId?: number;
+    companyId?: number;
+  }) {
     const query = new URLSearchParams();
     if (filter?.employeeId) query.set("employeeId", String(filter.employeeId));
     if (filter?.companyId) query.set("companyId", String(filter.companyId));
     const qs = query.toString();
-    const response = await ApiClient.request<
-      Document[] | PaginatedResponse<Document>
-    >(`/documents${qs ? `?${qs}` : ""}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return normalizeListResponse<Document>(response as any);
-  }
-
-  static async getDocumentById(id: number, accessToken: string) {
-    const response = await ApiClient.request<Document | ApiResponse<Document>>(
-      `/documents/${id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+    const response = await ApiClient.get<PaginatedResponse<Document>>(
+      `${this.basePath}${qs ? `?${qs}` : ""}`
     );
-    return unwrap<Document>(response);
+    return response;
   }
 
-  static async uploadDocument(data: UploadDocumentData, accessToken: string) {
+  static async getDocumentById(id: number) {
+    const response = await ApiClient.get<Document>(`${this.basePath}/${id}`);
+    return response;
+  }
+
+  static async uploadDocument(data: UploadDocumentData) {
     const formData = new FormData();
     formData.append("file", data.file);
     if (data.description) formData.append("description", data.description);
     if (data.employeeId) formData.append("employeeId", String(data.employeeId));
     if (data.companyId) formData.append("companyId", String(data.companyId));
 
-    const response = await ApiClient.request<Document | ApiResponse<Document>>(
+    const response = await ApiClient.post<Document>(
       "/documents/upload",
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
-        body: formData,
-      }
+      formData
     );
-    return unwrap<Document>(response);
+    return response;
   }
 
-  static async updateDocument(
-    id: number,
-    data: Partial<CreateDocumentDto>,
-    accessToken: string
-  ) {
-    const response = await ApiClient.request<Document | ApiResponse<Document>>(
-      `/documents/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
+  static async updateDocument(id: number, data: Partial<CreateDocumentDto>) {
+    const response = await ApiClient.put<Document>(
+      `${this.basePath}/${id}`,
+      data
     );
-    return unwrap<Document>(response);
+    return response;
   }
 
-  static async deleteDocument(id: number, accessToken: string) {
-    await ApiClient.request(`/documents/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async deleteDocument(id: number) {
+    await ApiClient.delete(`${this.basePath}/${id}`);
     return "Document deleted";
   }
 
-  static async downloadDocument(id: number, accessToken: string) {
-    return ApiClient.requestBlob(`/documents/${id}/download`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  static async downloadDocument(id: number) {
+    return ApiClient.getBlob(`${this.basePath}/${id}/download`);
   }
 }

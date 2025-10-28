@@ -46,7 +46,7 @@ export function EquipmentTypeForm({
   error,
   accessToken,
 }: EquipmentTypeFormProps) {
-  const { data: categories = [] } = useEquipmentCategories(accessToken);
+  const { data: categories = [] } = useEquipmentCategories();
 
   const form = useForm<EquipmentTypeFormData>({
     resolver: zodResolver(equipmentTypeFormSchema),

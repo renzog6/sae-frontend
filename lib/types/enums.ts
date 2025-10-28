@@ -138,6 +138,18 @@ export enum TirePosition {
   E1ID = "E1ID", // Eje 1 Izquierdo Externo
   E1DI = "E1DI", // Eje 1 Derecho Interno
   E1DD = "E1DD", // Eje 1 Derecho Externo
+  E2II = "E2II", // Eje 2 Izquierdo Interno
+  E2ID = "E2ID", // Eje 2 Izquierdo Externo
+  E2DI = "E2DI", // Eje 2 Derecho Interno
+  E2DD = "E2DD", // Eje 2 Derecho Externo
+  E3II = "E3II", // Eje 3 Izquierdo Interno
+  E3ID = "E3ID", // Eje 3 Izquierdo Externo
+  E3DI = "E3DI", // Eje 3 Derecho Interno
+  E3DD = "E3DD", // Eje 3 Derecho Externo
+  E4II = "E4II", // Eje 4 Izquierdo Interno
+  E4ID = "E4ID", // Eje 4 Izquierdo Externo
+  E4DI = "E4DI", // Eje 4 Derecho Interno
+  E4DD = "E4DD", // Eje 4 Derecho Externo
   SPARE = "SPARE", // Rueda de auxilio
   UNKNOWN = "UNKNOWN", // Sin posición definida
 }
