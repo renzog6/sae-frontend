@@ -63,6 +63,7 @@ export const EquipmentSelector: React.FC<Props> = ({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="mb-2"
+                    onKeyDown={(e) => e.stopPropagation()}
                   />
                 </div>
 
@@ -72,25 +73,43 @@ export const EquipmentSelector: React.FC<Props> = ({
                       No hay equipos
                     </div>
                   ) : (
-                    items.map((equipment) => (
-                      <SelectItem
-                        key={equipment.id}
-                        value={String(equipment.id)}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-sm text-muted-foreground">
-                            <p className="font-medium">
-                              {equipment.name || "Sin nombre"}
-                            </p>
-                            {equipment.model?.brand?.name ?? "—"}{" "}
-                            {equipment.model?.name ?? ""} {equipment.year ?? ""}{" "}
-                            {equipment.licensePlate
-                              ? `- ${equipment.licensePlate}`
-                              : ""}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))
+                    items
+                      .filter(
+                        (equipment) =>
+                          searchTerm === "" ||
+                          equipment.name
+                            ?.toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          equipment.model?.brand?.name
+                            ?.toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          equipment.model?.name
+                            ?.toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          equipment.licensePlate
+                            ?.toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                      )
+                      .map((equipment) => (
+                        <SelectItem
+                          key={equipment.id}
+                          value={String(equipment.id)}
+                        >
+                          <div className="flex flex-col">
+                            <span className="text-sm text-muted-foreground">
+                              <p className="font-medium">
+                                {equipment.name || "Sin nombre"}
+                              </p>
+                              {equipment.model?.brand?.name ?? "—"}{" "}
+                              {equipment.model?.name ?? ""}{" "}
+                              {equipment.year ?? ""}{" "}
+                              {equipment.licensePlate
+                                ? `- ${equipment.licensePlate}`
+                                : ""}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))
                   )}
                 </ScrollArea>
               </SelectContent>

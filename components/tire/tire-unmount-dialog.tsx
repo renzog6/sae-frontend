@@ -63,6 +63,7 @@ export function TireUnmountDialog({
 }: TireUnmountDialogProps) {
   const { data: session } = useSession();
   const { toast } = useToast();
+  const accessToken = session?.accessToken || "";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

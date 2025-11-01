@@ -29,7 +29,7 @@ import {
   useTirePositionConfigsByEquipment,
   useTireAssignments,
 } from "@/lib/hooks/useTires";
-import { useEquipmentList } from "@/lib/hooks/useEquipment";
+import { useEquipmentList } from "@/lib/hooks/useEquipments";
 import type { TirePositionConfig } from "@/lib/types/tire";
 import type { Equipment } from "@/lib/types/equipment";
 

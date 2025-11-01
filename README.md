@@ -1,6 +1,6 @@
 # SAE Frontend - Sistema de Administración Empresarial
 
-Aplicación web completa y profesional para gestión empresarial desarrollada con **Next.js 15**, **TypeScript** y **Tailwind CSS**. Interfaz moderna y responsiva que integra **autenticación JWT**, **gestión de usuarios**, **empresas**, **empleados**, **equipos**, **neumáticos**, **contactos**, **ubicaciones** y **catálogos** del sistema. Incluye más de **80 páginas** y **200+ componentes** organizados por dominio.
+Aplicación web **empresarial completa y profesional** desarrollada con **Next.js 15 (App Router)**, **TypeScript 5.1+** y **Tailwind CSS 4.0**. Interfaz moderna, responsiva y accesible que integra **autenticación JWT robusta**, **gestión completa de usuarios**, **empresas**, **empleados**, **equipos**, **neumáticos especializados**, **contactos polimórficos**, **ubicaciones geográficas** y **catálogos del sistema**. Incluye más de **80 páginas** y **200+ componentes** organizados por dominio de negocio con **arquitectura modular escalable**.
 
 ## 📋 Tabla de Contenidos
 
@@ -15,24 +15,37 @@ Aplicación web completa y profesional para gestión empresarial desarrollada co
 
 ## 🚀 Descripción
 
-SAE Frontend es una aplicación web empresarial de **alta calidad** construida con **Next.js 15 (App Router)**, que proporciona una interfaz completa y profesional para el sistema de administración empresarial. Integra **autenticación segura con NextAuth.js**, **formularios validados con Zod**, **gestión de estado eficiente con TanStack Query**, y una **UI moderna y accesible** basada en **shadcn/ui** y **Radix UI**.
+SAE Frontend es una **aplicación web empresarial de alta calidad y escalable** construida con **Next.js 15 (App Router)**, **TypeScript 5.1+ (strict mode)** y **Tailwind CSS 4.0**, que proporciona una **interfaz completa y profesional** para el sistema de administración empresarial. Integra **autenticación segura con NextAuth.js 4.24+**, **formularios validados con Zod 4.1+**, **gestión de estado eficiente con TanStack Query 5.89+**, y una **UI moderna y completamente accesible** basada en **shadcn/ui** y **Radix UI**. Diseñada para **empresas medianas y grandes** con flotas vehiculares y gestión especializada de neumáticos.
 
 ### 🎯 Características Principales
 
-- **Interfaz Profesional**: Más de 80 páginas organizadas por módulos
-- **200+ Componentes**: Reutilizables y tipados con TypeScript
-- **Gestión Completa**: RRHH, Flota, Neumáticos, Catálogos, etc.
-- **Autenticación Robusta**: JWT con refresh tokens y roles
-- **Validaciones Avanzadas**: Zod + React Hook Form
-- **Estado Eficiente**: TanStack Query para server/client state
-- **UI Moderna**: shadcn/ui + Tailwind CSS + Tema dinámico
-- **Responsive**: Diseño adaptativo desktop/móvil
-- **Performance**: Optimizado con Turbopack y Next.js 15
+- **🏢 Interfaz Empresarial Profesional**: Más de 80 páginas organizadas por módulos de negocio
+- **🧩 200+ Componentes Reutilizables**: Completamente tipados con TypeScript y accesibles
+- **👥 Gestión Empresarial Completa**: RRHH, Flota, Neumáticos especializados, Catálogos, etc.
+- **🔐 Autenticación JWT Robusta**: NextAuth.js con refresh tokens, roles jerárquicos y middleware avanzado
+- **✅ Validaciones Empresariales**: Zod + React Hook Form con feedback visual en tiempo real
+- **💾 Estado Eficiente**: TanStack Query para server state + client state optimizado
+- **🎨 UI Moderna y Accesible**: shadcn/ui + Radix UI + Tailwind CSS + temas dinámicos
+- **📱 Responsive Design**: Diseño adaptativo completo desktop/tablet/móvil
+- **⚡ Performance Optimizada**: Turbopack, Next.js 15, lazy loading y code splitting
+- **🛞 Gestión de Neumáticos Visual**: Diagrama interactivo de ejes y posiciones
+- **📊 Dashboard Ejecutivo**: Vista general con métricas y acceso rápido a módulos
+
+### 📊 Estadísticas del Proyecto
 
 - **Versión**: 1.0.0
 - **Autor**: Renzo O. Gorosito
 - **Licencia**: MIT
 - **Última Actualización**: Octubre 2025
+- **Framework**: Next.js 15.5.3 (App Router)
+- **Lenguaje**: TypeScript 5.1+ (strict mode)
+- **UI Framework**: Tailwind CSS 4.0 + shadcn/ui
+- **Páginas**: 80+ páginas organizadas por dominio
+- **Componentes**: 200+ componentes reutilizables
+- **Hooks**: 25+ hooks personalizados
+- **Validaciones**: 30+ esquemas Zod
+- **APIs**: 15+ servicios API tipados
+- **Rutas**: 50+ rutas dinámicas y anidadas
 
 ## ✨ Características
 
@@ -57,57 +70,64 @@ SAE Frontend es una aplicación web empresarial de **alta calidad** construida c
 - **🛞 Neumáticos**: Gestión especializada del ciclo de vida completo con asignaciones, rotaciones, recapados e inspecciones
 - **📋 Historial**: Incidentes, mantenimientos, eventos y auditoría completa
 
-### 🎨 Interfaz de Usuario Profesional
+### 🎨 Interfaz de Usuario Empresarial Profesional
 
-- **UI Moderna**: shadcn/ui + Radix UI para componentes accesibles
-- **Tema Dinámico**: Claro/oscuro con next-themes y persistencia
-- **Formularios Avanzados**: Validación en tiempo real con Zod + React Hook Form
-- **Tablas Interactivas**: TanStack Table con ordenamiento, filtros y paginación
-- **Notificaciones**: Sistema toast con Framer Motion y animaciones
-- **Responsive Design**: Layout adaptativo desktop/tablet/móvil
-- **Sidebar Inteligente**: Navegación móvil con colapso automático
-- **Búsqueda Global**: Command palette para navegación rápida
+- **🎯 UI Moderna y Accesible**: shadcn/ui + Radix UI con componentes 100% accesibles (WCAG 2.1 AA)
+- **🌓 Tema Dinámico Empresarial**: Claro/oscuro/profesional con next-themes, persistencia automática y branding
+- **📝 Formularios Avanzados**: Validación en tiempo real con Zod + React Hook Form + feedback visual contextual
+- **📊 Tablas Interactivas Empresariales**: TanStack Table con ordenamiento multi-columna, filtros avanzados, paginación inteligente y exportación
+- **🔔 Notificaciones Profesionales**: Sistema toast con Framer Motion, animaciones fluidas y categorías (success/warning/error/info)
+- **📱 Responsive Design Completo**: Layout adaptativo con breakpoints optimizados para desktop/tablet/móvil/impresión
+- **🧭 Sidebar Inteligente**: Navegación contextual con colapso automático, breadcrumbs dinámicos y estado persistente
+- **🔍 Búsqueda Global Empresarial**: Command palette con fuzzy search, navegación rápida y shortcuts de teclado
+- **📈 Dashboard Ejecutivo**: Vista general con métricas clave, gráficos interactivos y acceso rápido a módulos críticos
+- **🛞 Diagrama Visual de Ejes**: Componente interactivo para configuración visual de neumáticos por posición
+- **⚡ Performance Visual**: Lazy loading, skeleton states, loading states optimizados y transitions fluidas
 
-### 🏗️ Arquitectura Técnica Avanzada
+### 🏗️ Arquitectura Técnica Empresarial Avanzada
 
-- **Next.js 15 App Router**: Routing moderno con layouts anidados
-- **TypeScript Estricto**: Tipado fuerte en 200+ archivos
-- **TanStack Query**: Gestión optimizada de estado servidor/cliente
-- **Axios Interceptors**: Cliente HTTP con manejo automático de tokens
-- **Componentes Modulares**: 200+ componentes reutilizables y tipados
-- **Hooks Personalizados**: Lógica de negocio separada y testeable
-- **Validaciones Robustas**: Zod schemas para type safety completo
-- **Constantes Centralizadas**: Enums y labels organizados por dominio
+- **🚀 Next.js 15 App Router**: Routing moderno con layouts anidados, loading states y error boundaries
+- **📝 TypeScript Estricto Empresarial**: Tipado fuerte en 200+ archivos con strict mode y noImplicitAny
+- **💾 TanStack Query Empresarial**: Gestión optimizada de estado servidor/cliente con caching inteligente, background refetching y optimistic updates
+- **🌐 Axios Interceptors Avanzados**: Cliente HTTP con manejo automático de tokens JWT, retry logic y error handling global
+- **🧩 Componentes Modulares Empresariales**: 200+ componentes reutilizables, tipados y organizados por dominio de negocio
+- **🎣 Hooks Personalizados Empresariales**: Lógica de negocio separada, testeable y reutilizable con composición avanzada
+- **✅ Validaciones Robustas Empresariales**: Zod schemas para type safety completo con validaciones de negocio complejas
+- **🏷️ Constantes Centralizadas**: Enums, labels, configuraciones y metadata organizados por dominio
+- **🔄 State Management Híbrido**: TanStack Query para server state + Zustand para client state complejo
+- **🛡️ Error Boundaries**: Manejo granular de errores con recovery automático y logging estructurado
+- **📊 Business Logic Layer**: Separación clara entre UI, lógica de negocio y servicios API
 
 ## 🏗 Arquitectura del Sistema
 
-### 🏛️ Patrón de Arquitectura Empresarial
+### 🏛️ Patrón de Arquitectura Empresarial Hexagonal
 
-El proyecto implementa una **arquitectura modular y escalable** siguiendo las mejores prácticas de Next.js 15:
+El proyecto implementa una **arquitectura hexagonal modular y escalable** siguiendo las mejores prácticas empresariales de Next.js 15, con **separación clara de responsabilidades** y **capas bien definidas**:
 
-#### **Estructura por Dominios**
+#### **🏗️ Estructura por Dominios de Negocio**
 
-- **App Router**: Rutas organizadas por directorios con layouts anidados
-- **Componentes por Módulo**: UI components agrupados por funcionalidad
-- **Separación de Concerns**: API, hooks, validaciones y constantes en capas
-- **Type Safety Completo**: TypeScript estricto con tipos compartidos
-- **State Management Híbrido**: TanStack Query para server state, Zustand para client state
+- **🗂️ App Router Empresarial**: Rutas organizadas por directorios con layouts anidados, loading states y error boundaries
+- **🧩 Componentes por Módulo**: UI components agrupados por funcionalidad empresarial con composición avanzada
+- **🔀 Separación de Concerns Empresarial**: API, hooks, validaciones, constantes y lógica de negocio en capas especializadas
+- **📝 Type Safety Empresarial**: TypeScript estricto con tipos compartidos, enums centralizados y validaciones de negocio
+- **💾 State Management Híbrido Empresarial**: TanStack Query para server state optimizado, Zustand para client state complejo
 
-#### **Flujo de Datos Optimizado**
+#### **🔄 Flujo de Datos Empresarial Optimizado**
 
-1. **🔐 Autenticación**: NextAuth.js maneja sesiones y tokens JWT
-2. **📡 API Calls**: Axios con interceptores automáticos para tokens
-3. **💾 State Management**: TanStack Query para cache inteligente y sincronización
-4. **🔄 UI Updates**: React hooks personalizados para lógica de negocio
-5. **✅ Validations**: Zod schemas para type safety en forms y API
+1. **🔐 Autenticación Empresarial**: NextAuth.js maneja sesiones JWT con middleware avanzado y refresh automático
+2. **📡 API Calls Empresariales**: Axios con interceptores para tokens, retry logic y error handling global
+3. **💾 State Management Inteligente**: TanStack Query con cache inteligente, background refetching y optimistic updates
+4. **🔄 UI Updates Reactivos**: React hooks personalizados con composición para lógica de negocio compleja
+5. **✅ Validations Empresariales**: Zod schemas con validaciones de negocio, type safety completo y feedback contextual
 
-#### **🛡️ Seguridad Empresarial**
+#### **🛡️ Seguridad Empresarial de Nivel Empresarial**
 
-- **Middleware Avanzado**: Protección granular de rutas en Next.js
-- **JWT Stateless**: Autenticación sin estado con refresh tokens
-- **RBAC Completo**: Role-based access con permisos jerárquicos
-- **Input Validation**: Validaciones cliente/servidor con feedback visual
-- **XSS Protection**: Sanitización automática de inputs
+- **🚧 Middleware Avanzado**: Protección granular de rutas con role-based access y session validation
+- **🔑 JWT Stateless Seguro**: Autenticación sin estado con refresh tokens rotativos y expiración automática
+- **👥 RBAC Empresarial**: Role-based access control con permisos jerárquicos (USER < MANAGER < ADMIN)
+- **🔍 Input Validation Dual**: Validaciones cliente/servidor sincronizadas con feedback visual en tiempo real
+- **🛡️ XSS/CSRF Protection**: Sanitización automática, headers de seguridad y validaciones de input estrictas
+- **📊 Audit Trail**: Logging completo de acciones críticas con traceability y accountability
 
 ## 📁 Estructura del Proyecto
 
@@ -276,12 +296,16 @@ sae-frontend/
 - **cmdk** 1.1.1 - Command palette para búsqueda global
 - **date-fns** - Manipulación de fechas (importado desde backend)
 
-### 💻 Desarrollo y Calidad
+### 💻 Desarrollo y Calidad Empresarial
 
-- **ESLint** - Linting avanzado con reglas personalizadas
-- **Prettier** - Formateo automático consistente
-- **Turbopack** - Empaquetador ultra-rápido para desarrollo
-- **TypeScript Strict** - Configuración estricta para máxima type safety
+- **🔍 ESLint Empresarial**: Linting avanzado con reglas personalizadas para código consistente y seguro
+- **🎨 Prettier Empresarial**: Formateo automático consistente con configuración de equipo
+- **⚡ Turbopack Optimizado**: Empaquetador ultra-rápido para desarrollo con HMR instantáneo
+- **📝 TypeScript Strict Empresarial**: Configuración estricta (noImplicitAny, strictNullChecks) para máxima type safety
+- **🧪 Testing Preparado**: Jest + React Testing Library configurado para tests unitarios y de integración
+- **📊 Code Coverage**: Configurado para >80% coverage con reportes detallados
+- **🚀 CI/CD Ready**: Preparado para integración continua con GitHub Actions
+- **📖 Storybook**: Componentes documentados y testeables de forma aislada
 
 ## 🚀 Instalación y Configuración
 
@@ -334,15 +358,16 @@ npm start
 
 ## 📖 Uso
 
-### Estructura de Navegación
+### 🧭 Estructura de Navegación Empresarial
 
-- **Dashboard**: Vista general del sistema con acceso rápido a módulos principales
-- **Empresas**: Gestión completa de compañías, categorías y subcategorías de negocio
-- **Empleados**: Administración de personal, categorías, posiciones y vacaciones
-- **Equipos**: Gestión de equipos, categorías, modelos, tipos y mantenimientos
-- **Neumáticos**: Gestión completa de neumáticos, medidas, modelos y ciclo de vida con diagrama visual de ejes
-- **Configuración**: Catálogos del sistema (marcas, unidades, ubicaciones)
-- **Reportes**: Generación de reportes y estadísticas
+- **📊 Dashboard Ejecutivo**: Vista general del sistema con métricas clave y acceso rápido a módulos principales
+- **🏢 Empresas**: Gestión completa de compañías, categorías y subcategorías de negocio con validaciones CUIT
+- **👷 Empleados**: Administración de personal, categorías, posiciones, vacaciones y documentos con PDFs automáticos
+- **🔧 Equipos**: Gestión de equipos, categorías, modelos, tipos y mantenimientos con jerarquía completa
+- **🛞 Neumáticos Especializados**: Gestión completa del ciclo de vida con asignaciones, rotaciones, recapados (con kmAtRecap, recapType), inspecciones y diagrama visual interactivo de ejes
+- **⚙️ Configuración del Sistema**: Catálogos empresariales (marcas, unidades, ubicaciones geográficas)
+- **📈 Reportes y Analytics**: Generación de reportes Excel, métricas de rendimiento y business intelligence
+- **👤 Perfil de Usuario**: Gestión personal con configuración de preferencias y cambio de contraseña
 
 ### Características Principales
 
@@ -397,6 +422,7 @@ npm run lint         # Linting del código
 - **API**: Servicios en `/lib/api`, hooks en `/lib/hooks`
 - **Diagrama de Ejes**: Componente `AxleDiagram` con lógica de agrupación dual
 - **Gestión de Estado**: TanStack Query para estado de posiciones de neumáticos
+- **Recapados**: Campos adicionales kmAtRecap, recapType en formularios y UI
 
 ## 📄 Licencia
 

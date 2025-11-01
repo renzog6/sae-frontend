@@ -8,16 +8,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Truck } from "lucide-react";
 import type { Equipment } from "@/lib/types/equipment";
+import { useState } from "react";
 
 interface EquipmentSelectorDialogProps {
   equipments: Equipment[];
@@ -36,6 +30,8 @@ export function EquipmentSelectorDialog({
   setSearchTerm,
   children,
 }: EquipmentSelectorDialogProps) {
+  const [open, setOpen] = useState(false);
+
   // Filter only active equipment
   const activeEquipments = equipments.filter((eq) => eq.status === "ACTIVE");
 
@@ -45,7 +41,7 @@ export function EquipmentSelectorDialog({
       .includes(searchTerm.toLowerCase())
   );
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -61,48 +57,44 @@ export function EquipmentSelectorDialog({
         <div className="space-y-4">
           <div className="flex gap-4">
             <div className="flex-1">
-              <Select
-                value={selectedEquipmentId?.toString() || ""}
-                onValueChange={(value) =>
-                  setSelectedEquipmentId(value ? parseInt(value) : null)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar equipo..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar equipo..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-                  <ScrollArea className="h-64">
-                    {filteredEquipments.map((equipment) => (
-                      <SelectItem
-                        key={equipment.id}
-                        value={equipment.id.toString()}
-                      >
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {equipment.name || "Sin nombre"}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {equipment.model?.brand?.name || "Sin marca"}
-                            {" - "}
-                            {equipment.model?.name || "Sin modelo"}
-                            {equipment.year && ` - ${equipment.year}`}
-                            {equipment.licensePlate &&
-                              ` - ${equipment.licensePlate}`}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <Input
+                placeholder="Buscar equipo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-4"
+              />
+              <ScrollArea className="h-64">
+                <div className="space-y-2">
+                  {filteredEquipments.map((equipment) => (
+                    <div
+                      key={equipment.id}
+                      className={`p-3 rounded-md cursor-pointer border transition-colors ${
+                        selectedEquipmentId === equipment.id
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "hover:bg-muted border-border"
+                      }`}
+                      onClick={() => {
+                        setSelectedEquipmentId(equipment.id);
+                        setOpen(false);
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {equipment.name || "Sin nombre"}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {equipment.model?.brand?.name || "Sin marca"}
+                          {" - "}
+                          {equipment.model?.name || "Sin modelo"}
+                          {equipment.year && ` - ${equipment.year}`}
+                          {equipment.licensePlate &&
+                            ` - ${equipment.licensePlate}`}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </div>
           </div>
         </div>

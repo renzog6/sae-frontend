@@ -11,9 +11,18 @@ import {
 export class TireInspectionsService {
   private static basePath = "/tires/inspections";
 
-  static async getAll() {
+  static async getAll(params?: { page?: number; limit?: number; q?: string }) {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.q) queryParams.append("q", params.q);
+
+    const url = queryParams.toString()
+      ? `${this.basePath}?${queryParams.toString()}`
+      : this.basePath;
+
     const response = await ApiClient.get<PaginatedResponse<TireInspection>>(
-      this.basePath
+      url
     );
     return response;
   }

@@ -8,7 +8,7 @@ import type { Equipment } from "@/lib/types/equipment";
 import type { TirePositionConfig } from "@/lib/types/tire";
 import type { EquipmentAxle } from "@/lib/types/equipment";
 
-import { useEquipmentList, useEquipmentAxles } from "@/lib/hooks/useEquipment";
+import { useEquipmentList, useEquipmentAxles } from "@/lib/hooks/useEquipments";
 import {
   useTirePositionConfigsByEquipment,
   useTireAssignments,
@@ -74,10 +74,13 @@ export function TireAssignmentsContainer() {
   }, [positionsData]);
 
   // Fetch current assignments for the selected equipment (only when equipment is selected)
-  const { data: assignmentsData, isLoading: isLoadingAssignments } =
-    useTireAssignments(
-      selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
-    );
+  const {
+    data: assignmentsData,
+    isLoading: isLoadingAssignments,
+    refetch: refetchAssignments,
+  } = useTireAssignments(
+    selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
+  );
 
   const assignments = useMemo(() => {
     if (!assignmentsData) return [];
@@ -104,7 +107,9 @@ export function TireAssignmentsContainer() {
 
   const onRefreshDiagram = useCallback(() => {
     setRefreshTrigger((prev) => prev + 1);
-  }, []);
+    // Also refetch assignments data
+    refetchAssignments();
+  }, [refetchAssignments]);
 
   // Loading UX: skeletons / empty states
   if (isLoadingEquipments) {

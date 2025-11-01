@@ -2,8 +2,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useEquipmentDetail } from "@/lib/hooks/useEquipment";
+import { useEquipmentDetail } from "@/lib/hooks/useEquipments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,77 +20,42 @@ const statusColors: Record<EquipmentStatus, string> = {
 
 export default function EquipmentDetailPage() {
   const params = useParams();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const id = params?.id as string;
 
   const {
     data: equipment,
     isLoading,
     error,
-  } = useEquipmentDetail(id ? parseInt(id) : undefined, accessToken);
+  } = useEquipmentDetail(id ? parseInt(id) : undefined);
 
   if (isLoading) {
     return (
-      <div className="p-4">
-        <div className="space-y-4 animate-pulse">
-          <div className="w-1/4 h-8 bg-gray-200 rounded"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
+      <div className="space-y-4 animate-pulse">
+        <div className="w-1/4 h-8 bg-gray-200 rounded"></div>
+        <div className="h-64 bg-gray-200 rounded"></div>
       </div>
     );
   }
 
   if (error || !equipment) {
     return (
-      <div className="p-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600">Error</h1>
-          <p className="text-gray-600">
-            {error?.message || "Equipo no encontrado"}
-          </p>
-          <Link href="/equipments/list">
-            <Button className="mt-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver a la lista
-            </Button>
-          </Link>
-        </div>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-red-600">Error</h1>
+        <p className="text-gray-600">
+          {error?.message || "Equipo no encontrado"}
+        </p>
+        <Link href="/equipments/list">
+          <Button className="mt-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver a la lista
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/equipments/list">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold">
-              {equipment.name || "Sin nombre"}
-            </h1>
-            <p className="text-gray-600">
-              {equipment.internalCode && `Código: ${equipment.internalCode}`}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Edit className="w-4 h-4 mr-2" />
-            Editar
-          </Button>
-          <Button variant="destructive">
-            <Trash2 className="w-4 h-4 mr-2" />
-            Eliminar
-          </Button>
-        </div>
-      </div>
-
+    <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Información básica */}
         <Card>

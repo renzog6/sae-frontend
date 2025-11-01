@@ -1,7 +1,6 @@
 // filepath: sae-frontend/app/equipments/new/page.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +15,7 @@ import Link from "next/link";
 import { EquipmentForm } from "@/components/forms/equipment-form";
 
 export default function NewEquipmentPage() {
-  const { data: session } = useSession();
   const router = useRouter();
-  const accessToken = session?.accessToken || "";
 
   const handleSuccess = () => {
     router.push("/equipments/list");
@@ -50,7 +47,6 @@ export default function NewEquipmentPage() {
         </CardHeader>
         <CardContent>
           <EquipmentForm
-            accessToken={accessToken}
             onSuccess={handleSuccess}
             onCancel={() => router.push("/equipments/list")}
           />

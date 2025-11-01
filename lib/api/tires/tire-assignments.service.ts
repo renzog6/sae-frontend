@@ -1,3 +1,4 @@
+//filepath: sae-frontend/lib/api/tires/tire-assignments.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
 import { PaginatedResponse } from "@/lib/types/api";
 import { TireAssignment, MountTireDto, UnmountTireDto } from "@/lib/types/tire";

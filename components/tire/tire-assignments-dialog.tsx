@@ -36,7 +36,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, Truck, MapPin, Search, Calendar } from "lucide-react";
 import { useToast } from "@/components/ui/toaster";
 import { useTires } from "@/lib/hooks/useTires";
-import { useEquipmentList } from "@/lib/hooks/useEquipment";
+import { useEquipmentList } from "@/lib/hooks/useEquipments";
 import { TireAssignmentsService } from "@/lib/api/tires";
 import {
   mountTireSchema,

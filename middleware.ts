@@ -11,7 +11,11 @@ export default withAuth(
     }
 
     // Si el usuario no está autenticado y trata de acceder a rutas protegidas
-    if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/dashboard")) {
+    if (
+      !req.nextauth.token &&
+      (req.nextUrl.pathname.startsWith("/dashboard") ||
+        req.nextUrl.pathname.startsWith("/equipments"))
+    ) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
@@ -26,7 +30,10 @@ export default withAuth(
         }
 
         // Para rutas protegidas, requerir token
-        if (req.nextUrl.pathname.startsWith("/dashboard")) {
+        if (
+          req.nextUrl.pathname.startsWith("/dashboard") ||
+          req.nextUrl.pathname.startsWith("/equipments")
+        ) {
           return !!token;
         }
 

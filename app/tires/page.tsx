@@ -75,7 +75,7 @@ export default function TiresPage() {
       icon: <Ruler className="w-4 h-4" />,
     },
     {
-      href: routes.tires.axleConfigurator,
+      href: routes.equipments.list,
       title: "Configurador de Ejes",
       description: "Crea ejes completos con posiciones automáticamente.",
       icon: <Settings className="w-4 h-4" />,

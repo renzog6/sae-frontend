@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,12 +17,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { EquipmentModel } from "@/lib/types/equipment";
 import {
   useEquipmentModels,
   useEquipmentTypes,
-} from "@/lib/hooks/useEquipment";
+} from "@/lib/hooks/useEquipments";
 import { useBrands } from "@/lib/hooks/useCatalogs";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentModelColumns } from "./columns";
@@ -38,9 +37,6 @@ import {
 } from "@/components/ui/pagination";
 
 export default function EquipmentModelsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -61,48 +57,29 @@ export default function EquipmentModelsPage() {
     setPage(1);
   }, [debouncedQuery, selectedBrand, selectedType, limit]);
 
+  const { data: brands = [] } = useBrands();
+  const { data: typesData } = useEquipmentTypes();
+  const types = Array.isArray(typesData) ? typesData : [];
+
   const {
     data: modelsResponse,
     isLoading,
     error,
   } = useEquipmentModels({
-    // Get all models to enable client-side filtering
+    page,
+    limit,
+    typeId: selectedType
+      ? types.find((t: any) => t.name === selectedType)?.id
+      : undefined,
   });
-
-  const { data: brands = [] } = useBrands();
-  const { data: types = [] } = useEquipmentTypes();
-  const models = useMemo(() => {
-    let filtered = modelsResponse || [];
-
-    // Filter by search query (case-insensitive)
-    if (debouncedQuery) {
-      const query = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(
-        (model) =>
-          model.name?.toLowerCase().includes(query) ||
-          model.code?.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by brand
-    if (selectedBrand) {
-      filtered = filtered.filter(
-        (model) => model.brand?.name === selectedBrand
-      );
-    }
-
-    // Filter by type
-    if (selectedType) {
-      filtered = filtered.filter((model) => model.type?.name === selectedType);
-    }
-
-    // Sort by name A-Z
-    return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [modelsResponse, debouncedQuery, selectedBrand, selectedType]);
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = models.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
+  const models = modelsResponse?.data || [];
+  const meta = modelsResponse?.meta || {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  };
+  const totalPages = meta.totalPages || Math.ceil(meta.total / meta.limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -273,7 +250,10 @@ export default function EquipmentModelsPage() {
           ) : (
             <DataTable<EquipmentModel, unknown>
               columns={columns}
-              data={models.slice((page - 1) * limit, page * limit)}
+              data={models.filter(
+                (model: any) =>
+                  !selectedBrand || model.brand?.name === selectedBrand
+              )}
               searchableColumns={["name", "code"]}
               searchPlaceholder="Buscar por nombre o código..."
             />
@@ -313,7 +293,6 @@ export default function EquipmentModelsPage() {
       </Card>
 
       <EquipmentModelDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

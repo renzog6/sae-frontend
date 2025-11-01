@@ -1,6 +1,12 @@
-// filepath: sae-frontend/lib/hooks/useEquipment.ts
+// filepath: sae-frontend/lib/hooks/useEquipments.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { EquipmentService } from "@/lib/api/equipment";
+import {
+  EquipmentsService,
+  EquipmentModelsService,
+  EquipmentTypesService,
+  EquipmentCategoriesService,
+  EquipmentAxlesService,
+} from "@/lib/api/equipments";
 import {
   Equipment,
   EquipmentCategory,
@@ -22,24 +28,20 @@ import { PaginatedResponse } from "@/lib/types/api";
 export function useEquipmentAxles(params?: { equipmentId?: number }) {
   return useQuery({
     queryKey: ["equipment-axles", params?.equipmentId ?? ""],
-    queryFn: () => EquipmentService.getEquipmentAxles(params),
+    queryFn: () => EquipmentAxlesService.getAll(params),
     enabled: !!params?.equipmentId,
   });
 }
 
-export function useEquipmentAxleDetail(
-  id: number | undefined,
-  accessToken: string
-) {
+export function useEquipmentAxleDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["equipment-axles", id],
-    queryFn: () =>
-      EquipmentService.getEquipmentAxleById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
+    queryFn: () => EquipmentAxlesService.getById(id as number),
+    enabled: typeof id === "number",
   });
 }
 
-export function useCreateEquipmentAxle(accessToken: string) {
+export function useCreateEquipmentAxle() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: {
@@ -48,14 +50,14 @@ export function useCreateEquipmentAxle(accessToken: string) {
       axleType: string;
       wheelCount: number;
       description?: string;
-    }) => EquipmentService.createEquipmentAxle(data, accessToken),
+    }) => EquipmentAxlesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment-axles"] });
     },
   });
 }
 
-export function useUpdateEquipmentAxle(accessToken: string) {
+export function useUpdateEquipmentAxle() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: {
@@ -67,7 +69,7 @@ export function useUpdateEquipmentAxle(accessToken: string) {
         wheelCount: number;
         description?: string;
       }>;
-    }) => EquipmentService.updateEquipmentAxle(vars.id, vars.data, accessToken),
+    }) => EquipmentAxlesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["equipment-axles"] });
       qc.invalidateQueries({ queryKey: ["equipment-axles", vars.id] });
@@ -75,11 +77,10 @@ export function useUpdateEquipmentAxle(accessToken: string) {
   });
 }
 
-export function useDeleteEquipmentAxle(accessToken: string) {
+export function useDeleteEquipmentAxle() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      EquipmentService.deleteEquipmentAxle(id, accessToken),
+    mutationFn: (id: number) => EquipmentAxlesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["equipment-axles"] });
       qc.invalidateQueries({ queryKey: ["equipment-axles", id] });
@@ -88,29 +89,32 @@ export function useDeleteEquipmentAxle(accessToken: string) {
 }
 
 // Categories
-export function useEquipmentCategories() {
-  return useQuery<EquipmentCategory[], Error>({
-    queryKey: ["equipment-categories"],
-    queryFn: () => EquipmentService.getCategories(),
+export function useEquipmentCategories(params?: {
+  page?: number;
+  limit?: number;
+}) {
+  return useQuery<PaginatedResponse<EquipmentCategory>, Error>({
+    queryKey: ["equipment-categories", params?.page ?? 1, params?.limit ?? 10],
+    queryFn: () => EquipmentCategoriesService.getAll(params),
   });
 }
 
-export function useCreateEquipmentCategory(accessToken: string) {
+export function useCreateEquipmentCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateEquipmentCategoryDto) =>
-      EquipmentService.createCategory(data, accessToken),
+      EquipmentCategoriesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment-categories"] });
     },
   });
 }
 
-export function useUpdateEquipmentCategory(accessToken: string) {
+export function useUpdateEquipmentCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEquipmentCategoryDto }) =>
-      EquipmentService.updateCategory(vars.id, vars.data, accessToken),
+      EquipmentCategoriesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["equipment-categories"] });
       qc.invalidateQueries({ queryKey: ["equipment-category", vars.id] });
@@ -118,11 +122,10 @@ export function useUpdateEquipmentCategory(accessToken: string) {
   });
 }
 
-export function useDeleteEquipmentCategory(accessToken: string) {
+export function useDeleteEquipmentCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      EquipmentService.deleteCategory(id, accessToken),
+    mutationFn: (id: number) => EquipmentCategoriesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["equipment-categories"] });
       qc.invalidateQueries({ queryKey: ["equipment-category", id] });
@@ -131,40 +134,46 @@ export function useDeleteEquipmentCategory(accessToken: string) {
 }
 
 // Types
-export function useEquipmentTypes(params?: { categoryId?: number }) {
-  return useQuery<EquipmentType[], Error>({
-    queryKey: ["equipment-types", params?.categoryId ?? ""],
-    queryFn: () => EquipmentService.getTypes(params),
+export function useEquipmentTypes(params?: {
+  categoryId?: number;
+  page?: number;
+  limit?: number;
+}) {
+  return useQuery({
+    queryKey: [
+      "equipment-types",
+      params?.categoryId ?? "",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+    ],
+    queryFn: () => EquipmentTypesService.getAll(params),
   });
 }
 
-export function useEquipmentTypeDetail(
-  id: number | undefined,
-  accessToken: string
-) {
+export function useEquipmentTypeDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["equipment-types", id],
-    queryFn: () => EquipmentService.getTypeById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
+    queryFn: () => EquipmentTypesService.getById(id as number),
+    enabled: typeof id === "number",
   });
 }
 
-export function useCreateEquipmentType(accessToken: string) {
+export function useCreateEquipmentType() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateEquipmentTypeDto) =>
-      EquipmentService.createType(data, accessToken),
+      EquipmentTypesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment-types"] });
     },
   });
 }
 
-export function useUpdateEquipmentType(accessToken: string) {
+export function useUpdateEquipmentType() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEquipmentTypeDto }) =>
-      EquipmentService.updateType(vars.id, vars.data, accessToken),
+      EquipmentTypesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["equipment-types"] });
       qc.invalidateQueries({ queryKey: ["equipment-types", vars.id] });
@@ -172,10 +181,10 @@ export function useUpdateEquipmentType(accessToken: string) {
   });
 }
 
-export function useDeleteEquipmentType(accessToken: string) {
+export function useDeleteEquipmentType() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => EquipmentService.deleteType(id, accessToken),
+    mutationFn: (id: number) => EquipmentTypesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["equipment-types"] });
       qc.invalidateQueries({ queryKey: ["equipment-types", id] });
@@ -183,52 +192,54 @@ export function useDeleteEquipmentType(accessToken: string) {
   });
 }
 
-export function useEquipmentTypesByCategory(
-  categoryId: number,
-  accessToken: string
-) {
+export function useEquipmentTypesByCategory(categoryId: number) {
   return useQuery<EquipmentType[], Error>({
     queryKey: ["equipment-types", "category", categoryId],
-    queryFn: () => EquipmentService.getTypesByCategory(categoryId, accessToken),
-    enabled: !!accessToken,
+    queryFn: () => EquipmentTypesService.getByCategory(categoryId),
   });
 }
 
 // Models
-export function useEquipmentModels(params?: { typeId?: number }) {
-  return useQuery<EquipmentModel[], Error>({
-    queryKey: ["equipment-models", params?.typeId ?? ""],
-    queryFn: () => EquipmentService.getModels(params),
+export function useEquipmentModels(params?: {
+  typeId?: number;
+  page?: number;
+  limit?: number;
+}) {
+  return useQuery<PaginatedResponse<EquipmentModel>, Error>({
+    queryKey: [
+      "equipment-models",
+      params?.typeId ?? "",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+    ],
+    queryFn: () => EquipmentModelsService.getAll(params),
   });
 }
 
-export function useEquipmentModelDetail(
-  id: number | undefined,
-  accessToken: string
-) {
+export function useEquipmentModelDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["equipment-models", id],
-    queryFn: () => EquipmentService.getModelById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
+    queryFn: () => EquipmentModelsService.getById(id as number),
+    enabled: typeof id === "number",
   });
 }
 
-export function useCreateEquipmentModel(accessToken: string) {
+export function useCreateEquipmentModel() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateEquipmentModelDto) =>
-      EquipmentService.createModel(data, accessToken),
+      EquipmentModelsService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment-models"] });
     },
   });
 }
 
-export function useUpdateEquipmentModel(accessToken: string) {
+export function useUpdateEquipmentModel() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEquipmentModelDto }) =>
-      EquipmentService.updateModel(vars.id, vars.data, accessToken),
+      EquipmentModelsService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["equipment-models"] });
       qc.invalidateQueries({ queryKey: ["equipment-models", vars.id] });
@@ -236,10 +247,10 @@ export function useUpdateEquipmentModel(accessToken: string) {
   });
 }
 
-export function useDeleteEquipmentModel(accessToken: string) {
+export function useDeleteEquipmentModel() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => EquipmentService.deleteModel(id, accessToken),
+    mutationFn: (id: number) => EquipmentModelsService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["equipment-models"] });
       qc.invalidateQueries({ queryKey: ["equipment-models", id] });
@@ -247,11 +258,10 @@ export function useDeleteEquipmentModel(accessToken: string) {
   });
 }
 
-export function useEquipmentModelsByType(typeId: number, accessToken: string) {
+export function useEquipmentModelsByType(typeId: number) {
   return useQuery<EquipmentModel[], Error>({
     queryKey: ["equipment-models", "type", typeId],
-    queryFn: () => EquipmentService.getModelsByType(typeId, accessToken),
-    enabled: !!accessToken,
+    queryFn: () => EquipmentModelsService.getByType(typeId),
   });
 }
 
@@ -279,38 +289,34 @@ export function useEquipmentList(params?: {
       params?.search ?? "",
     ],
     queryFn: () => {
-      return EquipmentService.getEquipment(params);
+      return EquipmentsService.getAll(params);
     },
   });
 }
 
-export function useEquipmentDetail(
-  id: number | undefined,
-  accessToken: string
-) {
+export function useEquipmentDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["equipment", id],
-    queryFn: () => EquipmentService.getEquipmentById(id as number, accessToken),
-    enabled: !!accessToken && typeof id === "number",
+    queryFn: () => EquipmentsService.getById(id as number),
+    enabled: typeof id === "number",
   });
 }
 
-export function useCreateEquipment(accessToken: string) {
+export function useCreateEquipment() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateEquipmentDto) =>
-      EquipmentService.createEquipment(data, accessToken),
+    mutationFn: (data: CreateEquipmentDto) => EquipmentsService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment"] });
     },
   });
 }
 
-export function useUpdateEquipment(accessToken: string) {
+export function useUpdateEquipment() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEquipmentDto }) =>
-      EquipmentService.updateEquipment(vars.id, vars.data, accessToken),
+      EquipmentsService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["equipment"] });
       qc.invalidateQueries({ queryKey: ["equipment", vars.id] });
@@ -318,11 +324,10 @@ export function useUpdateEquipment(accessToken: string) {
   });
 }
 
-export function useDeleteEquipment(accessToken: string) {
+export function useDeleteEquipment() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) =>
-      EquipmentService.deleteEquipment(id, accessToken),
+    mutationFn: (id: number) => EquipmentsService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["equipment"] });
       qc.invalidateQueries({ queryKey: ["equipment", id] });

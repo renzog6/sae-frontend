@@ -1,0 +1,110 @@
+// filepath: sae-frontend/app/equipments/[id]/layout.tsx
+
+"use client";
+
+import { ReactNode } from "react";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEquipmentDetail } from "@/lib/hooks/useEquipments";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Truck, Edit, Settings, CircleDot, History } from "lucide-react";
+
+const navItems = [
+  { href: "", label: "Detalle", icon: Truck },
+  { href: "/edit", label: "Editar", icon: Edit },
+  {
+    href: "/axle-configurator",
+    label: "Configuración de Ejes",
+    icon: Settings,
+  },
+  { href: "/tires", label: "Neumáticos", icon: CircleDot },
+  { href: "/history", label: "Historial", icon: History },
+];
+
+export default function EquipmentLayout({ children }: { children: ReactNode }) {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const {
+    data: equipment,
+    isLoading,
+    error,
+  } = useEquipmentDetail(id ? parseInt(id) : undefined);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 p-6 md:flex-row">
+        <Card className="w-full md:w-64">
+          <CardContent className="p-6">
+            <div className="space-y-4 animate-pulse">
+              <div className="w-3/4 h-4 rounded bg-muted"></div>
+              <div className="w-1/2 h-3 rounded bg-muted"></div>
+              <div className="w-1/4 h-3 rounded bg-muted"></div>
+              <div className="space-y-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-8 rounded bg-muted"></div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="flex-1">
+          <CardContent className="p-6">
+            <div className="space-y-4 animate-pulse">
+              <div className="w-1/4 h-6 rounded bg-muted"></div>
+              <div className="w-1/2 h-4 rounded bg-muted"></div>
+              <div className="h-32 rounded bg-muted"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error || !equipment) {
+    notFound();
+  }
+
+  return (
+    <div className="flex flex-col gap-6 p-6 md:flex-row">
+      {/* Sidebar con info básica del equipo */}
+      <Card className="w-full md:w-64">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl">
+            {equipment.name || "Sin nombre"}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {equipment.type?.name} - {equipment.model?.name}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {equipment.licensePlate && `Patente: ${equipment.licensePlate}`}
+          </p>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <nav className="flex flex-col gap-1">
+            {navItems.map((item) => (
+              <Button
+                key={item.href}
+                variant="ghost"
+                className="justify-start px-3 h-9"
+                asChild
+              >
+                <Link href={`/equipments/${id}${item.href}`}>
+                  <item.icon className="w-4 h-4 mr-2" />
+                  {item.label}
+                </Link>
+              </Button>
+            ))}
+          </nav>
+        </CardContent>
+      </Card>
+
+      {/* Contenido dinámico de cada sección */}
+      <Card className="flex-1">
+        <CardContent className="p-0">{children}</CardContent>
+      </Card>
+    </div>
+  );
+}

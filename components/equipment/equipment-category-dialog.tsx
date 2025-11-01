@@ -10,7 +10,7 @@ import {
   useCreateEquipmentCategory,
   useUpdateEquipmentCategory,
   useDeleteEquipmentCategory,
-} from "@/lib/hooks/useEquipment";
+} from "@/lib/hooks/useEquipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface EquipmentCategoryDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -32,7 +31,6 @@ export interface EquipmentCategoryDialogProps {
 }
 
 export function EquipmentCategoryDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,
@@ -40,11 +38,11 @@ export function EquipmentCategoryDialog({
 }: EquipmentCategoryDialogProps) {
   const { toast } = useToast();
   const { mutate: createCategory, isPending: creating } =
-    useCreateEquipmentCategory(accessToken);
+    useCreateEquipmentCategory();
   const { mutate: updateCategory, isPending: updating } =
-    useUpdateEquipmentCategory(accessToken);
+    useUpdateEquipmentCategory();
   const { mutate: deleteCategory, isPending: deleting } =
-    useDeleteEquipmentCategory(accessToken);
+    useDeleteEquipmentCategory();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 

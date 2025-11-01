@@ -75,11 +75,16 @@ export default function TireDetailPage() {
               <label className="text-sm font-medium text-muted-foreground">
                 Estado
               </label>
-              <Badge
-                variant={tire.status === "IN_STOCK" ? "default" : "secondary"}
-              >
-                {statusLabels[tire.status] || tire.status}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant={tire.status === "IN_STOCK" ? "default" : "secondary"}
+                >
+                  {statusLabels[tire.status] || tire.status}
+                </Badge>
+                {tire.recapCount > 0 && (
+                  <Badge variant="secondary">Recapado</Badge>
+                )}
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">
@@ -113,6 +118,20 @@ export default function TireDetailPage() {
               </label>
               <p>{tire.totalKm || "0"} km</p>
             </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">
+                Conteo de Recapados
+              </label>
+              <p>{tire.recapCount || 0}</p>
+            </div>
+            {tire.lastRecapAt && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Último Recapado
+                </label>
+                <p>{new Date(tire.lastRecapAt).toLocaleDateString()}</p>
+              </div>
+            )}
             <div>
               <label className="text-sm font-medium text-muted-foreground">
                 Fecha de Creación
@@ -235,6 +254,77 @@ export default function TireDetailPage() {
                           Km al Fin
                         </label>
                         <p>{assignment.kmAtEnd}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {tire.recaps && tire.recaps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wrench className="w-5 h-5" />
+              Historial de Recapados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {tire.recaps.map((recap) => (
+                <div key={recap.id} className="p-4 border rounded-lg">
+                  <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Fecha
+                      </label>
+                      <p>{new Date(recap.recapDate).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Número de Recapado
+                      </label>
+                      <p>N°{recap.recapNumber}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Tipo
+                      </label>
+                      <p>{recap.recapType || "No especificado"}</p>
+                    </div>
+                    {recap.provider && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Proveedor
+                        </label>
+                        <p>{recap.provider}</p>
+                      </div>
+                    )}
+                    {recap.kmAtRecap && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Km al Recapado
+                        </label>
+                        <p>{recap.kmAtRecap} km</p>
+                      </div>
+                    )}
+                    {recap.cost && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Costo
+                        </label>
+                        <p>${recap.cost.toLocaleString()}</p>
+                      </div>
+                    )}
+                    {recap.notes && (
+                      <div className="md:col-span-3">
+                        <label className="text-sm font-medium text-muted-foreground">
+                          Notas
+                        </label>
+                        <p>{recap.notes}</p>
                       </div>
                     )}
                   </div>

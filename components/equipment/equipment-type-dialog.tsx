@@ -10,7 +10,7 @@ import {
   useCreateEquipmentType,
   useUpdateEquipmentType,
   useDeleteEquipmentType,
-} from "@/lib/hooks/useEquipment";
+} from "@/lib/hooks/useEquipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface EquipmentTypeDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -32,19 +31,15 @@ export interface EquipmentTypeDialogProps {
 }
 
 export function EquipmentTypeDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,
   type,
 }: EquipmentTypeDialogProps) {
   const { toast } = useToast();
-  const { mutate: createType, isPending: creating } =
-    useCreateEquipmentType(accessToken);
-  const { mutate: updateType, isPending: updating } =
-    useUpdateEquipmentType(accessToken);
-  const { mutate: deleteType, isPending: deleting } =
-    useDeleteEquipmentType(accessToken);
+  const { mutate: createType, isPending: creating } = useCreateEquipmentType();
+  const { mutate: updateType, isPending: updating } = useUpdateEquipmentType();
+  const { mutate: deleteType, isPending: deleting } = useDeleteEquipmentType();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -107,7 +102,6 @@ export function EquipmentTypeDialog({
           <EquipmentTypeForm
             onSubmit={onSubmit}
             isLoading={creating || updating}
-            accessToken={accessToken}
             defaultValues={
               mode === "edit" && type
                 ? {

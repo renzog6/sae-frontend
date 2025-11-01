@@ -10,7 +10,7 @@ import {
   useCreateEquipmentModel,
   useUpdateEquipmentModel,
   useDeleteEquipmentModel,
-} from "@/lib/hooks/useEquipment";
+} from "@/lib/hooks/useEquipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface EquipmentModelDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -32,7 +31,6 @@ export interface EquipmentModelDialogProps {
 }
 
 export function EquipmentModelDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,
@@ -40,11 +38,11 @@ export function EquipmentModelDialog({
 }: EquipmentModelDialogProps) {
   const { toast } = useToast();
   const { mutate: createModel, isPending: creating } =
-    useCreateEquipmentModel(accessToken);
+    useCreateEquipmentModel();
   const { mutate: updateModel, isPending: updating } =
-    useUpdateEquipmentModel(accessToken);
+    useUpdateEquipmentModel();
   const { mutate: deleteModel, isPending: deleting } =
-    useDeleteEquipmentModel(accessToken);
+    useDeleteEquipmentModel();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -107,7 +105,6 @@ export function EquipmentModelDialog({
           <EquipmentModelForm
             onSubmit={onSubmit}
             isLoading={creating || updating}
-            accessToken={accessToken}
             defaultValues={
               mode === "edit" && model
                 ? {

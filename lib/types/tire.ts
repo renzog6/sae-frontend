@@ -81,6 +81,9 @@ export interface Tire {
   position?: TirePosition | null;
   status: TireStatus;
   totalKm?: number | null;
+  recapCount: number; // DENORMALIZACIÓN: nº total recapados
+  lastRecapAt?: string | null; // denormalización para consultas rápidas
+  lastRecapId?: number | null; // FK opcional al último TireRecap
   createdAt: string;
   updatedAt: string;
 
@@ -134,6 +137,9 @@ export interface TireRecap {
   cost?: number | null;
   notes?: string | null;
   recapNumber: number; // Incremental per tire
+  kmAtRecap?: number | null; // Muy importante: kms acumulados al momento del recap
+  recapType?: string | null; // Ej: "full", "partial", "delamination_repair"
+  createdBy?: number | null; // userId que realizó el registro
   createdAt: string;
   updatedAt: string;
 
@@ -263,6 +269,8 @@ export interface CreateTireRecapDto {
   provider?: string;
   cost?: number;
   notes?: string;
+  kmAtRecap?: number;
+  recapType?: string;
 }
 
 export interface UpdateTireRecapDto extends Partial<CreateTireRecapDto> {}

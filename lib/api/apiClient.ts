@@ -339,7 +339,27 @@ export class ApiClient {
     options: ApiClientOptions = {}
   ): Promise<T> {
     return this.request<T>(this.buildUrl(path), {
-      method: "POST",
+      method: "PUT",
+      headers: options.headers,
+      body: JSON.stringify(body),
+      signal: options.signal,
+    });
+  }
+
+  /**
+   * Realiza una solicitud PATCH
+   * @param path - Ruta relativa del endpoint
+   * @param body - Cuerpo de la solicitud
+   * @param options - Opciones adicionales
+   * @returns Respuesta parseada
+   */
+  static async patch<T>(
+    path: string,
+    body: any,
+    options: ApiClientOptions = {}
+  ): Promise<T> {
+    return this.request<T>(this.buildUrl(path), {
+      method: "PATCH",
       headers: options.headers,
       body: JSON.stringify(body),
       signal: options.signal,

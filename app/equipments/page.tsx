@@ -10,7 +10,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { motion, useReducedMotion } from "framer-motion";
-import { Truck, Tags, Layers, Ruler, Wrench } from "lucide-react";
+import { Truck, Tags, Layers, Ruler, Wrench, Settings } from "lucide-react";
 import { routes } from "@/lib/routes";
 
 export default function EquipmentsPage() {
@@ -55,6 +55,12 @@ export default function EquipmentsPage() {
       title: "Modelos de Equipos",
       description: "Lista, crea y edita los modelos de equipos.",
       icon: <Ruler className="w-4 h-4" />,
+    },
+    {
+      href: routes.equipments.list,
+      title: "Configurador de Ejes",
+      description: "Crea ejes completos con posiciones automáticamente.",
+      icon: <Settings className="w-4 h-4" />,
     },
     {
       href: routes.tires.root,

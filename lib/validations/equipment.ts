@@ -99,7 +99,7 @@ export const createEquipmentFormInputSchema = z.object({
   chassis: z.string().max(50, "Máximo 50 caracteres").optional(),
   engine: z.string().max(50, "Máximo 50 caracteres").optional(),
   color: z.string().max(25, "Máximo 25 caracteres").optional(),
-  information: z.string().optional(),
+  // information: z.string().optional(),
   diesel: z.boolean().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED"]).optional(),
   companyId: z.number().int().positive("Empresa requerida").optional(),

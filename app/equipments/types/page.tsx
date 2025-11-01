@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import type { EquipmentType } from "@/lib/types/equipment";
-import { useEquipmentTypes } from "@/lib/hooks/useEquipment";
+import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentTypeColumns } from "./columns";
 import { EquipmentTypeDialog } from "@/components/equipment/equipment-type-dialog";
@@ -34,9 +33,6 @@ import {
 } from "@/components/ui/pagination";
 
 export default function EquipmentTypesPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -55,11 +51,15 @@ export default function EquipmentTypesPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
-  const { data: types, isLoading, error } = useEquipmentTypes();
+  const { data: typesData, isLoading, error } = useEquipmentTypes();
+  const types = Array.isArray(typesData)
+    ? typesData
+    : (typesData as any)?.data || [];
 
   const sortedTypes = useMemo(() => {
-    return (types || []).sort((a, b) => a.name.localeCompare(b.name));
+    return types.sort((a: any, b: any) => a.name.localeCompare(b.name));
   }, [types]);
+
   const totalPages = 1; // No pagination for now
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -194,7 +194,6 @@ export default function EquipmentTypesPage() {
       </Card>
 
       <EquipmentTypeDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

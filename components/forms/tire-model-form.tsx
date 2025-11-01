@@ -14,13 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import {
   createTireModelSchema,
   type CreateTireModelFormData,
@@ -92,24 +86,23 @@ export function TireModelForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Marca *</FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  defaultValue={field.value?.toString()}
-                  disabled={isLoading}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona marca" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {brands?.map((brand) => (
-                      <SelectItem key={brand.id} value={brand.id.toString()}>
-                        {brand.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Combobox
+                    options={
+                      brands?.map((brand) => ({
+                        value: brand.id.toString(),
+                        label: brand.name,
+                      })) || []
+                    }
+                    value={field.value?.toString()}
+                    onValueChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
+                    }
+                    placeholder="Selecciona marca"
+                    searchPlaceholder="Buscar marca..."
+                    disabled={isLoading}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -121,24 +114,23 @@ export function TireModelForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Medida *</FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  defaultValue={field.value?.toString()}
-                  disabled={isLoading}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona medida" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {sizes?.map((size: any) => (
-                      <SelectItem key={size.id} value={size.id.toString()}>
-                        {size.mainCode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Combobox
+                    options={
+                      sizes?.map((size: any) => ({
+                        value: size.id.toString(),
+                        label: size.mainCode,
+                      })) || []
+                    }
+                    value={field.value?.toString()}
+                    onValueChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
+                    }
+                    placeholder="Selecciona medida"
+                    searchPlaceholder="Buscar medida..."
+                    disabled={isLoading}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

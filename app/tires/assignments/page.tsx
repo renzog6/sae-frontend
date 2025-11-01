@@ -1,4 +1,4 @@
-// app/tires/assignments/page.tsx
+//filepath: sae-frontend/app/tires/assignments/page.tsx
 "use client";
 
 import { TireAssignmentsContainer } from "./TireAssignmentsContainer";

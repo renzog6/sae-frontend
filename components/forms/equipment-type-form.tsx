@@ -25,7 +25,7 @@ import {
   equipmentTypeFormSchema,
   type EquipmentTypeFormData,
 } from "@/lib/validations/equipment";
-import { useEquipmentCategories } from "@/lib/hooks/useEquipment";
+import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 
 interface EquipmentTypeFormProps {
   onSubmit: (data: EquipmentTypeFormData) => void;
@@ -34,7 +34,6 @@ interface EquipmentTypeFormProps {
   isEdit?: boolean;
   onCancel?: () => void;
   error?: string | null;
-  accessToken: string;
 }
 
 export function EquipmentTypeForm({
@@ -44,9 +43,15 @@ export function EquipmentTypeForm({
   isEdit = false,
   onCancel,
   error,
-  accessToken,
 }: EquipmentTypeFormProps) {
-  const { data: categories = [] } = useEquipmentCategories();
+  const {
+    data: categoriesResponse = {
+      data: [],
+      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
+    },
+  } = useEquipmentCategories();
+
+  const categories = categoriesResponse.data;
 
   const form = useForm<EquipmentTypeFormData>({
     resolver: zodResolver(equipmentTypeFormSchema),

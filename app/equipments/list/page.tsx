@@ -24,7 +24,7 @@ import {
   useEquipmentList,
   useEquipmentCategories,
   useEquipmentTypes,
-} from "@/lib/hooks/useEquipment";
+} from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
@@ -67,8 +67,16 @@ export default function EquipmentListPage() {
     take: 1000, // Get all equipment to enable client-side filtering
   });
 
-  const { data: categories = [] } = useEquipmentCategories();
-  const { data: types = [] } = useEquipmentTypes();
+  const {
+    data: categoriesResponse = {
+      data: [],
+      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
+    },
+  } = useEquipmentCategories();
+  const { data: typesData } = useEquipmentTypes();
+  const types = Array.isArray(typesData) ? typesData : [];
+
+  const categories = categoriesResponse.data;
 
   const equipment = useMemo(() => {
     let filtered = equipmentResponse?.data || [];
@@ -119,6 +127,9 @@ export default function EquipmentListPage() {
   const totalFilteredItems = equipment.length;
   const totalPages = Math.ceil(totalFilteredItems / limit);
 
+  // Get paginated data
+  const paginatedData = equipment.slice((page - 1) * limit, page * limit);
+
   const columns = useMemo(
     () =>
       getEquipmentColumns({
@@ -149,8 +160,14 @@ export default function EquipmentListPage() {
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search */}
+            {/* Search Input */}
             <div className="flex gap-2">
+              <Input
+                placeholder="Buscar equipos..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="min-w-[200px]"
+              />
               {/* Status filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -233,7 +250,7 @@ export default function EquipmentListPage() {
                     Todas las categorías
                   </DropdownMenuItem>
                   {categories
-                    .sort((a, b) => a.name.localeCompare(b.name))
+                    ?.sort((a, b) => a.name.localeCompare(b.name))
                     .map((category) => (
                       <DropdownMenuItem
                         key={category.id}
@@ -274,7 +291,7 @@ export default function EquipmentListPage() {
                     Todos los tipos
                   </DropdownMenuItem>
                   {types
-                    .sort((a, b) => a.name.localeCompare(b.name))
+                    ?.sort((a, b) => a.name.localeCompare(b.name))
                     .map((type) => (
                       <DropdownMenuItem
                         key={type.id}
@@ -335,9 +352,7 @@ export default function EquipmentListPage() {
           ) : (
             <DataTable<Equipment, unknown>
               columns={columns}
-              data={equipment.slice((page - 1) * limit, page * limit)}
-              searchableColumns={["name", "licensePlate"]}
-              searchPlaceholder="Buscar por nombre o patente..."
+              data={paginatedData}
             />
           )}
           {/* Pagination controls */}

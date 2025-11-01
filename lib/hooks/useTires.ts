@@ -8,7 +8,7 @@ import {
   TirePositionConfigsService,
   TireAssignmentsService,
 } from "@/lib/api/tires";
-import { EquipmentService } from "@/lib/api/equipment";
+import { EquipmentAxlesService } from "@/lib/api/equipments";
 import {
   CreateTireDto,
   UpdateTireDto,
@@ -273,7 +273,7 @@ export function useTirePositionsByEquipment(equipmentId?: number) {
   return useQuery({
     queryKey: ["tire-positions-equipment", equipmentId ?? ""],
     queryFn: () =>
-      EquipmentService.getEquipmentAxlePositions(equipmentId as number),
+      EquipmentAxlesService.getPositionsByEquipment(equipmentId as number),
     enabled: !!equipmentId,
   });
 }
@@ -357,5 +357,143 @@ export function useTireAssignments(params?: {
       return TireAssignmentsService.getAll(params);
     },
     enabled: !!params, // Only run if params are provided
+  });
+}
+
+// ===== TIRE INSPECTIONS =====
+
+export function useTireInspections(params?: {
+  page?: number;
+  limit?: number;
+  q?: string;
+}) {
+  return useQuery({
+    queryKey: [
+      "tire-inspections",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.q ?? "",
+    ],
+    queryFn: () => {
+      const { TireInspectionsService } = require("@/lib/api/tires");
+      return TireInspectionsService.getAll(params);
+    },
+  });
+}
+
+// ===== TIRE RECAPS =====
+
+export function useTireRecaps(params?: {
+  page?: number;
+  limit?: number;
+  q?: string;
+}) {
+  return useQuery({
+    queryKey: [
+      "tire-recaps",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.q ?? "",
+    ],
+    queryFn: () => {
+      const { TireRecapsService } = require("@/lib/api/tires");
+      return TireRecapsService.getAll();
+    },
+  });
+}
+
+// ===== TIRE ROTATIONS =====
+
+export function useTireRotations(params?: {
+  page?: number;
+  limit?: number;
+  q?: string;
+}) {
+  return useQuery({
+    queryKey: [
+      "tire-rotations",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.q ?? "",
+    ],
+    queryFn: () => {
+      const { TireRotationsService } = require("@/lib/api/tires");
+      return TireRotationsService.getAll(params);
+    },
+  });
+}
+
+// ===== TIRE EVENTS =====
+
+export function useTireEvents(params?: {
+  page?: number;
+  limit?: number;
+  q?: string;
+  eventType?: string;
+  fromDate?: string;
+  toDate?: string;
+}) {
+  return useQuery({
+    queryKey: [
+      "tire-events",
+      params?.page ?? 1,
+      params?.limit ?? 10,
+      params?.q ?? "",
+      params?.eventType ?? "",
+      params?.fromDate ?? "",
+      params?.toDate ?? "",
+    ],
+    queryFn: () => {
+      const { TireEventsService } = require("@/lib/api/tires");
+      return TireEventsService.getAll(params);
+    },
+  });
+}
+
+// ===== TIRE REPORTS =====
+
+import { TireReportsService } from "@/lib/api/tires";
+import type {
+  TireReportFilter,
+  AverageLifeReport,
+  CostPerKmReport,
+  OverRecappedReport,
+  BrandRankingReport,
+  YearlyRecapReport,
+} from "@/lib/api/tires/tire-reports.service";
+
+export function useAverageLifeReport(filter?: TireReportFilter) {
+  return useQuery({
+    queryKey: ["tire-reports", "average-life", filter?.brand ?? ""],
+    queryFn: () => TireReportsService.getAverageLife(filter),
+  });
+}
+
+export function useCostPerKmReport(filter?: TireReportFilter) {
+  return useQuery({
+    queryKey: ["tire-reports", "cost-per-km", filter?.brand ?? ""],
+    queryFn: () => TireReportsService.getCostPerKm(filter),
+  });
+}
+
+export function useOverRecappedReport(threshold = 2) {
+  return useQuery({
+    queryKey: ["tire-reports", "over-recap", threshold],
+    queryFn: () => TireReportsService.getOverRecapped(threshold),
+  });
+}
+
+export function useBrandRankingReport() {
+  return useQuery({
+    queryKey: ["tire-reports", "brand-ranking"],
+    queryFn: () => TireReportsService.getBrandRanking(),
+  });
+}
+
+export function useYearlyRecapReport(year: number) {
+  return useQuery({
+    queryKey: ["tire-reports", "yearly-recaps", year],
+    queryFn: () => TireReportsService.getYearlyRecap(year),
+    enabled: !!year,
   });
 }

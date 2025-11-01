@@ -25,7 +25,7 @@ import {
   equipmentModelFormSchema,
   type EquipmentModelFormData,
 } from "@/lib/validations/equipment";
-import { useEquipmentTypes } from "@/lib/hooks/useEquipment";
+import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { useBrands } from "@/lib/hooks/useCatalogs";
 import { Combobox } from "@/components/ui/combobox";
 
@@ -36,7 +36,6 @@ interface EquipmentModelFormProps {
   isEdit?: boolean;
   onCancel?: () => void;
   error?: string | null;
-  accessToken: string;
 }
 
 export function EquipmentModelForm({
@@ -46,9 +45,11 @@ export function EquipmentModelForm({
   isEdit = false,
   onCancel,
   error,
-  accessToken,
 }: EquipmentModelFormProps) {
-  const { data: types = [] } = useEquipmentTypes();
+  const { data: typesData } = useEquipmentTypes();
+  const types = Array.isArray(typesData)
+    ? typesData
+    : (typesData as any)?.data || [];
   const { data: brands = [] } = useBrands();
 
   const form = useForm<EquipmentModelFormData>({
@@ -123,7 +124,7 @@ export function EquipmentModelForm({
                 <Input
                   type="number"
                   placeholder="Ej: 2023"
-                  {...field}
+                  value={field.value || ""}
                   onChange={(e) =>
                     field.onChange(
                       e.target.value ? Number(e.target.value) : undefined
@@ -143,24 +144,25 @@ export function EquipmentModelForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo *</FormLabel>
-              <Select
-                onValueChange={(value) => field.onChange(Number(value))}
-                defaultValue={field.value?.toString()}
-                disabled={isLoading}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un tipo" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {types.map((type) => (
-                    <SelectItem key={type.id} value={type.id.toString()}>
-                      {type.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <Combobox
+                  options={types
+                    .filter((type: any) => type.name.toLowerCase().includes(""))
+                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .map((type: any) => ({
+                      value: type.id.toString(),
+                      label: type.name,
+                    }))}
+                  value={field.value?.toString() || ""}
+                  onValueChange={(value) =>
+                    field.onChange(value ? Number(value) : undefined)
+                  }
+                  placeholder="Selecciona un tipo"
+                  searchPlaceholder="Buscar tipo..."
+                  disabled={isLoading}
+                  caseSensitive={false}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

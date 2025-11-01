@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import type { EquipmentCategory } from "@/lib/types/equipment";
-import { useEquipmentCategories } from "@/lib/hooks/useEquipment";
+import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentCategoryColumns } from "./columns";
 import { EquipmentCategoryDialog } from "@/components/equipment/equipment-category-dialog";
@@ -34,9 +32,6 @@ import {
 } from "@/components/ui/pagination";
 
 export default function EquipmentCategoriesPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -59,12 +54,18 @@ export default function EquipmentCategoriesPage() {
     data: categoriesResponse,
     isLoading,
     error,
-  } = useEquipmentCategories();
+  } = useEquipmentCategories({ page, limit });
+  console.log("Categories response:", categoriesResponse);
+  console.log("Categories error:", error);
 
-  const categories = Array.isArray(categoriesResponse)
-    ? categoriesResponse
-    : [];
-  const totalPages = 1; // Since categories don't have pagination in the hook
+  const categories = categoriesResponse?.data || [];
+  const meta = categoriesResponse?.meta || {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  };
+  const totalPages = meta.totalPages || Math.ceil(meta.total / meta.limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -102,14 +103,6 @@ export default function EquipmentCategoriesPage() {
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por nombre o código..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
             <div className="flex gap-2">
               {/* Page size selector */}
               <DropdownMenu>
@@ -200,7 +193,6 @@ export default function EquipmentCategoriesPage() {
       </Card>
 
       <EquipmentCategoryDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

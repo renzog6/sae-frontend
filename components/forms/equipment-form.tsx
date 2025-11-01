@@ -1,6 +1,7 @@
 // filepath: sae-frontend/components/forms/equipment-form.tsx
 "use client";
 
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EquipmentStatus } from "@/lib/types/enums";
 import {
@@ -32,28 +34,34 @@ import {
   useEquipmentTypes,
   useEquipmentModels,
   useCreateEquipment,
-} from "@/lib/hooks/useEquipment";
+  useUpdateEquipment,
+} from "@/lib/hooks/useEquipments";
 import { useCompanies } from "@/lib/hooks/useCompanies";
 import { useToast } from "@/components/ui/toaster";
 
 interface EquipmentFormProps {
-  accessToken: string;
-  onSuccess?: () => void;
+  onSuccess?: (data: EquipmentFormData) => void;
   onCancel?: () => void;
   defaultValues?: Partial<EquipmentFormData>;
   isEdit?: boolean;
 }
 
 export function EquipmentForm({
-  accessToken,
   onSuccess,
   onCancel,
   defaultValues,
   isEdit = false,
 }: EquipmentFormProps) {
   const { toast } = useToast();
-  const { data: categories = [] } = useEquipmentCategories();
+  const {
+    data: categoriesResponse = {
+      data: [],
+      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
+    },
+  } = useEquipmentCategories();
   const { data: companies = [] } = useCompanies();
+
+  const categories = categoriesResponse.data;
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentFormSchema),
@@ -67,7 +75,7 @@ export function EquipmentForm({
       chassis: "",
       engine: "",
       color: "",
-      information: "",
+      // information: "",
       diesel: false,
       status: "ACTIVE",
       companyId: 1, // Default company ID for now
@@ -78,42 +86,100 @@ export function EquipmentForm({
     },
   });
 
+  // Reset form when defaultValues change (for edit mode)
+  React.useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues);
+      // Force re-render of dependent fields
+      if (defaultValues.categoryId) {
+        form.setValue("categoryId", defaultValues.categoryId);
+      }
+      if (defaultValues.typeId) {
+        form.setValue("typeId", defaultValues.typeId);
+      }
+      if (defaultValues.modelId) {
+        form.setValue("modelId", defaultValues.modelId);
+      }
+    }
+  }, [defaultValues, form]);
+
   const selectedCategoryId = form.watch("categoryId");
   const selectedTypeId = form.watch("typeId");
 
-  const { data: types = [] } = useEquipmentTypes({
+  const { data: typesData } = useEquipmentTypes({
     categoryId: selectedCategoryId,
+    page: 1,
+    limit: 1000,
   });
+  const types = Array.isArray(typesData)
+    ? typesData
+    : (typesData as any)?.data || [];
 
-  const { data: models = [] } = useEquipmentModels({
+  const {
+    data: modelsResponse = {
+      data: [],
+      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
+    },
+  } = useEquipmentModels({
     typeId: selectedTypeId,
+    page: 1,
+    limit: 1000,
   });
 
-  const { mutate: createEquipment, isPending } =
-    useCreateEquipment(accessToken);
+  const models = modelsResponse.data;
+
+  const { mutate: createEquipment, isPending } = useCreateEquipment();
+
+  const { mutate: updateEquipment, isPending: updating } = useUpdateEquipment();
 
   const handleSubmit = (data: EquipmentFormData) => {
     const submitData = {
       ...data,
       status: data.status as EquipmentStatus,
     };
-    createEquipment(submitData, {
-      onSuccess: () => {
-        toast({
-          title: "Equipo creado",
-          description: "El equipo se ha registrado correctamente.",
-          variant: "success",
-        });
-        onSuccess?.();
-      },
-      onError: (error: any) => {
-        toast({
-          title: "Error al crear equipo",
-          description: error?.message || "Intenta nuevamente.",
-          variant: "error",
-        });
-      },
-    });
+
+    if (isEdit) {
+      // Update existing equipment
+      updateEquipment(
+        { id: (defaultValues as any)?.id || 0, data: submitData },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Equipo actualizado",
+              description: "Los cambios se han guardado correctamente.",
+              variant: "success",
+            });
+            onSuccess?.(data);
+          },
+          onError: (error: any) => {
+            toast({
+              title: "Error al actualizar equipo",
+              description: error?.message || "Intenta nuevamente.",
+              variant: "error",
+            });
+          },
+        }
+      );
+    } else {
+      // Create new equipment
+      createEquipment(submitData, {
+        onSuccess: () => {
+          toast({
+            title: "Equipo creado",
+            description: "El equipo se ha registrado correctamente.",
+            variant: "success",
+          });
+          onSuccess?.(data);
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Error al crear equipo",
+            description: error?.message || "Intenta nuevamente.",
+            variant: "error",
+          });
+        },
+      });
+    }
   };
 
   return (
@@ -202,27 +268,28 @@ export function EquipmentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo</FormLabel>
-                <Select
-                  onValueChange={(value) => {
-                    field.onChange(Number(value));
-                    form.setValue("modelId", undefined);
-                  }}
-                  defaultValue={field.value?.toString()}
-                  disabled={isPending || !selectedCategoryId}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona tipo" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {types.map((type) => (
-                      <SelectItem key={type.id} value={type.id.toString()}>
-                        {type.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Combobox
+                    options={types
+                      .filter((type: any) =>
+                        type.name.toLowerCase().includes("")
+                      )
+                      .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                      .map((type: any) => ({
+                        value: type.id.toString(),
+                        label: type.name,
+                      }))}
+                    value={field.value?.toString() || ""}
+                    onValueChange={(value) => {
+                      field.onChange(value ? Number(value) : undefined);
+                      form.setValue("modelId", undefined);
+                    }}
+                    placeholder="Selecciona tipo"
+                    searchPlaceholder="Buscar tipo..."
+                    disabled={isPending || !selectedCategoryId}
+                    caseSensitive={false}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -234,24 +301,27 @@ export function EquipmentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Modelo</FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  defaultValue={field.value?.toString()}
-                  disabled={isPending || !selectedTypeId}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona modelo" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {models.map((model) => (
-                      <SelectItem key={model.id} value={model.id.toString()}>
-                        {model.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Combobox
+                    options={models
+                      .filter((model: any) =>
+                        model.name.toLowerCase().includes("")
+                      )
+                      .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                      .map((model: any) => ({
+                        value: model.id.toString(),
+                        label: model.name,
+                      }))}
+                    value={field.value?.toString() || ""}
+                    onValueChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
+                    }
+                    placeholder="Selecciona modelo"
+                    searchPlaceholder="Buscar modelo..."
+                    disabled={isPending || !selectedTypeId}
+                    caseSensitive={false}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -270,7 +340,7 @@ export function EquipmentForm({
                   <Input
                     placeholder="Ej: ABC-123"
                     {...field}
-                    disabled={isPending}
+                    disabled={isPending || updating}
                   />
                 </FormControl>
                 <FormMessage />
@@ -327,7 +397,7 @@ export function EquipmentForm({
                   <Input
                     type="number"
                     placeholder="2023"
-                    {...field}
+                    value={field.value || ""}
                     onChange={(e) =>
                       field.onChange(
                         e.target.value ? Number(e.target.value) : undefined
@@ -488,26 +558,6 @@ export function EquipmentForm({
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="information"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Información Adicional</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Información adicional..."
-                  className="resize-none"
-                  rows={2}
-                  {...field}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Botones */}
         <div className="flex justify-end gap-2 pt-4">
           {onCancel && (
@@ -520,8 +570,14 @@ export function EquipmentForm({
               Cancelar
             </Button>
           )}
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Creando..." : "Crear Equipo"}
+          <Button type="submit" disabled={isPending || updating}>
+            {isPending || updating
+              ? isEdit
+                ? "Actualizando..."
+                : "Creando..."
+              : isEdit
+              ? "Actualizar Equipo"
+              : "Crear Equipo"}
           </Button>
         </div>
       </form>

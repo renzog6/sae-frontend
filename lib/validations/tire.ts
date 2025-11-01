@@ -124,6 +124,8 @@ export const createTireRecapSchema = z.object({
   provider: z.string().optional(),
   cost: z.number().min(0).optional(),
   notes: z.string().optional(),
+  kmAtRecap: z.number().min(0).optional(),
+  recapType: z.string().optional(),
 });
 
 export const updateTireRecapSchema = createTireRecapSchema.partial();

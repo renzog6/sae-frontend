@@ -9,6 +9,7 @@ import { Plus, RotateCcw, Wrench, Minus, Eye, Truck } from "lucide-react";
 import { TireAssignmentsDialog } from "./tire-assignments-dialog";
 import { TireUnmountDialog } from "./tire-unmount-dialog";
 import { TireRotateDialog } from "./tire-rotate-dialog";
+import { TireInspectionDialog } from "./tire-inspection-dialog";
 import { TireAssignmentsService } from "@/lib/api/tires";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +32,8 @@ export const TireActionsPanel: React.FC<Props> = ({
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isUnmountDialogOpen, setIsUnmountDialogOpen] = React.useState(false);
   const [isRotateDialogOpen, setIsRotateDialogOpen] = React.useState(false);
+  const [isInspectionDialogOpen, setIsInspectionDialogOpen] =
+    React.useState(false);
 
   // Fetch current assignment for this position
   const {
@@ -165,11 +168,13 @@ export const TireActionsPanel: React.FC<Props> = ({
                   >
                     <RotateCcw className="w-4 h-4 mr-2" /> Rotar
                   </Button>
+                  {/*Button inspect tire*/}
                   <Button
                     variant="outline"
                     className="w-full"
                     size="sm"
                     disabled={!assignedTire}
+                    onClick={() => setIsInspectionDialogOpen(true)}
                   >
                     <Wrench className="w-4 h-4 mr-2" /> Inspeccionar
                   </Button>
@@ -252,6 +257,22 @@ export const TireActionsPanel: React.FC<Props> = ({
         assignedTire={assignedTire}
         assignmentId={assignmentId}
         onRotationSuccess={handleRotationSuccess}
+      />
+
+      <TireInspectionDialog
+        open={isInspectionDialogOpen}
+        onOpenChange={(open) => {
+          setIsInspectionDialogOpen(open);
+          if (!open) {
+            // Refetch assignment data when dialog closes
+            refetchAssignment();
+            // Refresh diagram to show updated tire assignments
+            onRefreshDiagram?.();
+          }
+        }}
+        selectedPosition={selectedPosition}
+        selectedEquipment={selectedEquipment}
+        assignedTire={assignedTire}
       />
     </>
   );
