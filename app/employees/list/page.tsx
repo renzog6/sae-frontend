@@ -38,7 +38,6 @@ type StatusFilter = "ALL" | EmployeeStatus;
 
 export default function EmployeesPage() {
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   // Pagination state
   const [page, setPage] = useState(1);

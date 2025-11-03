@@ -135,9 +135,13 @@ export class ApiClient {
 
     try {
       const { accessToken } = await this.getSessionData();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
+      const headers: Record<string, string> = {};
+
+      // Only set Content-Type for non-FormData requests
+      const isFormData = options.body instanceof FormData;
+      if (!isFormData) {
+        headers["Content-Type"] = "application/json";
+      }
 
       if (options.headers) {
         Object.assign(headers, options.headers);
@@ -318,10 +322,19 @@ export class ApiClient {
     body: any,
     options: ApiClientOptions = {}
   ): Promise<T> {
+    // Handle FormData differently - don't set Content-Type header
+    const isFormData = body instanceof FormData;
+    const headers = { ...options.headers };
+
+    if (isFormData) {
+      // Remove Content-Type for FormData - let browser set it with boundary
+      delete headers["Content-Type"];
+    }
+
     return this.request<T>(this.buildUrl(path), {
       method: "POST",
-      headers: options.headers,
-      body: JSON.stringify(body),
+      headers,
+      body: isFormData ? body : JSON.stringify(body),
       signal: options.signal,
     });
   }

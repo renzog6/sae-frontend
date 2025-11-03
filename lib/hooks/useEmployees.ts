@@ -1,6 +1,10 @@
 // filepath: sae-frontend/lib/hooks/useEmployees.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { EmployeesService } from "@/lib/api/employees";
+import {
+  EmployeesService,
+  EmployeeCategoriesService,
+  EmployeePositionsService,
+} from "@/lib/api/employees";
 import { EmployeeCategory, EmployeePosition } from "@/lib/types/employee";
 
 import {
@@ -27,14 +31,14 @@ export function useEmployeesList(params?: {
       params?.q ?? "",
       params?.status ?? "",
     ],
-    queryFn: () => EmployeesService.getEmployees(params),
+    queryFn: () => EmployeesService.getAll(params),
   });
 }
 
 export function useEmployeeDetail(id: number | undefined) {
   return useQuery({
     queryKey: ["employees", id],
-    queryFn: () => EmployeesService.getEmployeeById(id as number),
+    queryFn: () => EmployeesService.getById(id as number),
     enabled: typeof id === "number",
   });
 }
@@ -43,8 +47,7 @@ export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["employees", "create"],
-    mutationFn: (data: CreateEmployeeFormData) =>
-      EmployeesService.createEmployee(data),
+    mutationFn: (data: CreateEmployeeFormData) => EmployeesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employees"] });
     },
@@ -56,7 +59,7 @@ export function useUpdateEmployee() {
   return useMutation({
     mutationKey: ["employees", "update"],
     mutationFn: (vars: { id: number; data: UpdateEmployeeFormData }) =>
-      EmployeesService.updateEmployee(vars.id, vars.data),
+      EmployeesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employees", vars.id] });
@@ -68,7 +71,7 @@ export function useDeleteEmployee() {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["employees", "delete"],
-    mutationFn: (id: number) => EmployeesService.deleteEmployee(id),
+    mutationFn: (id: number) => EmployeesService.delete(id),
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employees", id] });
@@ -78,9 +81,9 @@ export function useDeleteEmployee() {
 
 // Categories
 export function useEmployeeCategories() {
-  return useQuery<EmployeeCategory[], Error>({
+  return useQuery({
     queryKey: ["employee-categories"],
-    queryFn: () => EmployeesService.getCategories(),
+    queryFn: () => EmployeeCategoriesService.getAll(),
   });
 }
 
@@ -88,7 +91,7 @@ export function useCreateEmployeeCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: EmployeeCategoryFormData) =>
-      EmployeesService.createCategory(data),
+      EmployeeCategoriesService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-categories"] });
     },
@@ -99,7 +102,7 @@ export function useUpdateEmployeeCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEmployeeCategoryFormData }) =>
-      EmployeesService.updateCategory(vars.id, vars.data),
+      EmployeeCategoriesService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["employee-categories"] });
       qc.invalidateQueries({ queryKey: ["employee-category", vars.id] });
@@ -110,7 +113,7 @@ export function useUpdateEmployeeCategory() {
 export function useDeleteEmployeeCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => EmployeesService.deleteCategory(id),
+    mutationFn: (id: number) => EmployeeCategoriesService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["employee-categories"] });
       qc.invalidateQueries({ queryKey: ["employee-category", id] });
@@ -120,9 +123,9 @@ export function useDeleteEmployeeCategory() {
 
 // Positions
 export function useEmployeePositions() {
-  return useQuery<EmployeePosition[], Error>({
+  return useQuery({
     queryKey: ["employee-positions"],
-    queryFn: () => EmployeesService.getPositions(),
+    queryFn: () => EmployeePositionsService.getAll(),
   });
 }
 
@@ -130,7 +133,7 @@ export function useCreateEmployeePosition() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: EmployeePositionFormData) =>
-      EmployeesService.createPosition(data),
+      EmployeePositionsService.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-positions"] });
     },
@@ -141,7 +144,7 @@ export function useUpdateEmployeePosition() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; data: UpdateEmployeePositionFormData }) =>
-      EmployeesService.updatePosition(vars.id, vars.data),
+      EmployeePositionsService.update(vars.id, vars.data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["employee-positions"] });
       qc.invalidateQueries({ queryKey: ["employee-position", vars.id] });
@@ -152,7 +155,7 @@ export function useUpdateEmployeePosition() {
 export function useDeleteEmployeePosition() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => EmployeesService.deletePosition(id),
+    mutationFn: (id: number) => EmployeePositionsService.delete(id),
     onSuccess: (_message, id) => {
       qc.invalidateQueries({ queryKey: ["employee-positions"] });
       qc.invalidateQueries({ queryKey: ["employee-position", id] });

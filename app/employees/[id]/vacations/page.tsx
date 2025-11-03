@@ -37,7 +37,6 @@ export default function EmployeeVacationsDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   const id = useMemo(() => {
     const p = params?.id;
@@ -259,7 +258,7 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignAnnual}
           onOpenChange={(o) => setOpenAssignAnnual(o)}
-          accessToken={accessToken}
+          accessToken=""
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.ASSIGNED}
@@ -275,7 +274,7 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignDays}
           onOpenChange={(o) => setOpenAssignDays(o)}
-          accessToken={accessToken}
+          accessToken=""
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.TAKEN}
@@ -291,7 +290,7 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openEdit}
           onOpenChange={(o) => setOpenEdit(o)}
-          accessToken={accessToken}
+          accessToken=""
           employeeId={employee.id}
           mode="edit"
           fixedType={editVacation.type as VacationType}

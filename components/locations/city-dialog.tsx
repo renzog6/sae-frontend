@@ -44,7 +44,7 @@ export function CityDialog({
   const prefersReducedMotion = useReducedMotion();
   const { toast } = useToast();
 
-  const defaultValues: Partial<CityFormData> | undefined = useMemo(() => {
+  const defaultValues: Partial<CityFormData> = useMemo(() => {
     if (mode === "edit" && city) {
       return {
         name: city.name,
@@ -52,7 +52,10 @@ export function CityDialog({
         provinceId: city.provinceId,
       };
     }
-    return undefined;
+    return {
+      name: "",
+      postalCode: "",
+    };
   }, [mode, city]);
 
   const onSubmit = (data: CityFormData) => {

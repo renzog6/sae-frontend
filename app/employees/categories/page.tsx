@@ -19,9 +19,9 @@ import { EmployeeCategoryDialog } from "@/components/employees/employee-category
 
 export default function EmployeeCategoriesPage() {
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
-  const { data: categories = [], isLoading, error } = useEmployeeCategories();
+  const { data: categoriesData, isLoading, error } = useEmployeeCategories();
+  const categories = categoriesData?.data ?? [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -74,7 +74,7 @@ export default function EmployeeCategoriesPage() {
       </Card>
 
       <EmployeeCategoryDialog
-        accessToken={accessToken}
+        accessToken=""
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

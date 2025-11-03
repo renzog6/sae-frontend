@@ -6,13 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,7 +67,6 @@ export default function EmployeeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const queryClient = useQueryClient();
 
   const id = useMemo(() => {
@@ -88,8 +81,11 @@ export default function EmployeeDetailPage() {
     isLoading,
     error: fetchError,
   } = useEmployeeDetail(id);
-  const { data: categories = [] } = useEmployeeCategories();
-  const { data: positions = [] } = useEmployeePositions();
+  const { data: categoriesData } = useEmployeeCategories();
+  const { data: positionsData } = useEmployeePositions();
+
+  const categories = categoriesData?.data ?? [];
+  const positions = positionsData?.data ?? [];
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -138,11 +134,11 @@ export default function EmployeeDetailPage() {
     values: defaultValues, // keep in sync when employee loads
   });
   async function handleSubmit(data: UpdateEmployeeFormInput) {
-    if (!accessToken || !id) return;
+    if (!id) return;
     setSaving(true);
     setError(null);
     try {
-      await EmployeesService.updateEmployee(
+      await EmployeesService.update(
         id,
         data as unknown as UpdateEmployeeFormData
       );
@@ -170,7 +166,7 @@ export default function EmployeeDetailPage() {
   });
 
   async function handlePersonSubmit(data: UpdatePersonFormInput) {
-    if (!accessToken || !personId) return;
+    if (!personId) return;
     setSaving(true);
     setError(null);
     try {
@@ -704,7 +700,7 @@ export default function EmployeeDetailPage() {
                 ? { cityId: 1, personId }
                 : undefined
             }
-            accessToken={accessToken}
+            accessToken=""
             onDelete={
               editingAddress?.id
                 ? () => deleteAddressMut.mutate(editingAddress.id!)

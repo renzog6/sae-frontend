@@ -41,7 +41,6 @@ import { genderLabels, maritalLabels } from "@/lib/constants";
 export default function EmployeeNewPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);
@@ -56,13 +55,34 @@ export default function EmployeeNewPage() {
     setSaving(true);
     setError(null);
     try {
+      console.log("Creating person with data:", data);
+
+      // Create person first
       const person = await PersonsService.createPerson(
         data as CreatePersonFormData
       );
+
+      console.log("Person created:", person);
+
+      // Handle both direct response and wrapped response
+      const personData =
+        person && typeof person === "object" && "data" in person
+          ? person.data
+          : person;
+
+      console.log("Person data extracted:", personData);
+
+      if (!personData || !(personData as any).id) {
+        throw new Error("Failed to create person - no ID returned");
+      }
+
+      const personId = (personData as any).id;
+
+      // Then create employee
       const employeeData = {
-        personId: person.id,
+        personId: personId,
         companyId: 1,
-        employeeCode: "",
+        employeeCode: "00000",
         information: "",
         hireDate: new Date().toISOString(),
         endDate: undefined,
@@ -70,10 +90,17 @@ export default function EmployeeNewPage() {
         positionId: 9,
         status: EmployeeStatus.ACTIVE,
       };
-      const employee = await EmployeesService.createEmployee(employeeData);
+
+      console.log("Creating employee with data:", employeeData);
+
+      const employee = await EmployeesService.create(employeeData);
+
+      console.log("Employee created:", employee);
+
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       router.push(`/employees/${employee.id}/edit`);
     } catch (e: any) {
+      console.error("Error creating employee:", e);
       setError(e?.message || "Error al crear empleado");
     } finally {
       setSaving(false);

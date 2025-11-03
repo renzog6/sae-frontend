@@ -22,21 +22,35 @@ export class PersonsService {
   }
 
   static async getPersonById(id: number) {
-    const response = await ApiClient.get<Person>(`${this.basePath}/${id}`);
-    return response;
+    const response = await ApiClient.get<Person | { data: Person }>(
+      `${this.basePath}/${id}`
+    );
+    // Handle both direct response and wrapped response
+    return response && typeof response === "object" && "data" in response
+      ? response.data
+      : response;
   }
 
   static async createPerson(data: CreatePersonFormData) {
-    const response = await ApiClient.post<Person>(this.basePath, data);
-    return response;
+    const response = await ApiClient.post<Person | { data: Person }>(
+      this.basePath,
+      data
+    );
+    // Handle both direct response and wrapped response
+    return response && typeof response === "object" && "data" in response
+      ? response.data
+      : response;
   }
 
   static async updatePerson(id: number, data: UpdatePersonFormData) {
-    const response = await ApiClient.put<Person>(
+    const response = await ApiClient.patch<Person | { data: Person }>(
       `${this.basePath}/${id}`,
       data
     );
-    return response;
+    // Handle both direct response and wrapped response
+    return response && typeof response === "object" && "data" in response
+      ? response.data
+      : response;
   }
 
   static async deletePerson(id: number) {

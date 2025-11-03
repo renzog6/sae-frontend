@@ -82,7 +82,6 @@ export default function EmployeeDocumentsPage() {
   const params = useParams();
   const id = Number(params.id);
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
   const { data: documentsData, isLoading: documentsLoading } = useDocuments({
@@ -104,9 +103,7 @@ export default function EmployeeDocumentsPage() {
     },
   });
 
-  const documents: Document[] = Array.isArray(documentsData)
-    ? documentsData
-    : (documentsData as any)?.data ?? [];
+  const documents: Document[] = documentsData?.data ?? [];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

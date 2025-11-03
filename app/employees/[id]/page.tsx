@@ -20,7 +20,6 @@ export default function EmployeePage() {
   const params = useParams();
   const id = Number(params.id);
   const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   const { data: employee, isLoading } = useEmployeeDetail(id);
 

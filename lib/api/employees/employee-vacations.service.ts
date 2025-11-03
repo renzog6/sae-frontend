@@ -1,30 +1,24 @@
-// filepath: sae-frontend/lib/api/employeeVacations.ts
-import { ApiClient } from "./apiClient";
-import { EmployeeVacation } from "@/lib/types/employee";
-import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
-import {
-  EmployeeVacationFormData,
-  UpdateEmployeeVacationFormData,
-} from "@/lib/validations/employeeVacation";
+//filepath: sae-frontend/lib/api/employees/employee-vacations.service.ts
 
-function unwrap<T>(resp: any): T {
-  if (resp && typeof resp === "object" && "data" in resp) {
-    return resp.data as T;
-  }
-  return resp as T;
-}
+import { ApiClient } from "@/lib/api/apiClient";
+import {
+  EmployeeVacation,
+  CreateEmployeeVacationDto,
+  UpdateEmployeeVacationDto,
+} from "@/lib/types/employee";
+import { PaginatedResponse } from "@/lib/types/api";
+
 export class EmployeeVacationsService {
   private static basePath = "/employee-vacations";
 
-  // Fetch all employee vacations with optional pagination
-  static async getEmployeeVacations(
-    page?: number,
-    limit?: number
-  ): Promise<EmployeeVacation[]> {
+  static async getAll(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<EmployeeVacation[]> {
     try {
       const query = new URLSearchParams();
-      if (page) query.append("page", page.toString());
-      if (limit) query.append("limit", limit.toString());
+      if (params?.page) query.append("page", params.page.toString());
+      if (params?.limit) query.append("limit", params.limit.toString());
       const url = `${this.basePath}${
         query.toString() ? `?${query.toString()}` : ""
       }`;
@@ -38,8 +32,7 @@ export class EmployeeVacationsService {
     }
   }
 
-  // Fetch a single employee vacation by ID
-  static async getEmployeeVacationById(id: number): Promise<EmployeeVacation> {
+  static async getById(id: number): Promise<EmployeeVacation> {
     try {
       const response = await ApiClient.get<EmployeeVacation>(
         `${this.basePath}/${id}`
@@ -51,12 +44,11 @@ export class EmployeeVacationsService {
     }
   }
 
-  // Create a new employee vacation
-  static async createVacation(data: EmployeeVacationFormData) {
+  static async create(dto: CreateEmployeeVacationDto) {
     try {
       const response = await ApiClient.post<EmployeeVacation>(
         this.basePath,
-        data
+        dto
       );
       return response;
     } catch (error) {
@@ -65,15 +57,11 @@ export class EmployeeVacationsService {
     }
   }
 
-  // Update an existing employee vacation
-  static async updateVacation(
-    id: number,
-    data: UpdateEmployeeVacationFormData
-  ) {
+  static async update(id: number, dto: UpdateEmployeeVacationDto) {
     try {
       const response = await ApiClient.put<EmployeeVacation>(
         `${this.basePath}/${id}`,
-        data
+        dto
       );
       return response;
     } catch (error) {
@@ -82,8 +70,7 @@ export class EmployeeVacationsService {
     }
   }
 
-  // Delete an employee vacation
-  static async deleteVacation(id: number): Promise<string> {
+  static async delete(id: number): Promise<string> {
     try {
       await ApiClient.delete(`${this.basePath}/${id}`);
       return "Vacation deleted";
@@ -93,8 +80,7 @@ export class EmployeeVacationsService {
     }
   }
 
-  // Download vacation details as a PDF
-  static async downloadVacationPdf(id: number) {
+  static async downloadPdf(id: number) {
     const blob = await ApiClient.getBlob(`${this.basePath}/${id}/pdf`);
 
     const filename = `Vacaciones_${id}.pdf`;
@@ -108,8 +94,7 @@ export class EmployeeVacationsService {
     URL.revokeObjectURL(blobUrl);
   }
 
-  // Export vacations to Excel for a specific employee
-  static async exportVacationsToExcel(employeeId: number) {
+  static async exportToExcel(employeeId: number) {
     const blob = await ApiClient.getBlob(
       `${this.basePath}/${employeeId}/exportVacations/excel`
     );
@@ -125,8 +110,7 @@ export class EmployeeVacationsService {
     URL.revokeObjectURL(blobUrl);
   }
 
-  // Export employees vacations summary to Excel
-  static async exportEmployeesVacationsToExcel() {
+  static async exportEmployeesToExcel() {
     const blob = await ApiClient.getBlob(
       `${this.basePath}/exportEmployees/excel`
     );
