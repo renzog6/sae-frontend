@@ -45,14 +45,22 @@ export function useCreateEquipmentAxle() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: {
-      equipmentId: number;
-      order: number;
-      axleType: string;
-      wheelCount: number;
-      description?: string;
-    }) => EquipmentAxlesService.create(data),
+      axle: {
+        equipmentId: number;
+        order: number;
+        axleType: string;
+        wheelCount: number;
+        description?: string;
+      };
+      positions: Array<{
+        positionKey: string;
+        side: string;
+        isDual: boolean;
+      }>;
+    }) => EquipmentAxlesService.createWithPositions(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["equipment-axles"] });
+      qc.invalidateQueries({ queryKey: ["tire-position-configs-equipment"] });
     },
   });
 }

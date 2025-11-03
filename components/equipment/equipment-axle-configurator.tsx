@@ -30,11 +30,15 @@ import { AxleType, TireSide } from "@/lib/types/enums";
 import type { TirePositionConfig } from "@/lib/types/tire";
 import type { Equipment, EquipmentAxle } from "@/lib/types/equipment";
 import { EquipmentAxlesService } from "@/lib/api/equipments";
-import { useEquipmentAxles } from "@/lib/hooks/useEquipments";
+import {
+  useEquipmentAxles,
+  useCreateEquipmentAxle,
+} from "@/lib/hooks/useEquipments";
+import { useTirePositionConfigsByEquipment } from "@/lib/hooks/useTires";
 
 interface Props {
   equipmentId?: number;
-  onComplete?: (axle: EquipmentAxle) => void;
+  onComplete?: (axle?: EquipmentAxle) => void;
 }
 
 interface PositionForm {
@@ -75,6 +79,13 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
   const { data: existingAxles, isLoading: axlesLoading } = useEquipmentAxles({
     equipmentId: selectedEquipmentId || 0,
   });
+
+  // Fetch positions for selected equipment
+  const { data: existingPositions, isLoading: positionsLoading } =
+    useTirePositionConfigsByEquipment(selectedEquipmentId || 0);
+
+  // Mutation for creating axle with positions
+  const createAxleMutation = useCreateEquipmentAxle();
 
   const equipments: Equipment[] = Array.isArray(equipmentsData)
     ? equipmentsData
@@ -196,7 +207,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
 
     axle.tirePositions = positions.map((pos, index) => ({
       id: index + 1,
-      axleId: 0,
+      axleId: axle.id,
       positionKey: pos.positionKey,
       side: pos.side as TireSide,
       isDual: pos.isDual,
@@ -212,7 +223,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
     () =>
       positions.map((pos, index) => ({
         id: index + 1,
-        axleId: 0,
+        axleId: previewAxle.id,
         positionKey: pos.positionKey,
         side: pos.side as TireSide,
         isDual: pos.isDual,
@@ -220,12 +231,12 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
         updatedAt: new Date().toISOString(),
         axle: null as any, // Avoid circular reference in preview
       })),
-    [positions]
+    [positions, previewAxle.id]
   );
 
   const handleSubmit = async () => {
     try {
-      const result = await EquipmentAxlesService.createWithPositions({
+      await createAxleMutation.mutateAsync({
         axle: {
           equipmentId: selectedEquipmentId!,
           order: parseInt(axleForm.order),
@@ -240,7 +251,16 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
         })),
       });
 
-      onComplete?.(result);
+      // Reset form after successful creation
+      setAxleForm({
+        order: "",
+        axleType: "" as AxleType | "",
+        wheelCount: "",
+        description: "",
+      });
+      setPositions([]);
+
+      onComplete?.(undefined);
     } catch (error) {
       console.error("Error creating axle with positions:", error);
       alert("Error al crear el eje con posiciones");

@@ -29,7 +29,7 @@ export default function AxleConfiguratorPage() {
     ? axlesData
     : (axlesData as any)?.data ?? [];
 
-  const handleComplete = (axle: any) => {
+  const handleComplete = (axle?: any) => {
     setShowConfigurator(false);
     // Could add a toast notification here if needed
     console.log("Axle created successfully:", axle);
