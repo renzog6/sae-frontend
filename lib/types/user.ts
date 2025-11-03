@@ -8,6 +8,11 @@ export interface User {
   name: string;
   username?: string | null;
   role: Role;
+  preferences?: Record<string, any>;
+  companyId: number;
+  isActive?: boolean;
+  lastLoginAt?: string | null;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +23,11 @@ export interface CreateUserDto {
   username?: string;
   password: string;
   role?: Role;
+  preferences?: Record<string, any>;
+  companyId?: number;
+  isActive?: boolean;
 }
 
-export interface UpdateUserDto extends Partial<CreateUserDto> {}
+export interface UpdateUserDto extends Partial<CreateUserDto> {
+  deletedAt?: string;
+}
