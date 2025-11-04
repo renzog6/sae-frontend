@@ -20,6 +20,8 @@ import {
   UpdateUserFormData,
 } from "@/lib/validations/auth";
 import { Role } from "@/lib/types/enums";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 interface UserFormProps {
   onSubmit: (data: UserFormData | UpdateUserFormData) => void;
@@ -47,7 +49,9 @@ export function UserForm({
     resolver: zodResolver(isEdit ? updateUserSchema : userSchema),
     defaultValues: {
       role: Role.USER,
-      password: "", // Valor por defecto para password
+      password: isEdit ? undefined : "", // Valor por defecto para password solo en creación
+      companyId: 1, // Default company ID
+      isActive: true, // Default active status
       ...defaultValues,
     },
   });
@@ -148,6 +152,54 @@ export function UserForm({
         />
         {errors.role && (
           <p className="text-sm text-red-600">{errors.role.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="companyId">ID de Empresa (opcional)</Label>
+        <Input
+          id="companyId"
+          type="number"
+          {...register("companyId", { valueAsNumber: true })}
+          placeholder="1"
+        />
+        {errors.companyId && (
+          <p className="text-sm text-red-600">{errors.companyId.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="preferences">Preferencias (JSON opcional)</Label>
+        <Textarea
+          id="preferences"
+          {...register("preferences")}
+          placeholder='{"theme": "dark", "language": "es"}'
+          rows={3}
+        />
+        {errors.preferences && (
+          <p className="text-sm text-red-600">
+            {String(errors.preferences.message)}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Controller
+          name="isActive"
+          control={control}
+          render={({ field }) => (
+            <Checkbox
+              id="isActive"
+              checked={field.value ?? true}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <Label htmlFor="isActive">Usuario activo</Label>
+        {errors.isActive && (
+          <p className="text-sm text-red-600">
+            {String(errors.isActive.message)}
+          </p>
         )}
       </div>
 

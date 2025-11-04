@@ -14,7 +14,7 @@ import {
 
 import { UserForm } from "@/components/forms/user-form";
 import { useUpdateUser, useUser } from "@/lib/hooks/useUsers";
-import { UserFormData } from "@/lib/validations/auth";
+import { UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function EditUserPage() {
   const { data: session } = useSession();
@@ -28,7 +28,7 @@ export default function EditUserPage() {
 
   const updateUserMutation = useUpdateUser();
 
-  const handleSubmit = async (data: UserFormData) => {
+  const handleSubmit = async (data: UpdateUserFormData) => {
     try {
       setError(null);
       await updateUserMutation.mutateAsync({ id: userId, userData: data });
@@ -91,6 +91,9 @@ export default function EditUserPage() {
               email: user.email,
               username: user.username || "",
               role: user.role,
+              companyId: user.companyId,
+              isActive: user.isActive,
+              preferences: user.preferences,
             }}
             isEdit={true}
             onCancel={handleCancel}

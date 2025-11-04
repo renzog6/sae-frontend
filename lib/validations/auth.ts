@@ -27,6 +27,9 @@ export const userSchema = z.object({
   username: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   role: z.nativeEnum(Role),
+  preferences: z.record(z.string(), z.any()).optional(),
+  companyId: z.number().int().positive().optional(),
+  isActive: z.boolean().optional(),
 });
 
 export const updateUserSchema = z.object({
@@ -39,8 +42,15 @@ export const updateUserSchema = z.object({
     .min(1, "El email es requerido")
     .email("Formato de email inválido"),
   username: z.string().optional(),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"), // Permite string vacío
+  password: z
+    .string()
+    .min(6, "La contraseña debe tener al menos 6 caracteres")
+    .optional(), // Permite string vacío
   role: z.nativeEnum(Role),
+  preferences: z.record(z.string(), z.any()).optional(),
+  companyId: z.number().int().positive().optional(),
+  isActive: z.boolean().optional(),
+  deletedAt: z.string().optional(),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;

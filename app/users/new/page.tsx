@@ -14,7 +14,7 @@ import {
 
 import { UserForm } from "@/components/forms/user-form";
 import { useCreateUser } from "@/lib/hooks/useUsers";
-import { UserFormData } from "@/lib/validations/auth";
+import { UserFormData, UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function NewUserPage() {
   const { data: session } = useSession();
@@ -23,10 +23,10 @@ export default function NewUserPage() {
 
   const createUserMutation = useCreateUser();
 
-  const handleSubmit = async (data: UserFormData) => {
+  const handleSubmit = async (data: UserFormData | UpdateUserFormData) => {
     try {
       setError(null);
-      await createUserMutation.mutateAsync(data);
+      await createUserMutation.mutateAsync(data as UserFormData);
       router.push("/users");
     } catch (err) {
       console.error("Error creating user:", err);

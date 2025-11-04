@@ -23,14 +23,7 @@ import {
 
 import { UsersService } from "@/lib/api/users";
 
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { User } from "@/lib/types/user";
 
 export default function UsersPage() {
   const { data: session } = useSession();
@@ -100,6 +93,9 @@ export default function UsersPage() {
                     <TableHead>Nombre</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Rol</TableHead>
+                    <TableHead>Empresa</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Último Login</TableHead>
                     <TableHead>Fecha de Creación</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
@@ -111,6 +107,25 @@ export default function UsersPage() {
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
                         {user.role === "ADMIN" ? "Administrador" : "Usuario"}
+                      </TableCell>
+                      <TableCell>{user.companyId}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            user.isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {user.isActive ? "Activo" : "Inactivo"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {user.lastLoginAt
+                          ? new Date(user.lastLoginAt).toLocaleDateString(
+                              "es-ES"
+                            )
+                          : "Nunca"}
                       </TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString("es-ES")}
