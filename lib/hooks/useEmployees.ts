@@ -31,7 +31,7 @@ export function useEmployeesList(params?: {
       params?.q ?? "",
       params?.status ?? "",
     ],
-    queryFn: () => EmployeesService.getAll(params),
+    queryFn: () => EmployeesService.getAll(params).then((resp) => resp.data),
   });
 }
 

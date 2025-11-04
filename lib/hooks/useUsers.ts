@@ -2,10 +2,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UsersService } from "@/lib/api/users";
 import { User } from "@/lib/types/user";
+import { PaginatedResponse } from "@/lib/types/api";
 import { UserFormData } from "@/lib/validations/auth";
 
 export function useUsers() {
-  return useQuery<User[], Error>({
+  return useQuery<PaginatedResponse<User>, Error>({
     queryKey: ["users"],
     queryFn: () => UsersService.getUsers(),
   });

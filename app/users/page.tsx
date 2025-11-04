@@ -21,34 +21,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { UsersService } from "@/lib/api/users";
+import { useUsers } from "@/lib/hooks/useUsers";
 
 import { User } from "@/lib/types/user";
 
 export default function UsersPage() {
   const { data: session } = useSession();
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: usersResponse, isLoading: loading, error } = useUsers();
   const router = useRouter();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      if (session?.accessToken) {
-        const data = await UsersService.getUsers();
-        setUsers(data);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar usuarios");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Extract data from standardized response
+  const users = usersResponse?.data || [];
+  const meta = usersResponse?.meta;
 
   return (
     <>
@@ -72,7 +56,9 @@ export default function UsersPage() {
 
         {error && (
           <Card className="border-red-200 bg-red-50">
-            <CardContent className="pt-6 text-red-600">{error}</CardContent>
+            <CardContent className="pt-6 text-red-600">
+              {error.message}
+            </CardContent>
           </Card>
         )}
 

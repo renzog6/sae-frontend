@@ -15,7 +15,7 @@ export default function TireReportsSummaryPage() {
   const { data: overRecappedData } = useOverRecappedReport();
 
   // Calcular KPIs dinámicos
-  const tiresInStock = tiresData?.data?.length || 0;
+  const tiresInStock = tiresData?.length || 0;
   const averageLifeKm = averageLifeData?.averageKm
     ? `${Math.round(averageLifeData.averageKm).toLocaleString()} km`
     : "N/A";
@@ -27,10 +27,8 @@ export default function TireReportsSummaryPage() {
         }`
       : "$0.00";
   const recapPercentage =
-    overRecappedData && tiresData?.data
-      ? `${Math.round(
-          (overRecappedData.length / tiresData.data.length) * 100
-        )}%`
+    overRecappedData && tiresData
+      ? `${Math.round((overRecappedData.length / tiresData.length) * 100)}%`
       : "0%";
 
   const kpis = [

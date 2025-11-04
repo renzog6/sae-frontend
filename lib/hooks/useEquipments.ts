@@ -275,26 +275,24 @@ export function useEquipmentModelsByType(typeId: number) {
 
 // Equipment
 export function useEquipmentList(params?: {
-  skip?: number;
-  take?: number;
+  page?: number;
+  limit?: number;
   typeId?: number;
   modelId?: number;
   categoryId?: number;
   year?: number;
   status?: string;
-  search?: string;
 }) {
   return useQuery<PaginatedResponse<Equipment>, Error>({
     queryKey: [
       "equipment",
-      params?.skip ?? 0,
-      params?.take ?? 25,
+      params?.page ?? 1,
+      params?.limit ?? 10,
       params?.typeId ?? "",
       params?.modelId ?? "",
       params?.categoryId ?? "",
       params?.year ?? "",
       params?.status ?? "",
-      params?.search ?? "",
     ],
     queryFn: () => {
       return EquipmentsService.getAll(params);

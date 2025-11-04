@@ -17,7 +17,6 @@ import { useCreateUser } from "@/lib/hooks/useUsers";
 import { UserFormData, UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function NewUserPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 

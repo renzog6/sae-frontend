@@ -13,33 +13,29 @@ export class EquipmentsService {
   private static basePath = "/equipments";
 
   static async getAll(params?: {
-    skip?: number;
-    take?: number;
+    page?: number;
+    limit?: number;
     typeId?: number;
     modelId?: number;
     categoryId?: number;
     year?: number;
-    search?: string;
+    status?: string;
   }): Promise<PaginatedResponse<Equipment>> {
     const query = new URLSearchParams();
-    if (params?.skip !== undefined) query.set("skip", String(params.skip));
-    if (params?.take !== undefined) query.set("take", String(params.take));
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.limit !== undefined) query.set("limit", String(params.limit));
     if (params?.typeId) query.set("typeId", String(params.typeId));
     if (params?.modelId) query.set("modelId", String(params.modelId));
     if (params?.categoryId) query.set("categoryId", String(params.categoryId));
     if (params?.year) query.set("year", String(params.year));
-    if (params?.search) query.set("search", params.search);
+    if (params?.status) query.set("status", params.status);
     const qs = query.toString();
 
     const url = `${this.basePath}${qs ? `?${qs}` : ""}`;
 
-    const response = await ApiClient.get<
-      Equipment[] | PaginatedResponse<Equipment>
-    >(url);
+    const response = await ApiClient.get<PaginatedResponse<Equipment>>(url);
 
-    const normalized = normalizeListResponse<Equipment>(response);
-
-    return normalized;
+    return response;
   }
 
   static async getById(id: number): Promise<Equipment> {

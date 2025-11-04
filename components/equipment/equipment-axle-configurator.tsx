@@ -70,8 +70,8 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
   // Data fetching
   const { data: equipmentsData, isLoading: equipmentsLoading } =
     useEquipmentList({
-      skip: 0,
-      take: 1000, // Get all active equipment
+      page: 1,
+      limit: 1000, // Get all active equipment
       status: "ACTIVE",
     });
 

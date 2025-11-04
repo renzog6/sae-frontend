@@ -7,12 +7,12 @@ import { UserFormData } from "@/lib/validations/auth";
 export class UsersService {
   private static basePath = "/users";
 
-  static async getUsers(): Promise<User[]> {
+  static async getUsers(): Promise<PaginatedResponse<User>> {
     try {
       const response = await ApiClient.get<PaginatedResponse<User>>(
         this.basePath
       );
-      return response.data || [];
+      return response;
     } catch (error) {
       console.error("Error fetching users:", error);
       throw error;

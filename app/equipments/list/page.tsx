@@ -63,8 +63,8 @@ export default function EquipmentListPage() {
     isLoading,
     error,
   } = useEquipmentList({
-    skip: 0,
-    take: 1000, // Get all equipment to enable client-side filtering
+    page: 1,
+    limit: 1000, // Get all equipment to enable client-side filtering
   });
 
   const {

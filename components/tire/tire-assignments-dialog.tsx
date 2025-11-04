@@ -74,8 +74,8 @@ export function TireAssignmentsDialog({
 
   const { data: equipmentData, isLoading: equipmentLoading } = useEquipmentList(
     {
-      skip: 0,
-      take: 50,
+      page: 1,
+      limit: 50,
     }
   );
 
@@ -134,12 +134,8 @@ export function TireAssignmentsDialog({
     }
   };
 
-  const availableTires = Array.isArray(tiresData)
-    ? tiresData
-    : tiresData?.data || [];
-  const availableEquipment = Array.isArray(equipmentData)
-    ? equipmentData
-    : equipmentData?.data || [];
+  const availableTires = tiresData || [];
+  const availableEquipment = equipmentData?.data || [];
 
   // Filter tires based on search term
   const filteredTires = availableTires.filter(

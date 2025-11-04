@@ -201,7 +201,7 @@ export function useTires(params?: {
       params?.status ?? "",
       params?.brandId ?? "",
     ],
-    queryFn: () => TiresService.getAll(params),
+    queryFn: () => TiresService.getAll(params).then((resp) => resp.data),
   });
 }
 

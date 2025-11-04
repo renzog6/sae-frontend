@@ -41,8 +41,8 @@ export function TireAssignmentsContainer() {
     isLoading: isLoadingEquipments,
     isError: isErrorEquipments,
   } = useEquipmentList({
-    skip: 0,
-    take: 1000,
+    page: 1,
+    limit: 1000,
     status: "ACTIVE",
   });
 
