@@ -164,7 +164,7 @@ export default function SettingsPage() {
 
           {/* Card: Usuarios */}
           <Link
-            href={routes.settings.users}
+            href={routes.users.root}
             aria-label="Ir a configuración de usuarios"
             aria-describedby="desc-users"
             className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:focus-visible:ring-emerald-400/60 rounded-2xl"

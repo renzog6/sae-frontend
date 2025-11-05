@@ -1,7 +1,6 @@
 // filepath: sae-frontend/app/users/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,7 @@ import {
 } from "@/components/ui/table";
 
 import { useUsers } from "@/lib/hooks/useUsers";
-
-import { User } from "@/lib/types/user";
+import { Link, Plus } from "lucide-react";
 
 export default function UsersPage() {
   const { data: session } = useSession();
@@ -46,12 +44,6 @@ export default function UsersPage() {
               Administra los usuarios del sistema
             </p>
           </div>
-          <Button
-            onClick={() => router.push("/users/new")}
-            className="bg-laurel-600 hover:bg-laurel-700"
-          >
-            Nuevo Usuario
-          </Button>
         </div>
 
         {error && (
@@ -64,7 +56,15 @@ export default function UsersPage() {
 
         <Card className="border-laurel-200">
           <CardHeader>
-            <CardTitle className="text-laurel-900">Lista de Usuarios</CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-2xl">Lista de Usuarios</CardTitle>
+              <Link href="/users/new">
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Usuario
+                </Button>
+              </Link>
+            </div>
             <CardDescription className="text-laurel-600">
               {users.length} usuario{users.length !== 1 ? "s" : ""}
             </CardDescription>
