@@ -71,7 +71,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
   const { data: equipmentsData, isLoading: equipmentsLoading } =
     useEquipmentList({
       page: 1,
-      limit: 1000, // Get all active equipment
+      limit: 100, // Get all active equipment
       status: "ACTIVE",
     });
 

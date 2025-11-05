@@ -24,7 +24,7 @@ export default function TireStockPage() {
   const { data: tiresData, isLoading } = useTires({
     status: "IN_STOCK",
     page: 1,
-    limit: 1000,
+    limit: 100,
   });
 
   const [search, setSearch] = useState("");

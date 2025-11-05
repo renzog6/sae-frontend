@@ -68,7 +68,7 @@ export const TireRotateDialog: React.FC<Props> = ({
   // Fetch available equipments for rotation
   const { data: equipments, isLoading: equipmentsLoading } = useEquipmentList({
     page: 1,
-    limit: 1000,
+    limit: 100,
     status: "ACTIVE",
   });
 

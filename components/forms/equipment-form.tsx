@@ -109,7 +109,7 @@ export function EquipmentForm({
   const { data: typesData } = useEquipmentTypes({
     categoryId: selectedCategoryId,
     page: 1,
-    limit: 1000,
+    limit: 100,
   });
   const types = Array.isArray(typesData)
     ? typesData
@@ -123,7 +123,7 @@ export function EquipmentForm({
   } = useEquipmentModels({
     typeId: selectedTypeId,
     page: 1,
-    limit: 1000,
+    limit: 100,
   });
 
   const models = modelsResponse.data;
