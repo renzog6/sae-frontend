@@ -83,6 +83,7 @@ export function UserForm({
           id="name"
           {...register("name")}
           placeholder="Ingresa el nombre completo"
+          autoComplete="name"
         />
         {errors.name && (
           <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -96,6 +97,7 @@ export function UserForm({
           type="email"
           {...register("email")}
           placeholder="usuario@ejemplo.com"
+          autoComplete="email"
         />
         {errors.email && (
           <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -108,6 +110,7 @@ export function UserForm({
           id="username"
           {...register("username")}
           placeholder="nombre_usuario"
+          autoComplete="username"
         />
         {errors.username && (
           <p className="text-sm text-red-600">{errors.username.message}</p>
