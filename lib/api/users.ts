@@ -52,10 +52,9 @@ export class UsersService {
     }
   }
 
-  static async deleteUser(id: number): Promise<string> {
+  static async deleteUser(id: number): Promise<void> {
     try {
       await ApiClient.delete(`${this.basePath}/${id}`);
-      return "User deleted";
     } catch (error) {
       console.error("Error deleting user:", error);
       throw error;
