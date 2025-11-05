@@ -53,5 +53,14 @@ export const routes = {
     root: "/settings",
     profile: "/settings/profile",
     users: "/settings/users",
+    locations: "/settings/locations",
+    brands: "/settings/brands",
+    units: "/settings/units",
+  },
+
+  users: {
+    root: "/users",
+    new: "/users/new",
+    detail: (id: number | string) => `/users/${id}`,
   },
 } as const;
