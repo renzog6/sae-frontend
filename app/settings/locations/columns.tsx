@@ -4,6 +4,7 @@
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import type { City } from "@/lib/types/location";
 import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
 
 export function getCityColumns({
   onEdit,
@@ -42,14 +43,14 @@ export function getCityColumns({
         return (
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" onClick={() => onEdit(city)}>
-              Editar
+              <Edit className="w-4 h-4" />
             </Button>
             <Button
               variant="destructive"
               size="sm"
               onClick={() => onDelete(city)}
             >
-              Eliminar
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         );

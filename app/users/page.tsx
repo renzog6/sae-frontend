@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 
 import { useUsers } from "@/lib/hooks/useUsers";
-import { Link, Plus } from "lucide-react";
+import { Link, Plus, Edit } from "lucide-react";
 
 export default function UsersPage() {
   const { data: session } = useSession();
@@ -122,7 +122,7 @@ export default function UsersPage() {
                           size="sm"
                           onClick={() => router.push(`/users/${user.id}`)}
                         >
-                          Editar
+                          <Edit className="w-4 h-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
