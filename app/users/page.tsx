@@ -3,6 +3,8 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { User } from "@/lib/types/user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,17 +22,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useUsers } from "@/lib/hooks/useUsers";
-import { Link, Plus, Edit, Trash2 } from "lucide-react";
+import { useUsers, useDeleteUser } from "@/lib/hooks/useUsers";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/toaster";
 
 export default function UsersPage() {
   const { data: session } = useSession();
   const { data: usersResponse, isLoading: loading, error } = useUsers();
+  const { mutate: deleteUser, isPending: deleting } = useDeleteUser();
   const router = useRouter();
+  const { toast } = useToast();
 
   // Extract data from standardized response
   const users = usersResponse?.data || [];
   const meta = usersResponse?.meta;
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   return (
     <>
@@ -129,8 +147,8 @@ export default function UsersPage() {
                             variant="destructive"
                             size="sm"
                             onClick={() => {
-                              // TODO: Implement delete functionality
-                              console.log("Delete user:", user.id);
+                              setUserToDelete(user);
+                              setConfirmOpen(true);
                             }}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -145,6 +163,51 @@ export default function UsersPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Confirm delete dialog */}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar usuario</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Seguro que deseas eliminar el usuario "{userToDelete?.name}"?
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={() => {
+                if (userToDelete) {
+                  deleteUser(userToDelete.id, {
+                    onSuccess: () => {
+                      toast({
+                        title: "Usuario eliminado",
+                        description: `"${userToDelete.name}" eliminado correctamente.`,
+                        variant: "success",
+                      });
+                    },
+                    onError: (e: any) => {
+                      toast({
+                        title: "Error al eliminar usuario",
+                        description: e?.message || "Intenta nuevamente.",
+                        variant: "error",
+                      });
+                    },
+                    onSettled: () => {
+                      setConfirmOpen(false);
+                      setUserToDelete(null);
+                    },
+                  });
+                }
+              }}
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
