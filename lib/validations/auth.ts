@@ -27,7 +27,7 @@ export const userSchema = z.object({
   username: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   role: z.nativeEnum(Role),
-  preferences: z.record(z.string(), z.any()).optional(),
+  preferences: z.string().optional(),
   companyId: z.number().int().positive().optional(),
   isActive: z.boolean().optional(),
 });
@@ -47,7 +47,7 @@ export const updateUserSchema = z.object({
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .optional(), // Permite string vacío
   role: z.nativeEnum(Role),
-  preferences: z.record(z.string(), z.any()).optional(),
+  preferences: z.string().optional(),
   companyId: z.number().int().positive().optional(),
   isActive: z.boolean().optional(),
   deletedAt: z.string().optional(),

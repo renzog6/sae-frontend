@@ -127,6 +127,7 @@ export function UserForm({
           placeholder={
             isEdit ? "Mínimo 6 caracteres (opcional)" : "Mínimo 6 caracteres"
           }
+          autoComplete="new-password"
         />
         {errors.password && (
           <p className="text-sm text-red-600">{errors.password.message}</p>
@@ -177,9 +178,7 @@ export function UserForm({
           rows={3}
         />
         {errors.preferences && (
-          <p className="text-sm text-red-600">
-            {String(errors.preferences.message)}
-          </p>
+          <p className="text-sm text-red-600">{errors.preferences.message}</p>
         )}
       </div>
 
