@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 
 import { useUsers } from "@/lib/hooks/useUsers";
-import { Link, Plus, Edit } from "lucide-react";
+import { Link, Plus, Edit, Trash2 } from "lucide-react";
 
 export default function UsersPage() {
   const { data: session } = useSession();
@@ -44,6 +44,12 @@ export default function UsersPage() {
               Administra los usuarios del sistema
             </p>
           </div>
+          <div>
+            <Button variant="default" onClick={() => router.push("/users/new")}>
+              <Plus className="w-4 h-4 mr-2" />
+              Usuario
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -58,12 +64,6 @@ export default function UsersPage() {
           <CardHeader>
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="text-2xl">Lista de Usuarios</CardTitle>
-              <Link href="/users/new">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Usuario
-                </Button>
-              </Link>
             </div>
             <CardDescription className="text-laurel-600">
               {users.length} usuario{users.length !== 1 ? "s" : ""}
@@ -117,13 +117,25 @@ export default function UsersPage() {
                         {new Date(user.createdAt).toLocaleDateString("es-ES")}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/users/${user.id}`)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/users/${user.id}`)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              // TODO: Implement delete functionality
+                              console.log("Delete user:", user.id);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
