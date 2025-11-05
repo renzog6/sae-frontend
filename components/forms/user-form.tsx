@@ -24,9 +24,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 
 interface UserFormProps {
-  onSubmit: (data: UserFormData | UpdateUserFormData) => void;
+  onSubmit: (data: UpdateUserFormData) => void;
   isLoading?: boolean;
-  defaultValues?: Partial<UserFormData | UpdateUserFormData>;
+  defaultValues?: Partial<UpdateUserFormData>;
   isEdit?: boolean;
   onCancel?: () => void;
   error?: string | null;
@@ -45,8 +45,8 @@ export function UserForm({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<UserFormData | UpdateUserFormData>({
-    resolver: zodResolver(isEdit ? updateUserSchema : userSchema),
+  } = useForm<UpdateUserFormData>({
+    resolver: zodResolver(updateUserSchema),
     defaultValues: {
       role: Role.USER,
       password: isEdit ? undefined : "", // Valor por defecto para password solo en creación
@@ -56,7 +56,7 @@ export function UserForm({
     },
   });
 
-  const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
+  const handleFormSubmit = (data: UpdateUserFormData) => {
     let processedData = { ...data } as any;
 
     // console.log("Original data:", data);
@@ -82,6 +82,13 @@ export function UserForm({
         }
       }
     }
+
+    // Remove undefined values to clean up the payload
+    Object.keys(processedData).forEach((key) => {
+      if (processedData[key] === undefined) {
+        delete processedData[key];
+      }
+    });
 
     // En modo edición, si el password está vacío, lo removemos del payload
     if (isEdit && (processedData as UpdateUserFormData).password === "") {
@@ -207,7 +214,9 @@ export function UserForm({
           rows={3}
         />
         {errors.preferences && (
-          <p className="text-sm text-red-600">{errors.preferences.message}</p>
+          <p className="text-sm text-red-600">
+            {String(errors.preferences.message)}
+          </p>
         )}
       </div>
 

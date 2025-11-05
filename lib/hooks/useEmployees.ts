@@ -6,6 +6,7 @@ import {
   EmployeePositionsService,
 } from "@/lib/api/employees";
 import { EmployeeCategory, EmployeePosition } from "@/lib/types/employee";
+import { useApiErrorHandler } from "@/lib/hooks/useApiErrorHandler";
 
 import {
   CreateEmployeeFormData,
@@ -23,6 +24,8 @@ export function useEmployeesList(params?: {
   q?: string;
   status?: string;
 }) {
+  const { handleApiError } = useApiErrorHandler();
+
   return useQuery({
     queryKey: [
       "employees",
@@ -31,23 +34,48 @@ export function useEmployeesList(params?: {
       params?.q ?? "",
       params?.status ?? "",
     ],
-    queryFn: () => EmployeesService.getAll(params).then((resp) => resp.data),
+    queryFn: async () => {
+      try {
+        return await EmployeesService.getAll(params).then((resp) => resp.data);
+      } catch (error) {
+        handleApiError(error);
+        throw error;
+      }
+    },
   });
 }
 
 export function useEmployeeDetail(id: number | undefined) {
+  const { handleApiError } = useApiErrorHandler();
+
   return useQuery({
     queryKey: ["employees", id],
-    queryFn: () => EmployeesService.getById(id as number),
+    queryFn: async () => {
+      try {
+        return await EmployeesService.getById(id as number);
+      } catch (error) {
+        handleApiError(error);
+        throw error;
+      }
+    },
     enabled: typeof id === "number",
   });
 }
 
 export function useCreateEmployee() {
   const qc = useQueryClient();
+  const { handleApiError } = useApiErrorHandler();
+
   return useMutation({
     mutationKey: ["employees", "create"],
-    mutationFn: (data: CreateEmployeeFormData) => EmployeesService.create(data),
+    mutationFn: async (data: CreateEmployeeFormData) => {
+      try {
+        return await EmployeesService.create(data);
+      } catch (error) {
+        handleApiError(error);
+        throw error;
+      }
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employees"] });
     },
@@ -56,10 +84,18 @@ export function useCreateEmployee() {
 
 export function useUpdateEmployee() {
   const qc = useQueryClient();
+  const { handleApiError } = useApiErrorHandler();
+
   return useMutation({
     mutationKey: ["employees", "update"],
-    mutationFn: (vars: { id: number; data: UpdateEmployeeFormData }) =>
-      EmployeesService.update(vars.id, vars.data),
+    mutationFn: async (vars: { id: number; data: UpdateEmployeeFormData }) => {
+      try {
+        return await EmployeesService.update(vars.id, vars.data);
+      } catch (error) {
+        handleApiError(error);
+        throw error;
+      }
+    },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employees", vars.id] });
@@ -69,9 +105,18 @@ export function useUpdateEmployee() {
 
 export function useDeleteEmployee() {
   const qc = useQueryClient();
+  const { handleApiError } = useApiErrorHandler();
+
   return useMutation({
     mutationKey: ["employees", "delete"],
-    mutationFn: (id: number) => EmployeesService.delete(id),
+    mutationFn: async (id: number) => {
+      try {
+        return await EmployeesService.delete(id);
+      } catch (error) {
+        handleApiError(error);
+        throw error;
+      }
+    },
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employees", id] });

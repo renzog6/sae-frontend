@@ -47,7 +47,7 @@ export const updateUserSchema = z.object({
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .optional(), // Permite string vacío
   role: z.nativeEnum(Role),
-  preferences: z.string().optional(),
+  preferences: z.record(z.string(), z.any()).optional(),
   companyId: z.number().int().positive().optional(),
   isActive: z.boolean().optional(),
   deletedAt: z.string().optional(),
