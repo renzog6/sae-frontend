@@ -57,12 +57,27 @@ export function UserForm({
   });
 
   const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
+    let processedData = { ...data };
+
+    // Parse preferences JSON string to object if provided
+    if (
+      processedData.preferences &&
+      typeof processedData.preferences === "string"
+    ) {
+      try {
+        processedData.preferences = JSON.parse(processedData.preferences);
+      } catch (error) {
+        console.error("Invalid JSON in preferences:", error);
+        processedData.preferences = undefined;
+      }
+    }
+
     // En modo edición, si el password está vacío, lo removemos del payload
-    if (isEdit && (data as UpdateUserFormData).password === "") {
-      const { password, ...dataWithoutPassword } = data;
+    if (isEdit && (processedData as UpdateUserFormData).password === "") {
+      const { password, ...dataWithoutPassword } = processedData;
       onSubmit(dataWithoutPassword as UpdateUserFormData);
     } else {
-      onSubmit(data);
+      onSubmit(processedData);
     }
   };
 
