@@ -385,7 +385,7 @@ export class ApiClient {
    * @param options - Opciones adicionales
    * @returns Respuesta parseada
    */
-  static async delete<T>(
+  static async delete<T = void>(
     path: string,
     options: ApiClientOptions = {}
   ): Promise<T> {
