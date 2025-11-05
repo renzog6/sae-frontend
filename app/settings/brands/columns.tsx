@@ -4,6 +4,7 @@
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import type { Brand } from "@/lib/types/catalog";
 import { Button } from "@/components/ui/button";
+import { Edit, Trash2 } from "lucide-react";
 
 export function getBrandColumns({
   onEdit,
@@ -40,14 +41,14 @@ export function getBrandColumns({
         return (
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" onClick={() => onEdit(brand)}>
-              Editar
+              <Edit className="w-4 h-4" />
             </Button>
             <Button
               variant="destructive"
               size="sm"
               onClick={() => onDelete(brand)}
             >
-              Eliminar
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         );

@@ -61,22 +61,20 @@ export default function BrandsPage() {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Marcas</h1>
-        <Button
-          onClick={() => {
-            setDialogMode("create");
-            setSelectedBrand(null);
-            setDialogOpen(true);
-          }}
-        >
-          Nueva marca
-        </Button>
-      </div>
-
       <Card>
         <CardHeader>
-          <CardTitle>Listado de Marcas</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Listado de Marcas</CardTitle>
+            <Button
+              onClick={() => {
+                setDialogMode("create");
+                setSelectedBrand(null);
+                setDialogOpen(true);
+              }}
+            >
+              Nueva marca
+            </Button>
+          </div>
           <CardDescription>Gestión de marcas activas</CardDescription>
         </CardHeader>
         <CardContent>
