@@ -52,6 +52,7 @@ export function UserForm({
       password: isEdit ? undefined : "", // Valor por defecto para password solo en creación
       companyId: 1, // Default company ID
       isActive: true, // Default active status
+      preferences: {},
       ...defaultValues,
     },
   });
@@ -206,12 +207,16 @@ export function UserForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="preferences">Preferencias (JSON opcional)</Label>
+        <Label htmlFor="preferences">
+          Preferencias (JSON opcional) - Deshabilitado
+        </Label>
         <Textarea
           id="preferences"
           {...register("preferences")}
           placeholder='{"theme": "dark", "language": "es"}'
           rows={3}
+          disabled
+          value="{}"
         />
         {errors.preferences && (
           <p className="text-sm text-red-600">
