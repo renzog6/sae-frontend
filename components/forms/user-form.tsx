@@ -59,16 +59,27 @@ export function UserForm({
   const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
     let processedData = { ...data } as any;
 
+    // console.log("Original data:", data);
+    // console.log("Preferences type:", typeof processedData.preferences);
+    // console.log("Preferences value:", processedData.preferences);
+
     // Parse preferences JSON string to object if provided
     if (
       processedData.preferences &&
       typeof processedData.preferences === "string"
     ) {
-      try {
-        processedData.preferences = JSON.parse(processedData.preferences);
-      } catch (error) {
-        console.error("Invalid JSON in preferences:", error);
-        processedData.preferences = {};
+      if (processedData.preferences.trim() === "") {
+        // If preferences is empty string, set to undefined to omit from payload
+        processedData.preferences = undefined;
+        console.log("Empty preferences, setting to undefined");
+      } else {
+        try {
+          processedData.preferences = JSON.parse(processedData.preferences);
+          console.log("Parsed preferences:", processedData.preferences);
+        } catch (error) {
+          console.error("Invalid JSON in preferences:", error);
+          processedData.preferences = {};
+        }
       }
     }
 
