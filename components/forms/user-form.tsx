@@ -57,7 +57,7 @@ export function UserForm({
   });
 
   const handleFormSubmit = (data: UserFormData | UpdateUserFormData) => {
-    let processedData = { ...data };
+    let processedData = { ...data } as any;
 
     // Parse preferences JSON string to object if provided
     if (
@@ -68,7 +68,7 @@ export function UserForm({
         processedData.preferences = JSON.parse(processedData.preferences);
       } catch (error) {
         console.error("Invalid JSON in preferences:", error);
-        processedData.preferences = undefined;
+        processedData.preferences = {};
       }
     }
 
