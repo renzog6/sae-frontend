@@ -6,7 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { CompanySchema, type CompanyFormData } from "@/lib/validations/company";
 // No se requieren hooks de categorías/ciudades aquí; se gestionan fuera
 
@@ -19,8 +26,14 @@ export interface CompanyFormProps {
   error?: string | null;
 }
 
-export function CompanyForm({ onSubmit, isLoading = false, defaultValues, isEdit = false, onCancel, error }: CompanyFormProps) {
-
+export function CompanyForm({
+  onSubmit,
+  isLoading = false,
+  defaultValues,
+  isEdit = false,
+  onCancel,
+  error,
+}: CompanyFormProps) {
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(CompanySchema),
     defaultValues: {
@@ -37,12 +50,13 @@ export function CompanyForm({ onSubmit, isLoading = false, defaultValues, isEdit
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {error && (
-          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">{error}</div>
+          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            {error}
+          </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <FormField
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
@@ -55,7 +69,7 @@ export function CompanyForm({ onSubmit, isLoading = false, defaultValues, isEdit
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="cuit"
@@ -63,12 +77,16 @@ export function CompanyForm({ onSubmit, isLoading = false, defaultValues, isEdit
               <FormItem>
                 <FormLabel>CUIT</FormLabel>
                 <FormControl>
-                  <Input placeholder="30-12345678-9" {...field} />
+                  <Input
+                    placeholder="30-12345678-9"
+                    maxLength={13}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />          
+          />
 
           <FormField
             control={form.control}
@@ -113,9 +131,15 @@ export function CompanyForm({ onSubmit, isLoading = false, defaultValues, isEdit
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
+            className="text-white bg-amber-500 hover:bg-amber-600"
           >
-            {isLoading ? (isEdit ? "Guardando..." : "Creando...") : isEdit ? "Guardar" : "Crear"}
+            {isLoading
+              ? isEdit
+                ? "Guardando..."
+                : "Creando..."
+              : isEdit
+              ? "Guardar"
+              : "Crear"}
           </Button>
         </div>
       </form>

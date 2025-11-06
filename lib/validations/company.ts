@@ -44,7 +44,11 @@ export const CompanyAddressSchema = z.object({
 });
 
 export const CompanySchema = z.object({
-  cuit: z.string().min(1, "CUIT requerido"),
+  cuit: z
+    .string()
+    .min(1, "CUIT requerido")
+    .max(13, "CUIT debe tener máximo 13 caracteres")
+    .regex(/^\d{2}-\d{8}-\d{1}$/, "El formato de CUIT debe ser XX-XXXXXXXX-X"),
   name: z.string().min(1, "Nombre requerido").max(150),
   businessName: z.string().optional(),
   information: z.string().optional(),

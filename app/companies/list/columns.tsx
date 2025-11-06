@@ -38,6 +38,13 @@ export function getCompanyColumns(): ColumnDef<Company>[] {
       ),
     },
     {
+      accessorKey: "information",
+      header: "Info",
+      cell: ({ row }: { row: Row<Company> }) => (
+        <span>{row.original.information || "-"}</span>
+      ),
+    },
+    {
       id: "actions",
       header: () => <div className="text-right">Acciones</div>,
       cell: ({ row }: { row: Row<Company> }) => {
@@ -46,7 +53,7 @@ export function getCompanyColumns(): ColumnDef<Company>[] {
           <div className="flex justify-end gap-2">
             <Link href={`/companies/${company.id}`}>
               <Button variant="outline" size="sm" title="Ver detalle">
-                <Eye className="h-4 w-4" />
+                <Eye className="w-4 h-4" />
               </Button>
             </Link>
           </div>

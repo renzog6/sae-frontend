@@ -25,7 +25,8 @@ export function useBusinessCategories() {
     queryKey: ["business-categories"],
     queryFn: async () => {
       const resp = await BusinessCategoriesService.getCategories();
-      return resp.data; // standardized backend response
+      // Handle direct array response from backend
+      return resp.data || resp;
     },
   });
 }
