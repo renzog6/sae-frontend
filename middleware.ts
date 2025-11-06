@@ -1,22 +1,42 @@
 // filepath: sae-frontend/middleware.ts
-// Middleware para proteger rutas y redirigir usuarios autenticados
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+// 🔧 Rutas que requieren autenticación general
+const protectedRoutes = [
+  "/dashboard",
+  "/equipments",
+  "/employees",
+  "/companies",
+  "/tires",
+  "/settings",
+  "/users",
+];
+
+// 🔧 Rutas que requieren rol admin
+const adminRoutes = ["/users/new", "/users/[id]/edit", "/users/[id]/delete"];
+
 export default withAuth(
   function middleware(req) {
-    // Si el usuario está autenticado y trata de acceder a /login, redirigir a dashboard
-    if (req.nextUrl.pathname === "/login" && req.nextauth.token) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    const { pathname, origin } = req.nextUrl;
+    const token = req.nextauth.token as any;
+
+    // 🔹 Si ya está logueado e intenta entrar al login → redirigir
+    if (pathname === "/login" && token) {
+      return NextResponse.redirect(new URL("/dashboard", origin));
     }
 
-    // Si el usuario no está autenticado y trata de acceder a rutas protegidas
-    if (
-      !req.nextauth.token &&
-      (req.nextUrl.pathname.startsWith("/dashboard") ||
-        req.nextUrl.pathname.startsWith("/equipments"))
-    ) {
-      return NextResponse.redirect(new URL("/login", req.url));
+    // 🔹 Si no está logueado y entra a rutas protegidas → redirigir a login
+    if (!token && protectedRoutes.some((r) => pathname.startsWith(r))) {
+      return NextResponse.redirect(new URL("/login", origin));
+    }
+
+    // 🔹 Si es ruta de administración (usuarios críticos)
+    if (token && adminRoutes.some((r) => matchRoute(pathname, r))) {
+      if (token.role !== "ADMIN") {
+        // En vez de redirigir podrías enviar al forbidden page
+        return NextResponse.redirect(new URL("/forbidden", origin));
+      }
     }
 
     return NextResponse.next();
@@ -24,36 +44,31 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Permitir acceso a la página de login sin token
-        if (req.nextUrl.pathname === "/login") {
-          return true;
-        }
+        const pathname = req.nextUrl.pathname;
 
-        // Para rutas protegidas, requerir token
-        if (
-          req.nextUrl.pathname.startsWith("/dashboard") ||
-          req.nextUrl.pathname.startsWith("/equipments")
-        ) {
+        // Página pública
+        if (pathname === "/login") return true;
+
+        // Rutas protegidas → requieren login
+        if (protectedRoutes.some((r) => pathname.startsWith(r))) {
           return !!token;
         }
 
-        // Permitir acceso a otras rutas públicas
+        // Rutas públicas → permitir
         return true;
       },
     },
   }
 );
 
-// Configurar qué rutas debe procesar el middleware
+// 🔍 Utilidad simple para detectar rutas dinámicas
+function matchRoute(pathname: string, routePattern: string) {
+  // Reemplaza [id] por cualquier segmento
+  const regex = new RegExp("^" + routePattern.replace("[id]", "[^/]+") + "$");
+  return regex.test(pathname);
+}
+
+// Configuración del matcher de Next
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

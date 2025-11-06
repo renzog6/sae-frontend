@@ -71,7 +71,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="shadow-sm col-span-full border-laurel-200 bg-gradient-to-r from-laurel-50 to-white">
+          <Card className="shadow-sm col-span-full border-laurel-200 bg-linear-to-r from-laurel-50 to-white">
             <CardHeader>
               <CardTitle className="text-2xl font-semibold text-laurel-900">
                 ¡Bienvenido al Sistema!
