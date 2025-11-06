@@ -4,8 +4,7 @@ import { getSession, signOut } from "next-auth/react";
 import { AuthResponse, LoginCredentials } from "@/lib/types/auth";
 
 // Base URL desde variables de entorno
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3305/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Timeout predeterminado para solicitudes (10 segundos)
 const REQUEST_TIMEOUT = 10000;
