@@ -47,8 +47,11 @@ export default function EmployeeVacationsPage() {
 
   const columns = useMemo(() => getVacationColumns(), []);
 
+  // Filters state
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>(EmployeeStatus.ACTIVE);
+  const [sortBy, setSortBy] = useState("person.lastName");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const getStatusLabel = (status: StatusFilter) => {
     return status === "ALL" ? "Todos" : employeeStatusLabels[status];
@@ -64,13 +67,15 @@ export default function EmployeeVacationsPage() {
   // Reset to first page when filters change
   useEffect(() => {
     setPage(1);
-  }, [debouncedQuery, status, limit]);
+  }, [debouncedQuery, status, limit, sortBy, sortOrder]);
 
   const { data: employeesData } = useEmployeesList({
     page,
     limit,
     q: debouncedQuery || undefined,
     status: status === "ALL" ? undefined : status,
+    sortBy,
+    sortOrder,
   });
 
   const exportExcelMutation = useExportEmployeesVacationsToExcel();
@@ -145,6 +150,61 @@ export default function EmployeeVacationsPage() {
                   >
                     <span className="mr-2">❌</span>{" "}
                     {employeeStatusLabels[EmployeeStatus.TERMINATED]}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* AGREGADO: Sort field selector */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="min-w-[160px] justify-between"
+                  >
+                    <span className="mr-2">🔄</span>
+                    {sortBy === "person.lastName"
+                      ? "Apellido"
+                      : sortBy === "employeeCode"
+                      ? "Legajo"
+                      : sortBy === "createdAt"
+                      ? "Fecha Creación"
+                      : sortBy}
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    onClick={() => setSortBy("person.lastName")}
+                  >
+                    <span className="mr-2">👤</span> Apellido
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("employeeCode")}>
+                    <span className="mr-2">🏷️</span> Legajo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("createdAt")}>
+                    <span className="mr-2">📅</span> Fecha Creación
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* AGREGADO: Sort order selector */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="min-w-[120px] justify-between"
+                  >
+                    <span className="mr-2">⬆️⬇️</span>
+                    {sortOrder === "desc" ? "Descendente" : "Ascendente"}
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem onClick={() => setSortOrder("asc")}>
+                    <span className="mr-2">⬆️</span> Ascendente
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortOrder("desc")}>
+                    <span className="mr-2">⬇️</span> Descendente
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -16,12 +16,18 @@ export class EmployeesService {
     limit?: number;
     q?: string;
     status?: string;
+    sortBy?: string; //  AGREGADO: Campo por el cual ordenar
+    sortOrder?: "asc" | "desc"; //  AGREGADO: Dirección del orden
   }) {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     if (params?.q) query.set("q", params.q);
     if (params?.status) query.set("status", params.status);
+    // ✅ AGREGADO: Parámetros de ordenamiento
+    if (params?.sortBy) query.set("sortBy", params.sortBy);
+    if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
+
     const qs = query.toString();
     const response = await ApiClient.get<PaginatedResponse<Employee>>(
       `${this.basePath}${qs ? `?${qs}` : ""}`
