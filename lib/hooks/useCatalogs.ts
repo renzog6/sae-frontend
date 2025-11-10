@@ -14,7 +14,10 @@ import {
 export function useBrands() {
   return useQuery<Brand[], Error>({
     queryKey: ["brands"],
-    queryFn: () => BrandsService.getAll(),
+    queryFn: async () => {
+      const response = await BrandsService.getAll();
+      return response.data;
+    },
   });
 }
 
