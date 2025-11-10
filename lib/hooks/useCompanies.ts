@@ -75,7 +75,8 @@ export function useBusinessSubcategories(params?: { categoryId?: number }) {
     queryKey: ["business-subcategories", params?.categoryId ?? "all"],
     queryFn: async () => {
       const resp = await BusinessSubcategoriesService.getSubcategories(params);
-      return resp.data; // standardized backend response
+      // Handle direct array response from backend
+      return resp.data || resp;
     },
   });
 }
@@ -125,7 +126,8 @@ export function useCompanies(params?: { page?: number; limit?: number }) {
     queryKey: ["companies", params?.page ?? 1, params?.limit ?? 50],
     queryFn: async () => {
       const resp = await CompaniesService.getCompanies(params);
-      return resp.data; // standardized backend response
+      // Handle direct array response from backend
+      return resp.data || resp;
     },
   });
 }

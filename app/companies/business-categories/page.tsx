@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/companies/business-categories/page.tsx
+// filepath: sae-frontend/app/companies/categories/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";

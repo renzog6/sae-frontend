@@ -3,8 +3,11 @@
 import { getSession, signOut } from "next-auth/react";
 import { AuthResponse, LoginCredentials } from "@/lib/types/auth";
 
-// Base URL desde variables de entorno
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+// Detecta entorno automáticamente
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? process.env.API_URL // En SSR o servidor (Docker interno o localhost)
+    : process.env.NEXT_PUBLIC_API_URL; // En navegador (externa, visible al cliente)
 
 // Timeout predeterminado para solicitudes (10 segundos)
 const REQUEST_TIMEOUT = 10000;

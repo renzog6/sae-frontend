@@ -17,6 +17,8 @@ export const routes = {
     new: "/companies/new",
     list: "/companies/list",
     create: "/companies/create",
+    categories: "/companies/business-categories",
+    businessSubcategories: "/companies/business-subcategories",
     detail: (id: number | string) => `/companies/${id}`,
   },
 
