@@ -9,9 +9,12 @@ export interface CreateBrandDto {
   code: string;
   information?: string;
   isActive?: boolean;
+  deletedAt?: string | null;
 }
 
-export interface UpdateBrandDto extends Partial<CreateBrandDto> {}
+export interface UpdateBrandDto extends Partial<CreateBrandDto> {
+  deletedAt?: string | null;
+}
 
 export interface CreateUnitDto {
   name: string;
@@ -20,3 +23,12 @@ export interface CreateUnitDto {
 }
 
 export interface UpdateUnitDto extends Partial<CreateUnitDto> {}
+
+// ===== Brand query parameters =====
+export interface BrandQueryParams {
+  page?: number;
+  limit?: number;
+  q?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}

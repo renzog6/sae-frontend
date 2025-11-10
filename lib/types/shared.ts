@@ -8,6 +8,7 @@ export interface Brand {
   code: string;
   information?: string | null;
   isActive: boolean;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -145,9 +146,12 @@ export interface CreateBrandDto {
   code: string;
   information?: string;
   isActive?: boolean;
+  deletedAt?: string | null;
 }
 
-export interface UpdateBrandDto extends Partial<CreateBrandDto> {}
+export interface UpdateBrandDto extends Partial<CreateBrandDto> {
+  deletedAt?: string | null;
+}
 
 export interface CreateUnitDto {
   name: string;
