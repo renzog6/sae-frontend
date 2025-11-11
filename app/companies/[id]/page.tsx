@@ -162,7 +162,8 @@ export default function CompanyDetailPage() {
     currentCategoryId?: number | null;
     onUpdated?: (newId: number | undefined) => void;
   }) {
-    const { data: categories = [], isLoading } = useBusinessCategories();
+    const { data: categoriesResponse, isLoading } = useBusinessCategories();
+    const categories = categoriesResponse?.data || [];
     const [adding, setAdding] = useState(false);
     const [savingCat, setSavingCat] = useState(false);
     const [selectedId, setSelectedId] = useState<number | "">(

@@ -62,6 +62,17 @@ export function useDeleteBrand() {
   });
 }
 
+export function useRestoreBrand() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => BrandsService.restore(id),
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+      queryClient.invalidateQueries({ queryKey: ["brand", id] });
+    },
+  });
+}
+
 // ===== Units =====
 export function useUnits() {
   return useQuery<Unit[], Error>({

@@ -59,7 +59,7 @@ export default function CompaniesPage() {
 
   const { data: categoriesResponse } = useBusinessCategories();
 
-  const categories: BusinessCategory[] = categoriesResponse || [];
+  const categories: BusinessCategory[] = categoriesResponse?.data || [];
 
   const companies = useMemo(() => {
     let filtered: Company[] = companiesResponse || [];
