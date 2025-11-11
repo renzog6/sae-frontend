@@ -32,3 +32,12 @@ export interface BrandQueryParams {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+// ===== Unit query parameters =====
+export interface UnitQueryParams {
+  page?: number;
+  limit?: number;
+  q?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}

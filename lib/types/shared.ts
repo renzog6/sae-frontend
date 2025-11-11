@@ -18,6 +18,7 @@ export interface Unit {
   name: string;
   abbreviation: string;
   isActive: boolean;
+  deletedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -157,9 +158,12 @@ export interface CreateUnitDto {
   name: string;
   abbreviation: string;
   isActive?: boolean;
+  deletedAt?: string | null;
 }
 
-export interface UpdateUnitDto extends Partial<CreateUnitDto> {}
+export interface UpdateUnitDto extends Partial<CreateUnitDto> {
+  deletedAt?: string | null;
+}
 
 export interface CreatePresentationDto {
   name: string;
