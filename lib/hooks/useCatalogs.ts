@@ -66,7 +66,10 @@ export function useDeleteBrand() {
 export function useUnits() {
   return useQuery<Unit[], Error>({
     queryKey: ["units"],
-    queryFn: () => UnitsService.getAll(),
+    queryFn: async () => {
+      const response = await UnitsService.getAll();
+      return response.data;
+    },
   });
 }
 
@@ -105,6 +108,17 @@ export function useDeleteUnit() {
   return useMutation({
     mutationFn: (id: number) => UnitsService.delete(id),
     onSuccess: (_message, id) => {
+      queryClient.invalidateQueries({ queryKey: ["units"] });
+      queryClient.invalidateQueries({ queryKey: ["unit", id] });
+    },
+  });
+}
+
+export function useRestoreUnit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => UnitsService.restore(id),
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["unit", id] });
     },
