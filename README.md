@@ -1,435 +1,469 @@
-# SAE Frontend - Sistema de Administración Empresarial
+# SAE Frontend
 
-Aplicación web **empresarial completa y profesional** desarrollada con **Next.js 15 (App Router)**, **TypeScript 5.1+** y **Tailwind CSS 4.0**. Interfaz moderna, responsiva y accesible que integra **autenticación JWT robusta**, **gestión completa de usuarios**, **empresas**, **empleados**, **equipos**, **neumáticos especializados**, **contactos polimórficos**, **ubicaciones geográficas** y **catálogos del sistema**. Incluye más de **80 páginas** y **200+ componentes** organizados por dominio de negocio con **arquitectura modular escalable**.
+A comprehensive enterprise web application built with **Next.js 15 (App Router)**, **TypeScript 5.1+**, and **Tailwind CSS 4.0**. Modern, responsive, and accessible interface integrating robust JWT authentication, complete user management, companies, employees, equipment, specialized tires, polymorphic contacts, and geographic locations. Includes 80+ pages and 200+ components organized by business domain with scalable modular architecture.
 
-## 📋 Tabla de Contenidos
+## 📋 Table of Contents
 
-- [Descripción](#-descripción)
-- [Características](#-características)
-- [Arquitectura del Sistema](#-arquitectura-del-sistema)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [Instalación y Configuración](#-instalación-y-configuración)
-- [Uso](#-uso)
-- [Licencia](#-licencia)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Development](#-development)
+- [Production Build](#-production-build)
+- [Docker](#-docker)
+- [Backend Integration](#-backend-integration)
+- [Authentication](#-authentication)
+- [API Integration](#-api-integration)
+- [Project Structure](#-project-structure)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-## 🚀 Descripción
+## 🚀 Overview
 
-SAE Frontend es una **aplicación web empresarial de alta calidad y escalable** construida con **Next.js 15 (App Router)**, **TypeScript 5.1+ (strict mode)** y **Tailwind CSS 4.0**, que proporciona una **interfaz completa y profesional** para el sistema de administración empresarial. Integra **autenticación segura con NextAuth.js 4.24+**, **formularios validados con Zod 4.1+**, **gestión de estado eficiente con TanStack Query 5.89+**, y una **UI moderna y completamente accesible** basada en **shadcn/ui** y **Radix UI**. Diseñada para **empresas medianas y grandes** con flotas vehiculares y gestión especializada de neumáticos.
+SAE Frontend is a high-quality, scalable enterprise web application built with Next.js 15 (App Router), TypeScript 5.1+ (strict mode), and Tailwind CSS 4.0, providing a complete and professional interface for the SAE business management system. It integrates secure authentication with NextAuth.js 4.24+, form validation with Zod 4.1+, efficient state management with TanStack Query 5.89+, and a modern, fully accessible UI based on shadcn/ui and Radix UI. Designed for medium and large companies with vehicle fleets and specialized tire management.
 
-### 🎯 Características Principales
+### 📊 Project Statistics
 
-- **🏢 Interfaz Empresarial Profesional**: Más de 80 páginas organizadas por módulos de negocio
-- **🧩 200+ Componentes Reutilizables**: Completamente tipados con TypeScript y accesibles
-- **👥 Gestión Empresarial Completa**: RRHH, Flota, Neumáticos especializados, Catálogos, etc.
-- **🔐 Autenticación JWT Robusta**: NextAuth.js con refresh tokens, roles jerárquicos y middleware avanzado
-- **✅ Validaciones Empresariales**: Zod + React Hook Form con feedback visual en tiempo real
-- **💾 Estado Eficiente**: TanStack Query para server state + client state optimizado
-- **🎨 UI Moderna y Accesible**: shadcn/ui + Radix UI + Tailwind CSS + temas dinámicos
-- **📱 Responsive Design**: Diseño adaptativo completo desktop/tablet/móvil
-- **⚡ Performance Optimizada**: Turbopack, Next.js 15, lazy loading y code splitting
-- **🛞 Gestión de Neumáticos Visual**: Diagrama interactivo de ejes y posiciones
-- **📊 Dashboard Ejecutivo**: Vista general con métricas y acceso rápido a módulos
-
-### 📊 Estadísticas del Proyecto
-
-- **Versión**: 1.0.0
-- **Autor**: Renzo O. Gorosito
-- **Licencia**: MIT
-- **Última Actualización**: Octubre 2025
+- **Version**: 1.1.0
+- **Author**: Renzo O. Gorosito
+- **License**: MIT
 - **Framework**: Next.js 15.5.3 (App Router)
-- **Lenguaje**: TypeScript 5.1+ (strict mode)
+- **Language**: TypeScript 5.1+ (strict mode)
 - **UI Framework**: Tailwind CSS 4.0 + shadcn/ui
-- **Páginas**: 80+ páginas organizadas por dominio
-- **Componentes**: 200+ componentes reutilizables
-- **Hooks**: 25+ hooks personalizados
-- **Validaciones**: 30+ esquemas Zod
-- **APIs**: 15+ servicios API tipados
-- **Rutas**: 50+ rutas dinámicas y anidadas
+- **Pages**: 80+ pages organized by business domain
+- **Components**: 200+ reusable components
+- **Hooks**: 25+ custom hooks
+- **Validations**: 30+ Zod schemas
+- **API Services**: 15+ typed API services
+- **Routes**: 50+ dynamic and nested routes
 
-## ✨ Características
+## ✨ Features
 
-### 🔐 Autenticación y Seguridad Empresarial
+### 🔐 Enterprise Authentication & Security
 
-- **NextAuth.js Completo**: Autenticación JWT con providers múltiples
-- **Middleware Avanzado**: Protección de rutas con Next.js middleware
-- **Gestión de Sesiones**: Tokens de access/refresh con expiración automática
-- **Sistema de Roles**: USER, ADMIN con permisos jerárquicos
-- **Navegación Dinámica**: Menú filtrado por roles de usuario
-- **Protección CSRF**: Configurado para seguridad adicional
+- **NextAuth.js Complete**: JWT authentication with multiple providers
+- **Advanced Middleware**: Route protection with Next.js middleware
+- **Session Management**: Access/refresh tokens with automatic expiration
+- **Role System**: USER, ADMIN with hierarchical permissions
+- **Dynamic Navigation**: Menu filtered by user roles
+- **CSRF Protection**: Configured for additional security
 
-### 📊 Gestión de Datos Completa
+### 📊 Complete Data Management
 
-- **👥 Usuarios**: CRUD completo con roles y permisos (USER, ADMIN)
-- **🏢 Empresas**: Gestión integral con categorías y subcategorías de negocio
-- **👷 Empleados**: RRHH completo con categorías, posiciones, vacaciones y documentos
-- **📞 Contactos**: Sistema polimórfico para empresas y personas (email, teléfono, WhatsApp, etc.)
-- **👤 Personas y Familia**: Gestión de personas físicas con relaciones familiares
-- **📍 Ubicaciones**: Sistema geográfico completo (países, provincias, ciudades, direcciones)
-- **🏷️ Catálogos**: Marcas, unidades, equipos, categorías y tipos
-- **🛞 Neumáticos**: Gestión especializada del ciclo de vida completo con asignaciones, rotaciones, recapados e inspecciones
-- **📋 Historial**: Incidentes, mantenimientos, eventos y auditoría completa
+- **👥 Users**: Full CRUD with roles and permissions (USER, ADMIN)
+- **🏢 Companies**: Complete management with business categories and subcategories
+- **👷 Employees**: Full HR with categories, positions, vacations, and documents
+- **📞 Contacts**: Polymorphic system for companies and people (email, phone, WhatsApp, etc.)
+- **👤 People & Families**: Physical person management with family relationships
+- **📍 Locations**: Complete geographic system (countries, provinces, cities, addresses)
+- **🏷️ Catalogs**: Brands, units, equipment, categories, and types
+- **🛞 Tires**: Specialized lifecycle management with assignments, rotations, recaps, and inspections
+- **📋 History**: Incidents, maintenance, events, and complete auditing
 
-### 🎨 Interfaz de Usuario Empresarial Profesional
+### 🎨 Enterprise Professional UI
 
-- **🎯 UI Moderna y Accesible**: shadcn/ui + Radix UI con componentes 100% accesibles (WCAG 2.1 AA)
-- **🌓 Tema Dinámico Empresarial**: Claro/oscuro/profesional con next-themes, persistencia automática y branding
-- **📝 Formularios Avanzados**: Validación en tiempo real con Zod + React Hook Form + feedback visual contextual
-- **📊 Tablas Interactivas Empresariales**: TanStack Table con ordenamiento multi-columna, filtros avanzados, paginación inteligente y exportación
-- **🔔 Notificaciones Profesionales**: Sistema toast con Framer Motion, animaciones fluidas y categorías (success/warning/error/info)
-- **📱 Responsive Design Completo**: Layout adaptativo con breakpoints optimizados para desktop/tablet/móvil/impresión
-- **🧭 Sidebar Inteligente**: Navegación contextual con colapso automático, breadcrumbs dinámicos y estado persistente
-- **🔍 Búsqueda Global Empresarial**: Command palette con fuzzy search, navegación rápida y shortcuts de teclado
-- **📈 Dashboard Ejecutivo**: Vista general con métricas clave, gráficos interactivos y acceso rápido a módulos críticos
-- **🛞 Diagrama Visual de Ejes**: Componente interactivo para configuración visual de neumáticos por posición
-- **⚡ Performance Visual**: Lazy loading, skeleton states, loading states optimizados y transitions fluidas
+- **🎯 Modern & Accessible UI**: shadcn/ui + Radix UI with 100% accessible components (WCAG 2.1 AA)
+- **🌓 Dynamic Enterprise Theme**: Light/dark/professional with next-themes, automatic persistence, and branding
+- **📝 Advanced Forms**: Real-time validation with Zod + React Hook Form + contextual visual feedback
+- **📊 Interactive Enterprise Tables**: TanStack Table with multi-column sorting, advanced filters, intelligent pagination, and export
+- **🔔 Professional Notifications**: Toast system with Framer Motion, fluid animations, and success/warning/error/info categories
+- **📱 Complete Responsive Design**: Adaptive layout with optimized breakpoints for desktop/tablet/mobile/printing
+- **🧭 Intelligent Sidebar**: Contextual navigation with automatic collapse, dynamic breadcrumbs, and persistent state
+- **🔍 Enterprise Global Search**: Command palette with fuzzy search, quick navigation, and keyboard shortcuts
+- **📈 Executive Dashboard**: Overview with key metrics, interactive charts, and quick access to critical modules
+- **🛞 Visual Axle Diagram**: Interactive component for visual tire position configuration
+- **⚡ Visual Performance**: Lazy loading, skeleton states, optimized loading states, and fluid transitions
 
-### 🏗️ Arquitectura Técnica Empresarial Avanzada
+### 🏗️ Advanced Enterprise Technical Architecture
 
-- **🚀 Next.js 15 App Router**: Routing moderno con layouts anidados, loading states y error boundaries
-- **📝 TypeScript Estricto Empresarial**: Tipado fuerte en 200+ archivos con strict mode y noImplicitAny
-- **💾 TanStack Query Empresarial**: Gestión optimizada de estado servidor/cliente con caching inteligente, background refetching y optimistic updates
-- **🌐 Axios Interceptors Avanzados**: Cliente HTTP con manejo automático de tokens JWT, retry logic y error handling global
-- **🧩 Componentes Modulares Empresariales**: 200+ componentes reutilizables, tipados y organizados por dominio de negocio
-- **🎣 Hooks Personalizados Empresariales**: Lógica de negocio separada, testeable y reutilizable con composición avanzada
-- **✅ Validaciones Robustas Empresariales**: Zod schemas para type safety completo con validaciones de negocio complejas
-- **🏷️ Constantes Centralizadas**: Enums, labels, configuraciones y metadata organizados por dominio
-- **🔄 State Management Híbrido**: TanStack Query para server state + Zustand para client state complejo
-- **🛡️ Error Boundaries**: Manejo granular de errores con recovery automático y logging estructurado
-- **📊 Business Logic Layer**: Separación clara entre UI, lógica de negocio y servicios API
+- **🚀 Next.js 15 App Router**: Modern routing with nested layouts, loading states, and error boundaries
+- **📝 Enterprise TypeScript**: Strong typing across 200+ files with strict mode and noImplicitAny
+- **💾 TanStack Query Enterprise**: Optimized server/client state management with intelligent caching, background refetching, and optimistic updates
+- **🌐 Advanced Axios Interceptors**: HTTP client with automatic JWT token handling, retry logic, and global error handling
+- **🧩 Modular Enterprise Components**: 200+ reusable components, typed, and organized by business domain
+- **🎣 Enterprise Custom Hooks**: Business logic separated, testable, and reusable with advanced composition
+- **✅ Robust Enterprise Validations**: Zod schemas for complete type safety with complex business validations
+- **🏷️ Centralized Constants**: Enums, labels, configurations, and metadata organized by domain
+- **🔄 Hybrid State Management**: TanStack Query for server state + Zustand for complex client state
+- **🛡️ Error Boundaries**: Granular error handling with automatic recovery and structured logging
+- **📊 Business Logic Layer**: Clear separation between UI, business logic, and API services
 
-## 🏗 Arquitectura del Sistema
+## 🏗️ Architecture
 
-### 🏛️ Patrón de Arquitectura Empresarial Hexagonal
+### 🏛️ Hexagonal Enterprise Architecture Pattern
 
-El proyecto implementa una **arquitectura hexagonal modular y escalable** siguiendo las mejores prácticas empresariales de Next.js 15, con **separación clara de responsabilidades** y **capas bien definidas**:
+The project implements a **modular and scalable hexagonal architecture** following Next.js 15 best practices, with **clear responsibility separation** and **well-defined layers**:
 
-#### **🏗️ Estructura por Dominios de Negocio**
+#### **🏗️ Domain-Driven Structure**
 
-- **🗂️ App Router Empresarial**: Rutas organizadas por directorios con layouts anidados, loading states y error boundaries
-- **🧩 Componentes por Módulo**: UI components agrupados por funcionalidad empresarial con composición avanzada
-- **🔀 Separación de Concerns Empresarial**: API, hooks, validaciones, constantes y lógica de negocio en capas especializadas
-- **📝 Type Safety Empresarial**: TypeScript estricto con tipos compartidos, enums centralizados y validaciones de negocio
-- **💾 State Management Híbrido Empresarial**: TanStack Query para server state optimizado, Zustand para client state complejo
+- **🗂️ App Router Enterprise**: Routes organized by nested directories with layouts, loading states, and error boundaries
+- **🧩 Components by Module**: UI components grouped by business functionality with advanced composition
+- **🔀 Enterprise Concerns Separation**: API, hooks, validations, constants, and business logic in specialized layers
+- **📝 Enterprise Type Safety**: Shared types, centralized enums, and business validations
+- **💾 Hybrid State Management Enterprise**: TanStack Query for optimized server state, Zustand for complex client state
 
-#### **🔄 Flujo de Datos Empresarial Optimizado**
+#### **🔄 Optimized Enterprise Data Flow**
 
-1. **🔐 Autenticación Empresarial**: NextAuth.js maneja sesiones JWT con middleware avanzado y refresh automático
-2. **📡 API Calls Empresariales**: Axios con interceptores para tokens, retry logic y error handling global
-3. **💾 State Management Inteligente**: TanStack Query con cache inteligente, background refetching y optimistic updates
-4. **🔄 UI Updates Reactivos**: React hooks personalizados con composición para lógica de negocio compleja
-5. **✅ Validations Empresariales**: Zod schemas con validaciones de negocio, type safety completo y feedback contextual
+1. **🔐 Enterprise Authentication**: NextAuth.js handles JWT sessions with advanced middleware and automatic refresh
+2. **📡 Enterprise API Calls**: Axios with interceptors for tokens, retry logic, and global error handling
+3. **💾 Intelligent State Management**: TanStack Query with intelligent cache, background refetching, and optimistic updates
+4. **🔄 Reactive UI Updates**: Custom React hooks with composition for complex business logic
+5. **✅ Enterprise Validations**: Zod schemas with business validations, complete type safety, and contextual feedback
 
-#### **🛡️ Seguridad Empresarial de Nivel Empresarial**
+#### **🛡️ Enterprise-Level Security**
 
-- **🚧 Middleware Avanzado**: Protección granular de rutas con role-based access y session validation
-- **🔑 JWT Stateless Seguro**: Autenticación sin estado con refresh tokens rotativos y expiración automática
-- **👥 RBAC Empresarial**: Role-based access control con permisos jerárquicos (USER < MANAGER < ADMIN)
-- **🔍 Input Validation Dual**: Validaciones cliente/servidor sincronizadas con feedback visual en tiempo real
-- **🛡️ XSS/CSRF Protection**: Sanitización automática, headers de seguridad y validaciones de input estrictas
-- **📊 Audit Trail**: Logging completo de acciones críticas con traceability y accountability
+- **🚧 Advanced Middleware**: Granular route protection with role-based access and session validation
+- **🔑 Stateless Secure JWT**: Authentication without state with rotating refresh tokens and automatic expiration
+- **👥 Enterprise RBAC**: Role-based access control with hierarchical permissions (USER < MANAGER < ADMIN)
+- **🔍 Dual Input Validation**: Client/server synchronized validations with real-time visual feedback
+- **🛡️ XSS/CSRF Protection**: Automatic sanitization, security headers, and strict input validations
+- **📊 Audit Trail**: Complete logging of critical actions with traceability and accountability
 
-## 📁 Estructura del Proyecto
+## 🛠 Tech Stack
+
+### 🚀 Core Enterprise Framework
+
+- **Next.js** 15.5.3 - React framework with App Router and Turbopack
+- **React** 19.1.0 - React with concurrent features
+- **TypeScript** 5.1.3 - Strict static typing across the entire project
+
+### 🎨 Professional UI & Styling
+
+- **Tailwind CSS** 4.0.0-alpha.66 - Cutting-edge utility-first CSS framework
+- **shadcn/ui** - Customizable and accessible UI components (200+ components)
+- **Radix UI** - Headless primitives for maximum accessibility
+- **Lucide React** 0.544.0 - Consistent and modern iconography
+- **Framer Motion** 12.23.19 - Fluid and professional animations
+- **next-themes** 0.4.6 - Theme management with automatic persistence
+
+### 📊 Advanced State & Data Management
+
+- **TanStack Query** 5.89.0 - Intelligent server/client state management
+- **Axios** 1.6.0 - HTTP client with interceptors and error handling
+- **@tanstack/react-table** 8.21.3 - Data tables with virtualization and filters
+
+### 📝 Forms & Validation
+
+- **React Hook Form** 7.62.0 - Performant form management
+- **@hookform/resolvers** 5.2.1 - Zod integration with RHF
+- **Zod** 4.1.9 - Schema validation with type inference
+
+### 🔐 Enterprise Authentication
+
+- **NextAuth.js** 4.24.11 - Complete authentication with multiple providers
+- **JWT Management**: Access/refresh tokens with automatic renewal
+- **Session Handling**: Session persistence and management
+
+### 🛠️ Utilities & Tools
+
+- **class-variance-authority** 0.7.1 - Dynamic CSS variant system
+- **clsx** 2.1.1 - Optimized conditional class utilities
+- **tailwind-merge** 3.3.1 - Intelligent Tailwind class merging
+- **cmdk** 1.1.1 - Command palette for global search
+
+### 💻 Enterprise Development & Quality
+
+- **ESLint Enterprise**: Advanced linting with personalized rules for consistent and secure code
+- **Prettier Enterprise**: Automatic consistent code formatting with team configuration
+- **Turbopack Optimized**: Ultra-fast bundler for instant HMR development
+- **TypeScript Strict Enterprise**: Strict configuration (noImplicitAny, strictNullChecks) for maximum type safety
+- **Testing Ready**: Jest + React Testing Library configured for unit and integration tests
+- **Code Coverage**: Configured for >80% coverage with detailed reports
+- **CI/CD Ready**: Prepared for continuous integration with GitHub Actions
+- **Storybook**: Documented and isolated testable components
+
+## 📋 Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Docker (optional, for containerized deployment)
+
+## 🚀 Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd sae-frontend
+
+# Install dependencies
+npm install
+```
+
+## 🔧 Environment Variables
+
+Create a `.env.local` file in the project root with the following variables:
+
+```env
+# Environment
+NODE_ENV=development
+
+# Backend API (NestJS)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+API_URL=http://localhost:3305/api
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3003
+NEXTAUTH_SECRET=your-secure-secret-key-here
+NEXTAUTH_DEBUG=true
+
+# Optional: Additional configuration
+# NEXT_PUBLIC_APP_NAME=SAE Frontend
+# NEXT_PUBLIC_APP_VERSION=1.1.0
+```
+
+### Environment Variables Explanation
+
+- `NEXT_PUBLIC_API_BASE_URL`: Public URL for the SAE backend API (used in browser)
+- `API_URL`: Internal API URL for server-side calls (Docker/internal)
+- `NEXTAUTH_URL`: Complete URL where the app is running
+- `NEXTAUTH_SECRET`: Secure secret for JWT token signing (generate a strong random string)
+
+## 💻 Development
+
+```bash
+# Start development server with Turbopack
+npm run dev
+
+# Server will be available at http://localhost:3003
+```
+
+### Development Scripts
+
+```bash
+npm run dev          # Development with Turbopack (port 3003)
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # Code linting
+```
+
+## 🏗️ Production Build
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+```
+
+The production build is optimized with:
+
+- Code splitting and lazy loading
+- Image optimization
+- CSS minification
+- JavaScript minification
+- Service worker for caching (if configured)
+
+## 🐳 Docker
+
+### Build and Run with Docker
+
+```bash
+# Build the Docker image
+docker build -t sae-frontend .
+
+# Run the container
+docker run -p 3003:3003 \
+  -e NEXT_PUBLIC_API_BASE_URL=http://your-backend-url \
+  -e API_URL=http://your-backend-url/api \
+  -e NEXTAUTH_URL=http://your-frontend-url \
+  -e NEXTAUTH_SECRET=your-secret \
+  sae-frontend
+```
+
+### Docker Compose (with backend)
+
+```yaml
+version: "3.8"
+services:
+  sae-frontend:
+    build: .
+    ports:
+      - "3003:3003"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://sae-backend:3305
+      - API_URL=http://sae-backend:3305/api
+      - NEXTAUTH_URL=http://localhost:3003
+      - NEXTAUTH_SECRET=your-secret
+    depends_on:
+      - sae-backend
+
+  sae-backend:
+    # Backend configuration...
+```
+
+## 🔗 Backend Integration
+
+This frontend integrates with the SAE Backend (NestJS application) through RESTful APIs. The backend provides:
+
+- **Authentication**: JWT token generation and validation
+- **Database**: PostgreSQL with Prisma ORM
+- **Business Logic**: Complete CRUD operations for all entities
+- **File Upload**: Document and image management
+- **Reports**: Excel/PDF generation
+- **Audit Trail**: Complete logging and history
+
+### API Endpoints Structure
+
+```
+POST   /auth/login           # User authentication
+POST   /auth/refresh         # Token refresh
+GET    /users                # User management
+GET    /companies            # Company CRUD
+GET    /employees            # Employee management
+GET    /equipment            # Equipment CRUD
+GET    /tires                # Tire lifecycle management
+POST   /reports/generate     # Report generation
+```
+
+## 🔐 Authentication
+
+### NextAuth.js Configuration
+
+The application uses NextAuth.js with credentials provider for secure authentication:
+
+- **JWT Strategy**: Stateless authentication with access/refresh tokens
+- **Automatic Refresh**: Tokens are automatically refreshed before expiration
+- **Session Management**: Secure session handling with persistence
+- **Role-based Access**: USER and ADMIN roles with hierarchical permissions
+
+### Authentication Flow
+
+1. User submits credentials on login page
+2. NextAuth calls backend `/auth/login` endpoint
+3. JWT tokens are stored in secure httpOnly cookies
+4. Middleware validates tokens on protected routes
+5. Automatic token refresh when needed
+
+## 📡 API Integration
+
+### ApiClient Architecture
+
+The application uses a centralized `ApiClient` class with advanced features:
+
+```typescript
+// Example API call
+const tires = await ApiClient.get<Tire[]>("/tires", {
+  params: { page: 1, limit: 10 },
+});
+```
+
+### Key Features
+
+- **Automatic Token Handling**: JWT tokens automatically added to requests
+- **Token Refresh**: Seamless refresh of expired tokens
+- **Error Handling**: Global error handling with user-friendly messages
+- **Retry Logic**: Automatic retry for failed requests
+- **Timeout Management**: Configurable request timeouts
+- **File Upload Support**: FormData handling for file uploads
+
+### Custom Hooks Pattern
+
+Business logic is separated into custom hooks:
+
+```typescript
+// Example custom hook
+export function useTires(params?: TireQueryParams) {
+  return useQuery({
+    queryKey: ["tires", params],
+    queryFn: () => tireService.getTires(params),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+```
+
+## 📁 Project Structure
 
 ```
 sae-frontend/
 ├── app/                               # Next.js App Router
 │   ├── api/
 │   │   └── auth/[...nextauth]/        # NextAuth API routes
-│   ├── companies/                     # Gestión de empresas
-│   │   ├── [id]/                      # Detalle/edición empresa
-│   │   ├── business-categories/       # Categorías de negocio
-│   │   ├── business-subcategories/    # Subcategorías de negocio
-│   │   ├── list/                      # Lista de empresas
-│   │   └── new/                       # Nueva empresa
-│   ├── dashboard/                     # Dashboard principal
-│   ├── employees/                     # Gestión de empleados
-│   │   ├── [id]/                      # Detalle/edición empleado
-│   │   ├── categories/                # Categorías de empleados
-│   │   ├── list/                      # Lista de empleados
-│   │   ├── new/                       # Nuevo empleado
-│   │   ├── positions/                 # Posiciones de empleados
-│   │   └── vacations/                 # Vacaciones de empleados
-│   ├── equipments/                    # Gestión de equipos
-│   │   ├── [id]/                      # Detalle equipo
-│   │   ├── categories/                # Categorías de equipos
-│   │   ├── list/                      # Lista de equipos
-│   │   ├── models/                    # Modelos de equipos
-│   │   ├── new/                       # Nuevo equipo
-│   │   └── types/                     # Tipos de equipos
-│   ├── login/                         # Página de login
-│   ├── profile/                       # Perfil de usuario
-│   ├── reports/                       # Reportes del sistema
-│   ├── settings/                      # Configuraciones del sistema
-│   │   ├── brands/                    # Gestión de marcas
-│   │   ├── locations/                 # Gestión de ubicaciones
-│   │   ├── units/                     # Gestión de unidades
-│   │   └── page.tsx                   # Landing de settings
-│   ├── users/                         # Gestión de usuarios
-│   │   ├── [id]/                      # Detalle/edición usuario
-│   │   └── new/                       # Nuevo usuario
-│   ├── globals.css                    # Estilos globales Tailwind
-│   ├── layout.tsx                     # Layout raíz con providers
-│   ├── page.tsx                       # Página de inicio (redirect)
-│   └── middleware.ts                  # Middleware de protección
-│
-├── components/                        # Componentes React
-│   ├── addresses/                     # Componentes de direcciones
-│   ├── brands/                        # Componentes de marcas
-│   ├── categories/                    # Componentes de categorías
-│   ├── companies/                     # Componentes de empresas
-│   ├── contacts/                      # Componentes de contactos
-│   ├── employees/                     # Componentes de empleados
-│   ├── equipment/                     # Componentes de equipos
-│   ├── forms/                         # Formularios reutilizables
-│   ├── layouts/                       # Layouts y navegación
-│   ├── locations/                     # Componentes de ubicaciones
-│   ├── providers/                     # Context providers
-│   ├── ui/                            # Componentes UI (shadcn/ui)
-│   │   ├── data-table.tsx             # Tabla de datos genérica
-│   │   ├── form-dialog.tsx            # Dialog para formularios
-│   │   ├── toaster.tsx                # Notificaciones toast
-│   │   ├── global-search.tsx          # Búsqueda global
-│   │   └── ...                        # Otros componentes UI
-│   └── units/                         # Componentes de unidades
-│
-├── lib/                               # Utilidades y lógica de negocio
-│   ├── api/                           # Servicios API
-│   │   ├── apiClient.ts               # Cliente HTTP base
-│   │   ├── auth.ts                    # Servicios de autenticación
-│   │   ├── catalogs.ts                # Servicios de catálogos
-│   │   ├── companies.ts               # Servicios de empresas
-│   │   ├── contacts.ts                # Servicios de contactos
-│   │   ├── documents.ts               # Servicios de documentos
-│   │   ├── employees.ts               # Servicios de empleados
-│   │   ├── employeeVacations.ts       # Servicios de vacaciones
-│   │   ├── equipment.ts               # Servicios de equipos
-│   │   ├── history.ts                 # Servicios de historial
-│   │   ├── locations.ts               # Servicios de ubicaciones
-│   │   ├── persons.ts                 # Servicios de personas
-│   │   ├── users.ts                   # Servicios de usuarios
-│   │   └── utils.ts                   # Utilidades API
-│   ├── hooks/                         # React hooks personalizados
-│   │   ├── useCatalogs.ts             # Hook para catálogos
-│   │   ├── useCompanies.ts            # Hook para empresas
-│   │   ├── useContacts.ts             # Hook para contactos
-│   │   ├── useDocuments.ts            # Hook para documentos
-│   │   ├── useEmployees.ts            # Hook para empleados
-│   │   ├── useEmployeeVacations.ts    # Hook para vacaciones
-│   │   ├── useEquipment.ts            # Hook para equipos
-│   │   ├── useHistory.ts              # Hook para historial
-│   │   ├── useLocations.ts            # Hook para ubicaciones
-│   │   ├── usePersons.ts              # Hook para personas
-│   │   └── useUsers.ts                # Hook para usuarios
-│   ├── validations/                   # Esquemas de validación Zod
-│   ├── constants.ts                   # Constantes y etiquetas
-│   ├── navigation.ts                  # Configuración de navegación
-│   ├── routes.ts                      # Definiciones de rutas
-│   ├── utils.ts                       # Utilidades generales
-│   └── utils/date.ts                  # Utilidades de fecha
-│
-├── types/                             # Definiciones TypeScript
-│   ├── api.ts                         # Tipos de API (responses)
-│   ├── auth.ts                        # Tipos de autenticación
-│   ├── catalog.ts                     # Tipos de catálogos
-│   ├── company.ts                     # Tipos de empresas
-│   ├── contact.ts                     # Tipos de contactos
-│   ├── document.ts                    # Tipos de documentos
-│   ├── employee.ts                    # Tipos de empleados
-│   ├── enums.ts                       # Enums del sistema
-│   ├── equipment.ts                   # Tipos de equipos
-│   ├── history.ts                     # Tipos de historial
-│   ├── location.ts                    # Tipos de ubicaciones
-│   ├── shared.ts                      # Tipos compartidos
-│   ├── user.ts                        # Tipos de usuarios
-│   └── next-auth.d.ts                 # Extensiones NextAuth
-│
-├── middleware.ts                      # Middleware de Next.js
-├── next.config.ts                     # Configuración Next.js
-├── tailwind.config.js                 # Configuración Tailwind CSS
-├── postcss.config.mjs                 # Configuración PostCSS
-├── components.json                    # Configuración shadcn/ui
-├── Dockerfile                         # Docker para producción
-└── .env.example                       # Variables de entorno ejemplo
+│   ├── companies/                     # Company management
+│   │   ├── [id]/                      # Company detail/edit
+│   │   ├── business-categories/       # Business categories
+│   │   └── list/                      # Company list
+│   ├── dashboard/                     # Main dashboard
+│   ├── employees/                     # Employee management
+│   │   ├── [id]/                      # Employee detail
+│   │   ├── categories/                # Employee categories
+│   │   └── vacations/                 # Vacation management
+│   ├── equipments/                    # Equipment management
+│   ├── login/                         # Authentication page
+│   ├── settings/                      # System settings
+│   └── tires/                         # Tire management
+│       ├── assignments/               # Tire assignments
+│       ├── inspections/               # Tire inspections
+│       └── stock/                     # Tire inventory
+├── components/                        # React components
+│   ├── ui/                            # shadcn/ui primitives
+│   ├── layouts/                       # Layout components
+│   ├── forms/                         # Reusable forms
+│   └── data-table.tsx                 # Generic data table
+├── lib/                               # Business logic & utilities
+│   ├── api/                           # API services
+│   │   ├── apiClient.ts               # HTTP client
+│   │   ├── auth.ts                    # Auth configuration
+│   │   └── tires/                     # Tire services
+│   ├── hooks/                         # Custom React hooks
+│   ├── types/                         # TypeScript definitions
+│   ├── validations/                   # Zod schemas
+│   └── utils/                         # Utility functions
+├── middleware.ts                      # Next.js middleware
+├── next.config.ts                     # Next.js configuration
+├── tailwind.config.js                 # Tailwind CSS config
+├── components.json                    # shadcn/ui config
+├── Dockerfile                         # Docker configuration
+└── package.json                       # Dependencies & scripts
 ```
 
-## 🛠 Tecnologías Utilizadas
+## 🤝 Contributing
 
-### 🚀 Core Framework Empresarial
+### Development Workflow
 
-- **Next.js** 15.5.3 - React framework con App Router y Turbopack
-- **React** 19.1.0 - Biblioteca de UI con concurrent features
-- **TypeScript** 5.1.3 - Tipado estático estricto en todo el proyecto
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/your-feature`
+3. **Make** your changes following the established patterns
+4. **Test** your changes thoroughly
+5. **Commit** with conventional commits: `git commit -m "feat: add new feature"`
+6. **Push** to your branch: `git push origin feature/your-feature`
+7. **Create** a Pull Request
 
-### 🎨 UI y Estilos Profesionales
+### Code Standards
 
-- **Tailwind CSS** 4.0.0-alpha.66 - Framework CSS utilitario de última generación
-- **shadcn/ui** - Componentes UI accesibles y personalizables (200+ componentes)
-- **Radix UI** - Primitivas headless para máxima accesibilidad
-- **Lucide React** 0.544.0 - Iconografía consistente y moderna
-- **Framer Motion** 12.23.19 - Animaciones fluidas y profesionales
-- **next-themes** 0.4.6 - Gestión de temas con persistencia automática
+- **TypeScript**: Strict mode enabled, no `any` types
+- **ESLint**: Follow all linting rules
+- **Prettier**: Automatic code formatting
+- **Components**: PascalCase, `.tsx` extension
+- **Hooks**: camelCase, `use` prefix
+- **Utilities**: camelCase, `.ts` extension
 
-### 📊 Gestión de Estado y Datos Avanzada
+### Commit Convention
 
-- **TanStack Query** 5.89.0 - Gestión inteligente de estado servidor/cliente
-- **Axios** 1.6.0 - Cliente HTTP con interceptores y manejo de errores
-- **@tanstack/react-table** 8.21.3 - Tablas de datos con virtualización y filtros
+This project follows [Conventional Commits](https://conventionalcommits.org/):
 
-### 📝 Formularios y Validación Robusta
+```
+type(scope): description
 
-- **React Hook Form** 7.62.0 - Gestión de formularios performante
-- **@hookform/resolvers** 5.2.1 - Integración Zod con RHF
-- **Zod** 4.1.9 - Validación de esquemas con type inference
-
-### 🔐 Autenticación Empresarial
-
-- **NextAuth.js** 4.24.11 - Autenticación completa con múltiples providers
-- **JWT Management**: Access/refresh tokens con renovación automática
-- **Session Handling**: Gestión de sesiones con persistencia
-
-### 🛠️ Utilidades y Herramientas
-
-- **class-variance-authority** 0.7.1 - Sistema de variantes CSS dinámicas
-- **clsx** 2.1.1 - Utilidades de clases condicionales optimizadas
-- **tailwind-merge** 3.3.1 - Fusión inteligente de clases Tailwind
-- **cmdk** 1.1.1 - Command palette para búsqueda global
-- **date-fns** - Manipulación de fechas (importado desde backend)
-
-### 💻 Desarrollo y Calidad Empresarial
-
-- **🔍 ESLint Empresarial**: Linting avanzado con reglas personalizadas para código consistente y seguro
-- **🎨 Prettier Empresarial**: Formateo automático consistente con configuración de equipo
-- **⚡ Turbopack Optimizado**: Empaquetador ultra-rápido para desarrollo con HMR instantáneo
-- **📝 TypeScript Strict Empresarial**: Configuración estricta (noImplicitAny, strictNullChecks) para máxima type safety
-- **🧪 Testing Preparado**: Jest + React Testing Library configurado para tests unitarios y de integración
-- **📊 Code Coverage**: Configurado para >80% coverage con reportes detallados
-- **🚀 CI/CD Ready**: Preparado para integración continua con GitHub Actions
-- **📖 Storybook**: Componentes documentados y testeables de forma aislada
-
-## 🚀 Instalación y Configuración
-
-### Prerrequisitos
-
-- Node.js 18+
-- npm o yarn
-
-### Instalación
-
-```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd sae-frontend
-
-# Instalar dependencias
-npm install
+Types:
+- feat: New features
+- fix: Bug fixes
+- docs: Documentation
+- style: Code style changes
+- refactor: Code refactoring
+- test: Testing
+- chore: Maintenance
 ```
 
-### Variables de Entorno
+## 📄 License
 
-Crear un archivo `.env.local` en la raíz del proyecto basado en `.env.example`:
-
-```env
-# Entorno
-NODE_ENV=development
-
-# API Backend (NestJS)
-API_URL=http://localhost:3305/api
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
-
-# NextAuth
-NEXTAUTH_URL=http://localhost:3303
-NEXTAUTH_SECRET=your-secure-secret-key-here
-NEXTAUTH_DEBUG=true
-```
-
-### Desarrollo
-
-```bash
-# Ejecutar en modo desarrollo
-npm run dev
-
-# Construir para producción
-npm run build
-
-# Ejecutar en producción
-npm start
-```
-
-## 📖 Uso
-
-### 🧭 Estructura de Navegación Empresarial
-
-- **📊 Dashboard Ejecutivo**: Vista general del sistema con métricas clave y acceso rápido a módulos principales
-- **🏢 Empresas**: Gestión completa de compañías, categorías y subcategorías de negocio con validaciones CUIT
-- **👷 Empleados**: Administración de personal, categorías, posiciones, vacaciones y documentos con PDFs automáticos
-- **🔧 Equipos**: Gestión de equipos, categorías, modelos, tipos y mantenimientos con jerarquía completa
-- **🛞 Neumáticos Especializados**: Gestión completa del ciclo de vida con asignaciones, rotaciones, recapados (con kmAtRecap, recapType), inspecciones y diagrama visual interactivo de ejes
-- **⚙️ Configuración del Sistema**: Catálogos empresariales (marcas, unidades, ubicaciones geográficas)
-- **📈 Reportes y Analytics**: Generación de reportes Excel, métricas de rendimiento y business intelligence
-- **👤 Perfil de Usuario**: Gestión personal con configuración de preferencias y cambio de contraseña
-
-### Características Principales
-
-- **CRUD Completo**: Operaciones completas de crear, leer, actualizar y eliminar
-- **Búsqueda Avanzada**: Tablas con búsqueda múltiple y ordenamiento
-- **Formularios Validados**: Validación en tiempo real con feedback visual
-- **Notificaciones**: Sistema de toast notifications para feedback de usuario
-- **Responsive Design**: Interfaz adaptativa para desktop y móvil
-- **Role-based Access**: Control de acceso basado en roles de usuario
-- **Tema Dinámico**: Soporte para temas claro y oscuro
-- **Diagrama Visual de Ejes**: Visualización interactiva de posiciones de neumáticos por eje
-- **Gestión de Asignaciones**: Montaje/desmontaje visual de neumáticos en equipos
-
-### API Integration
-
-El frontend se conecta con el backend SAE mediante:
-
-- **Base URL**: Configurable via variables de entorno
-- **Autenticación**: JWT tokens con refresh automático
-- **Endpoints RESTful**: Convenciones REST para todas las operaciones
-- **Error Handling**: Manejo robusto de errores con feedback al usuario
-- **Caching**: TanStack Query para optimización de performance
-- **Gestión de Ejes**: Endpoint específico para obtener posiciones por equipo (`/equipment-axles/positions/equipment/:equipmentId`)
-- **Diagrama Interactivo**: Visualización de neumáticos montados con estados visuales
-
-## 🔧 Desarrollo y Contribución
-
-### Scripts Disponibles
-
-```bash
-npm run dev          # Desarrollo con Turbopack (puerto 3003)
-npm run build        # Build de producción
-npm run start        # Servidor de producción
-npm run lint         # Linting del código
-```
-
-### Convenciones de Código
-
-- **TypeScript**: Tipado fuerte en todos los archivos
-- **ESLint**: Reglas de linting consistentes
-- **Prettier**: Formateo automático de código
-- **Componentes**: PascalCase, archivos .tsx
-- **Hooks**: camelCase, prefijo "use"
-- **Utilidades**: camelCase, archivos .ts
-
-### Arquitectura de Componentes
-
-- **Páginas**: Lógicas de routing en `/app`
-- **Componentes**: Reutilizables en `/components`
-- **UI**: Primitivas shadcn/ui en `/components/ui`
-- **Forms**: Validaciones Zod en `/lib/validations`
-- **API**: Servicios en `/lib/api`, hooks en `/lib/hooks`
-- **Diagrama de Ejes**: Componente `AxleDiagram` con lógica de agrupación dual
-- **Gestión de Estado**: TanStack Query para estado de posiciones de neumáticos
-- **Recapados**: Campos adicionales kmAtRecap, recapType en formularios y UI
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Desarrollado por**: Renzo O. Gorosito
-**Versión**: 1.0.0
-**Última actualización**: 2025
+**Developed by**: Renzo O. Gorosito  
+**Version**: 1.1.0  
+**Last Updated**: November 2025
