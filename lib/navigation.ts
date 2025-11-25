@@ -9,6 +9,7 @@ import {
   Settings,
   Wrench,
   CircleDot,
+  FileText,
 } from "lucide-react";
 
 export const mainMenu = [
@@ -17,6 +18,7 @@ export const mainMenu = [
   { title: "Vacaciones", href: routes.employees.vacation, icon: Calendar },
   { title: "Equipos", href: routes.equipments.root, icon: Wrench },
   { title: "Neumáticos", href: routes.tires.root, icon: CircleDot },
+  { title: "Reportes", href: routes.reports.root, icon: FileText },
   { title: "Empresas", href: routes.companies.root, icon: Building2 },
   { title: "Configuración", href: routes.settings.root, icon: Settings },
 ];

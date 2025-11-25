@@ -23,7 +23,6 @@ import type { Employee } from "@/lib/types/employee";
 import { EmployeeStatus } from "@/lib/types/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
-import { useExportEmployeesVacationsToExcel } from "@/lib/hooks/useEmployeeVacations";
 import { DataTable } from "@/components/data-table";
 import { getVacationColumns } from "./columns";
 import {
@@ -34,6 +33,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { ReportType } from "@/lib/types";
 
 type StatusFilter = "ALL" | EmployeeStatus;
 
@@ -78,8 +79,6 @@ export default function EmployeeVacationsPage() {
     sortOrder,
   });
 
-  const exportExcelMutation = useExportEmployeesVacationsToExcel();
-
   const employees: Employee[] = Array.isArray(employeesData)
     ? employeesData
     : (employeesData as any)?.data ?? [];
@@ -90,22 +89,21 @@ export default function EmployeeVacationsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Vacaciones</CardTitle>
-            <div className="flex items-center gap-2">
-              {/* Export to Excel button */}
-              <Button
-                variant="outline"
-                onClick={() => exportExcelMutation.mutate()}
-                disabled={exportExcelMutation.isPending}
-                className="shadow-sm"
-              >
-                <span className="mr-2">📄</span>{" "}
-                {exportExcelMutation.isPending ? "Exportando..." : "Exportar"}
-              </Button>
+            <div>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-2xl">Vacaciones</CardTitle>
+              </div>
+              <CardDescription>
+                Gestión de vacaciones de empleados
+              </CardDescription>
             </div>
+            {/* Report generation dropdown */}
+            <ReportExportMenu
+              reportType={ReportType.EMPLOYEE_VACATION_BALANCE}
+              filter={{ status: "active" }}
+              title="Empleados"
+            />
           </div>
-          <CardDescription>Gestión de vacaciones de empleados</CardDescription>
-
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
             <div className="flex-1">

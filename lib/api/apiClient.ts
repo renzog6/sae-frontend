@@ -211,6 +211,12 @@ export class ApiClient {
       const { accessToken } = await this.getSessionData();
       const headers: Record<string, string> = {};
 
+      // Set Content-Type for non-FormData requests
+      const isFormData = options.body instanceof FormData;
+      if (!isFormData) {
+        headers["Content-Type"] = "application/json";
+      }
+
       if (options.headers) {
         Object.assign(headers, options.headers);
       }
@@ -411,6 +417,37 @@ export class ApiClient {
     return this.requestBlob(this.buildUrl(path), {
       method: "GET",
       headers: options.headers,
+      signal: options.signal,
+    });
+  }
+
+  /**
+   * Descarga un archivo como blob via POST
+   * @param path - Ruta relativa del endpoint
+   * @param body - Cuerpo de la solicitud
+   * @param options - Opciones adicionales
+   * @returns Blob con el archivo
+   */
+  static async postBlob(
+    path: string,
+    body: any,
+    options: ApiClientOptions = {}
+  ): Promise<Blob> {
+    // Handle FormData differently - don't set Content-Type header
+    const isFormData = body instanceof FormData;
+    const headers = { ...options.headers };
+
+    if (isFormData) {
+      // Remove Content-Type for FormData - let browser set it with boundary
+      delete headers["Content-Type"];
+    }
+
+    console.log("XXX >>> ", JSON.stringify(body));
+
+    return this.requestBlob(this.buildUrl(path), {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
       signal: options.signal,
     });
   }

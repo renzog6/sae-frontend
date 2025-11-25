@@ -65,4 +65,8 @@ export const routes = {
     new: "/users/new",
     detail: (id: number | string) => `/users/${id}`,
   },
+
+  reports: {
+    root: "/reports",
+  },
 } as const;

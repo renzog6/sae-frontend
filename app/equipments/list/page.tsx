@@ -30,6 +30,8 @@ import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { EquipmentStatus } from "@/lib/types/enums";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { ReportType } from "@/lib/types";
 
 export default function EquipmentListPage() {
   const { data: session } = useSession();
@@ -341,6 +343,12 @@ export default function EquipmentListPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              {/* Report generation dropdown */}
+              <ReportExportMenu
+                reportType={ReportType.EQUIPMENT_LIST}
+                filter={{ status: "active" }}
+                title="Equipos"
+              />
             </div>
           </div>
         </CardHeader>

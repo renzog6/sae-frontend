@@ -93,36 +93,4 @@ export class EmployeeVacationsService {
     link.remove();
     URL.revokeObjectURL(blobUrl);
   }
-
-  static async exportToExcel(employeeId: number) {
-    const blob = await ApiClient.getBlob(
-      `${this.basePath}/${employeeId}/exportVacations/excel`
-    );
-
-    const filename = `vacaciones.xlsx`;
-    const link = document.createElement("a");
-    const blobUrl = URL.createObjectURL(blob);
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(blobUrl);
-  }
-
-  static async exportEmployeesToExcel() {
-    const blob = await ApiClient.getBlob(
-      `${this.basePath}/exportEmployees/excel`
-    );
-
-    const filename = `empleados_vacaciones.xlsx`;
-    const link = document.createElement("a");
-    const blobUrl = URL.createObjectURL(blob);
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(blobUrl);
-  }
 }

@@ -75,16 +75,3 @@ export function useDownloadVacationPdf() {
     mutationFn: (id: number) => EmployeeVacationsService.downloadPdf(id),
   });
 }
-
-export function useExportVacationsToExcel() {
-  return useMutation({
-    mutationFn: (employeeId: number) =>
-      EmployeeVacationsService.exportToExcel(employeeId),
-  });
-}
-
-export function useExportEmployeesVacationsToExcel() {
-  return useMutation({
-    mutationFn: () => EmployeeVacationsService.exportEmployeesToExcel(),
-  });
-}

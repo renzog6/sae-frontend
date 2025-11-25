@@ -32,6 +32,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getTireColumns } from "./columns";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { ReportType } from "@/lib/types";
 
 type StatusFilter = "ALL" | TireStatus;
 
@@ -178,6 +180,13 @@ export default function TiresPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Report generation dropdown */}
+              <ReportExportMenu
+                reportType={ReportType.TIRE_LIST}
+                filter={{ status: "active" }}
+                title="Neumaticos"
+              />
             </div>
           </div>
         </CardHeader>

@@ -24,13 +24,12 @@ import { FileDown, FilePenLine } from "lucide-react";
 import type { EmployeeVacation } from "@/lib/types/employee";
 import { VacationType, AvailableYear } from "@/lib/types/employee";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import {
-  useDownloadVacationPdf,
-  useExportVacationsToExcel,
-} from "@/lib/hooks/useEmployeeVacations";
+import { useDownloadVacationPdf } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
 import { formatDate, formatTenure, calcAge } from "@/lib/utils/date";
 import { sumVacationDays } from "@/lib/utils/employee";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { ReportType } from "@/lib/types";
 
 export default function EmployeeVacationsDetailPage() {
   const sp = useSearchParams();
@@ -47,7 +46,6 @@ export default function EmployeeVacationsDetailPage() {
   const { data: employee, isLoading, error, refetch } = useEmployeeDetail(id);
 
   const downloadPdfMutation = useDownloadVacationPdf();
-  const exportExcelMutation = useExportVacationsToExcel();
 
   // Dialog state
   const [openAssignAnnual, setOpenAssignAnnual] = useState(false); // ASSIGNED
@@ -219,15 +217,11 @@ export default function EmployeeVacationsDetailPage() {
               >
                 <span className="mr-2">🏖️</span> Asignar Días de Vacaciones
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => exportExcelMutation.mutate(id!)}
-                disabled={!employee || exportExcelMutation.isPending}
-                className="shadow-sm"
-              >
-                <span className="mr-2">📄</span>{" "}
-                {exportExcelMutation.isPending ? "Exportando..." : "Exportar"}
-              </Button>
+              <ReportExportMenu
+                reportType={ReportType.EMPLOYEE_VACATION_HISTORY}
+                filter={{ employeeId: id }}
+                title="Historial de Vacaciones"
+              />
             </div>
           </section>
 

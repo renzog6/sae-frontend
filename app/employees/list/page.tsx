@@ -18,12 +18,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Download } from "lucide-react";
 import type { Employee } from "@/lib/types/employee";
 import { EmployeeStatus } from "@/lib/types/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table";
+import { useGenerateReport } from "@/lib/hooks/useReports";
+import { ReportType, ReportFormat } from "@/lib/types/report";
+import { toast } from "sonner";
 import {
   Pagination,
   PaginationContent,
@@ -33,6 +36,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getEmployeeColumns } from "./columns";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
 
 type StatusFilter = "ALL" | EmployeeStatus;
 
@@ -70,6 +74,8 @@ export default function EmployeesPage() {
     sortOrder,
   });
 
+  const generateReportMutation = useGenerateReport();
+
   const employees: Employee[] = Array.isArray(employeesData)
     ? employeesData
     : (employeesData as any)?.data ?? [];
@@ -81,11 +87,17 @@ export default function EmployeesPage() {
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Empleados</CardTitle>
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-2xl">Empleados</CardTitle>
+              {/* Report generation dropdown */}
+              <ReportExportMenu
+                reportType={ReportType.EMPLOYEE_LIST}
+                filter={{ status: "active" }}
+                title="Empleados"
+              />
+            </div>
           </div>
-          <CardDescription>Gestión de empleados</CardDescription>
-
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
             <div className="flex-1">
