@@ -18,11 +18,10 @@ export function useDocuments(filter?: {
       filter?.page ?? 1,
       filter?.limit ?? 10,
     ],
-    queryFn: () => DocumentsService.getAll(filter),
+    queryFn: () => DocumentsService.getAll(filter).then((resp) => resp.data),
     staleTime: 0, // Always refetch to ensure fresh data
     refetchOnWindowFocus: true, // Refetch when window regains focus
     refetchOnMount: true, // Always refetch on mount
-    select: (data) => ({ data }), // Wrap in object to match component expectation
   });
 }
 

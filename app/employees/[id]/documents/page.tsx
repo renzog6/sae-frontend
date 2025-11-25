@@ -103,7 +103,7 @@ export default function EmployeeDocumentsPage() {
     },
   });
 
-  const documents: Document[] = documentsData?.data ?? [];
+  const documents: Document[] = documentsData ?? [];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
