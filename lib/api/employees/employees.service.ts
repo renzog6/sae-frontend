@@ -57,7 +57,7 @@ export class EmployeesService {
   }
 
   static async update(id: number, dto: UpdateEmployeeDto): Promise<Employee> {
-    const response = await ApiClient.patch<Employee | { data: Employee }>(
+    const response = await ApiClient.put<Employee | { data: Employee }>(
       `${this.basePath}/${id}`,
       dto
     );

@@ -74,7 +74,7 @@ export class UnitsService {
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.patch<{ data: Unit }>(
+    const response = await ApiClient.put<{ data: Unit }>(
       `${this.basePath}/${id}/restore`,
       {}
     );

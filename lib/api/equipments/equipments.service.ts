@@ -54,7 +54,7 @@ export class EquipmentsService {
   }
 
   static async update(id: number, dto: UpdateEquipmentDto): Promise<Equipment> {
-    const response = await ApiClient.patch<Equipment | ApiResponse<Equipment>>(
+    const response = await ApiClient.put<Equipment | ApiResponse<Equipment>>(
       `${this.basePath}/${id}`,
       dto
     );

@@ -63,7 +63,7 @@ export class CompaniesService {
   }
 
   static async update(id: number, data: UpdateCompanyFormData) {
-    const response = await ApiClient.patch<{ data: Company }>(
+    const response = await ApiClient.put<{ data: Company }>(
       `${this.basePath}/${id}`,
       data
     );
@@ -78,7 +78,7 @@ export class CompaniesService {
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.patch<{ data: Company }>(
+    const response = await ApiClient.put<{ data: Company }>(
       `${this.basePath}/${id}/restore`,
       {}
     );

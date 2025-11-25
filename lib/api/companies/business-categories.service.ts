@@ -62,7 +62,7 @@ export class BusinessCategoriesService {
   }
 
   static async update(id: number, data: UpdateBusinessCategoryDto) {
-    const response = await ApiClient.patch<{ data: BusinessCategory }>(
+    const response = await ApiClient.put<{ data: BusinessCategory }>(
       `${this.basePath}/${id}`,
       data
     );
@@ -77,7 +77,7 @@ export class BusinessCategoriesService {
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.patch<{ data: BusinessCategory }>(
+    const response = await ApiClient.put<{ data: BusinessCategory }>(
       `${this.basePath}/${id}/restore`,
       {}
     );

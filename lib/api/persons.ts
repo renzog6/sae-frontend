@@ -43,7 +43,7 @@ export class PersonsService {
   }
 
   static async updatePerson(id: number, data: UpdatePersonFormData) {
-    const response = await ApiClient.patch<Person | { data: Person }>(
+    const response = await ApiClient.put<Person | { data: Person }>(
       `${this.basePath}/${id}`,
       data
     );

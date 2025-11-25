@@ -67,7 +67,7 @@ export class BrandsService {
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.patch<{ data: Brand }>(
+    const response = await ApiClient.put<{ data: Brand }>(
       `${this.basePath}/${id}/restore`,
       {}
     );
