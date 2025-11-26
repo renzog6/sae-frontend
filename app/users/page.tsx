@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { User } from "@/lib/types/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ import {
 
 import { useUsers, useDeleteUser } from "@/lib/hooks/useUsers";
 import { Plus, Edit, Trash2 } from "lucide-react";
+import { PaginationBar } from "@/components/table/pagination-bar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,9 +44,22 @@ export default function UsersPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
   // Extract data from standardized response
   const users = usersResponse?.data || [];
   const meta = usersResponse?.meta;
+
+  // Calculate pagination based on data
+  const totalFilteredItems = users.length;
+  const totalPages = Math.ceil(totalFilteredItems / limit);
+
+  // Get paginated data
+  const paginatedUsers = useMemo(() => {
+    return users.slice((page - 1) * limit, page * limit);
+  }, [users, page, limit]);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -84,7 +98,9 @@ export default function UsersPage() {
               <CardTitle className="text-2xl">Lista de Usuarios</CardTitle>
             </div>
             <CardDescription className="text-laurel-600">
-              {users.length} usuario{users.length !== 1 ? "s" : ""}
+              Mostrando {Math.min((page - 1) * limit + 1, totalFilteredItems)} a{" "}
+              {Math.min(page * limit, totalFilteredItems)} de{" "}
+              {totalFilteredItems} usuario{totalFilteredItems !== 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -105,7 +121,7 @@ export default function UsersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {paginatedUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
@@ -162,6 +178,18 @@ export default function UsersPage() {
             )}
           </CardContent>
         </Card>
+
+        <PaginationBar
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalFilteredItems}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </div>
 
       {/* Confirm delete dialog */}

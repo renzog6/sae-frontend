@@ -23,8 +23,8 @@ export function useEmployeesList(params?: {
   limit?: number;
   q?: string;
   status?: string;
-  sortBy?: string;     // ✅ AGREGADO: Campo por el cual ordenar
-  sortOrder?: "asc" | "desc";  // ✅ AGREGADO: Dirección del orden
+  sortBy?: string; // ✅ AGREGADO: Campo por el cual ordenar
+  sortOrder?: "asc" | "desc"; // ✅ AGREGADO: Dirección del orden
 }) {
   const { handleApiError } = useApiErrorHandler();
 
@@ -35,12 +35,12 @@ export function useEmployeesList(params?: {
       params?.limit ?? 10,
       params?.q ?? "",
       params?.status ?? "",
-      params?.sortBy ?? "",    // ✅ AGREGADO: Para el caché
+      params?.sortBy ?? "", // ✅ AGREGADO: Para el caché
       params?.sortOrder ?? "", // ✅ AGREGADO: Para el caché
     ],
     queryFn: async () => {
       try {
-        return await EmployeesService.getAll(params).then((resp) => resp.data);
+        return await EmployeesService.getAll(params); // Return full paginated response
       } catch (error) {
         handleApiError(error);
         throw error;

@@ -3,13 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,25 +12,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Download } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { Employee } from "@/lib/types/employee";
 import { EmployeeStatus } from "@/lib/types/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table";
 import { useGenerateReport } from "@/lib/hooks/useReports";
-import { ReportType, ReportFormat } from "@/lib/types/report";
-import { toast } from "sonner";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { ReportType } from "@/lib/types/report";
+
 import { getEmployeeColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { PaginationBar } from "@/components/table/pagination-bar";
 
 type StatusFilter = "ALL" | EmployeeStatus;
 
@@ -65,7 +52,7 @@ export default function EmployeesPage() {
     setPage(1);
   }, [debouncedQuery, status, limit, sortBy, sortOrder]);
 
-  const { data: employeesData } = useEmployeesList({
+  const { data: employeesResponse } = useEmployeesList({
     page,
     limit,
     q: debouncedQuery || undefined,
@@ -76,10 +63,8 @@ export default function EmployeesPage() {
 
   const generateReportMutation = useGenerateReport();
 
-  const employees: Employee[] = Array.isArray(employeesData)
-    ? employeesData
-    : (employeesData as any)?.data ?? [];
-  const totalPages = (employeesData as any)?.meta?.totalPages ?? 1;
+  const employees: Employee[] = employeesResponse?.data ?? [];
+  const totalPages = employeesResponse?.meta?.totalPages ?? 1;
 
   const columns = useMemo(() => getEmployeeColumns(), []);
 
@@ -200,81 +185,22 @@ export default function EmployeesPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Page size selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[120px] justify-between"
-                  >
-                    <span className="mr-2">📊</span> {limit}/pág
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(10);
-                    }}
-                  >
-                    10
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(50);
-                    }}
-                  >
-                    50
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(100);
-                    }}
-                  >
-                    100
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns} data={employees} />
-          {/* Pagination controls */}
-          <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        isActive={p === page}
-                        onClick={() => setPage(p)}
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={employeesResponse?.meta?.total ?? 0}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </CardContent>
       </Card>
     </div>

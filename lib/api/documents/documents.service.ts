@@ -17,14 +17,14 @@ export class DocumentsService {
     companyId?: number;
     page?: number;
     limit?: number;
-  }): Promise<Document[]> {
+  }): Promise<PaginatedResponse<Document>> {
     const query = new URLSearchParams();
     if (filter?.employeeId) query.set("employeeId", String(filter.employeeId));
     if (filter?.companyId) query.set("companyId", String(filter.companyId));
     if (filter?.page) query.set("page", String(filter.page));
     if (filter?.limit) query.set("limit", String(filter.limit));
     const qs = query.toString();
-    const response = await ApiClient.get<Document[]>(
+    const response = await ApiClient.get<PaginatedResponse<Document>>(
       `${this.basePath}${qs ? `?${qs}` : ""}`
     );
     return response;

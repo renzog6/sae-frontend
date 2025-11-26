@@ -16,6 +16,7 @@ import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "@/components/data-table";
 import { getCityColumns } from "./columns";
+import { PaginationBar } from "@/components/table/pagination-bar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,10 @@ import {
 export default function LocationsPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const { data: cities = [], isLoading, error } = useCities();
   const { mutate: deleteCity, isPending: deleting } = useDeleteCity();
@@ -59,6 +64,13 @@ export default function LocationsPage() {
   };
 
   const cityCount = useMemo(() => cities.length, [cities]);
+
+  // Calculate pagination based on filtered data
+  const totalFilteredItems = cities.length;
+  const totalPages = Math.ceil(totalFilteredItems / limit);
+
+  // Get paginated data
+  const paginatedData = cities.slice((page - 1) * limit, page * limit);
 
   const columns = getCityColumns({
     onEdit: handleEdit,
@@ -93,7 +105,7 @@ export default function LocationsPage() {
         <CardHeader>
           <CardTitle>Lista de ciudades</CardTitle>
           <CardDescription>
-            {cityCount} ciudad{cityCount !== 1 ? "es" : ""}
+            {totalFilteredItems} ciudad{totalFilteredItems !== 1 ? "es" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,13 +114,25 @@ export default function LocationsPage() {
           ) : (
             <DataTable
               columns={columns}
-              data={cities}
+              data={paginatedData}
               searchableColumn="name"
               searchPlaceholder="Buscar ciudad..."
             />
           )}
         </CardContent>
       </Card>
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalFilteredItems}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+      />
 
       <CityDialog
         accessToken={accessToken}

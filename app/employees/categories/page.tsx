@@ -16,12 +16,24 @@ import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
 import { DataTable } from "@/components/data-table";
 import { getEmployeeCategoryColumns } from "./columns";
 import { EmployeeCategoryDialog } from "@/components/employees/employee-category-dialog";
+import { PaginationBar } from "@/components/table/pagination-bar";
 
 export default function EmployeeCategoriesPage() {
   const { data: session } = useSession();
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
   const { data: categoriesData, isLoading, error } = useEmployeeCategories();
   const categories = categoriesData?.data ?? [];
+
+  // Calculate pagination based on filtered data
+  const totalFilteredItems = categories.length;
+  const totalPages = Math.ceil(totalFilteredItems / limit);
+
+  // Get paginated data
+  const paginatedData = categories.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -65,13 +77,25 @@ export default function EmployeeCategoriesPage() {
           ) : (
             <DataTable<EmployeeCategory, unknown>
               columns={columns}
-              data={categories}
+              data={paginatedData}
               searchableColumns={["name", "code"]}
               searchPlaceholder="Buscar por nombre o código..."
             />
           )}
         </CardContent>
       </Card>
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalFilteredItems}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+      />
 
       <EmployeeCategoryDialog
         accessToken=""

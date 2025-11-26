@@ -24,6 +24,7 @@ import { useCompanies, useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { DataTable } from "@/components/data-table";
 import { getCompanyColumns } from "./columns";
 import Link from "next/link";
+import { PaginationBar } from "@/components/table/pagination-bar";
 
 export default function CompaniesPage() {
   const { data: session } = useSession();
@@ -170,45 +171,6 @@ export default function CompaniesPage() {
                     ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Page size selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[120px] justify-between"
-                  >
-                    <span className="mr-2">📊</span> {limit}/pág
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(10);
-                    }}
-                  >
-                    10
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(50);
-                    }}
-                  >
-                    50
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(100);
-                    }}
-                  >
-                    100
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
         </CardHeader>
@@ -223,37 +185,17 @@ export default function CompaniesPage() {
               data={paginatedData}
             />
           )}
-          {/* Pagination controls */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">
-                Mostrando {Math.min((page - 1) * limit + 1, totalFilteredItems)}{" "}
-                a {Math.min(page * limit, totalFilteredItems)} de{" "}
-                {totalFilteredItems} resultados
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-              >
-                Anterior
-              </Button>
-              <span className="text-sm">
-                Página {page} de {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-              >
-                Siguiente
-              </Button>
-            </div>
-          </div>
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalFilteredItems}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </CardContent>
       </Card>
     </div>

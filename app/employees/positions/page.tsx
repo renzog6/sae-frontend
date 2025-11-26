@@ -16,12 +16,24 @@ import { useEmployeePositions } from "@/lib/hooks/useEmployees";
 import { DataTable } from "@/components/data-table";
 import { getEmployeePositionColumns } from "./columns";
 import { EmployeePositionDialog } from "@/components/employees/employee-position-dialog";
+import { PaginationBar } from "@/components/table/pagination-bar";
 
 export default function EmployeePositionsPage() {
   const { data: session } = useSession();
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
   const { data: positionsData, isLoading, error } = useEmployeePositions();
   const positions = positionsData?.data ?? [];
+
+  // Calculate pagination based on filtered data
+  const totalFilteredItems = positions.length;
+  const totalPages = Math.ceil(totalFilteredItems / limit);
+
+  // Get paginated data
+  const paginatedData = positions.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -65,13 +77,25 @@ export default function EmployeePositionsPage() {
           ) : (
             <DataTable<EmployeePosition, unknown>
               columns={columns}
-              data={positions}
+              data={paginatedData}
               searchableColumns={["name", "code"]}
               searchPlaceholder="Buscar por nombre o código..."
             />
           )}
         </CardContent>
       </Card>
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalFilteredItems}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+      />
 
       <EmployeePositionDialog
         accessToken=""

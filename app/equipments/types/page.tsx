@@ -23,14 +23,7 @@ import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentTypeColumns } from "./columns";
 import { EquipmentTypeDialog } from "@/components/equipment/equipment-type-dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { PaginationBar } from "@/components/table/pagination-bar";
 
 export default function EquipmentTypesPage() {
   // Pagination state
@@ -60,7 +53,12 @@ export default function EquipmentTypesPage() {
     return types.sort((a: any, b: any) => a.name.localeCompare(b.name));
   }, [types]);
 
-  const totalPages = 1; // No pagination for now
+  // Calculate pagination based on filtered data
+  const totalFilteredItems = sortedTypes.length;
+  const totalPages = Math.ceil(totalFilteredItems / limit);
+
+  // Get paginated data
+  const paginatedData = sortedTypes.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -156,40 +154,20 @@ export default function EquipmentTypesPage() {
           ) : (
             <DataTable<EquipmentType, unknown>
               columns={columns}
-              data={sortedTypes}
+              data={paginatedData}
             />
           )}
-          {/* Pagination controls */}
-          <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        isActive={p === page}
-                        onClick={() => setPage(p)}
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalFilteredItems}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </CardContent>
       </Card>
 
