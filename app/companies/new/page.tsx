@@ -31,7 +31,7 @@ export default function NewCompanyPage() {
     setSaving(true);
     setError(null);
     try {
-      const created = await CompaniesService.createCompany(data);
+      const created = await CompaniesService.create(data);
       // Invalidate list so it shows the new company later
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       // Go to edit/detail page of the newly created company

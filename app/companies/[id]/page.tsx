@@ -94,7 +94,7 @@ export default function CompanyDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await CompaniesService.getCompanyById(id);
+        const data = await CompaniesService.getById(id);
         if (!ignore) setCompany(data);
       } catch (e: any) {
         if (!ignore) setError(e?.message || "Error al cargar la empresa");
@@ -113,7 +113,7 @@ export default function CompanyDetailPage() {
     setSaving(true);
     setError(null);
     try {
-      await CompaniesService.updateCompany(id, data);
+      await CompaniesService.update(id, data);
       // Ensure companies list reflects latest data
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       router.push("/companies/list");
@@ -180,7 +180,7 @@ export default function CompanyDetailPage() {
           businessCategoryId:
             selectedId === "" ? undefined : Number(selectedId),
         };
-        await CompaniesService.updateCompany(companyId, payload);
+        await CompaniesService.update(companyId, payload);
         onUpdated?.(payload.businessCategoryId);
         // Refresh companies list page caches
         queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -266,7 +266,7 @@ export default function CompanyDetailPage() {
                 onClick={async () => {
                   // Ejecutar eliminación
                   setSelectedId("");
-                  await CompaniesService.updateCompany(companyId, {
+                  await CompaniesService.update(companyId, {
                     businessCategoryId: undefined,
                   });
                   onUpdated?.(undefined);
