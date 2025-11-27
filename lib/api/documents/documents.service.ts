@@ -7,6 +7,7 @@ import {
   ApiResponse,
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   Document,
   UploadDocumentData,
@@ -26,68 +27,112 @@ export class DocumentsService {
   static async getAll(
     filter?: DocumentQueryParams
   ): Promise<PaginatedResponse<Document>> {
-    // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
-    const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-    // 2. Filtros específicos de documentos
-    const specificParams = {
-      employeeId: filter?.employeeId,
-      companyId: filter?.companyId,
-      equipmentId: filter?.equipmentId, // 👈 LISTO PARA EL FUTURO
-    };
-    const specificQuery = QueryBuilder.buildSpecific(specificParams);
+        // 2. Filtros específicos de documentos
+        const specificParams = {
+          employeeId: filter?.employeeId,
+          companyId: filter?.companyId,
+          equipmentId: filter?.equipmentId, // 👈 LISTO PARA EL FUTURO
+        };
+        const specificQuery = QueryBuilder.buildSpecific(specificParams);
 
-    // 3. Combinar URLs
-    const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+        // 3. Combinar URLs
+        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
 
-    const response = await ApiClient.get<PaginatedResponse<Document>>(finalUrl);
-    return response;
+        const response = await ApiClient.get<PaginatedResponse<Document>>(
+          finalUrl
+        );
+        return response;
+      },
+      "DocumentsService",
+      "getAll",
+      { filter }
+    );
   }
 
   static async getById(id: number): Promise<Document> {
-    const response = await ApiClient.get<ApiResponse<Document>>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Document>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "DocumentsService",
+      "getById",
+      { id }
     );
-    return response.data;
   }
 
   static async upload(data: UploadDocumentData): Promise<Document> {
-    const formData = new FormData();
-    formData.append("file", data.file);
-    if (data.description) formData.append("description", data.description);
-    // Only append one of employeeId or companyId, not both
-    // FormData converts undefined to "undefined" string, so we must check !== undefined
-    if (data.employeeId !== undefined) {
-      formData.append("employeeId", String(data.employeeId));
-    }
-    if (data.companyId !== undefined) {
-      formData.append("companyId", String(data.companyId));
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const formData = new FormData();
+        formData.append("file", data.file);
+        if (data.description) formData.append("description", data.description);
+        // Only append one of employeeId or companyId, not both
+        // FormData converts undefined to "undefined" string, so we must check !== undefined
+        if (data.employeeId !== undefined) {
+          formData.append("employeeId", String(data.employeeId));
+        }
+        if (data.companyId !== undefined) {
+          formData.append("companyId", String(data.companyId));
+        }
 
-    const response = await ApiClient.post<ApiResponse<Document>>(
-      "/documents/upload",
-      formData
+        const response = await ApiClient.post<ApiResponse<Document>>(
+          "/documents/upload",
+          formData
+        );
+        return response.data;
+      },
+      "DocumentsService",
+      "upload",
+      { data }
     );
-    return response.data;
   }
 
   static async update(
     id: number,
     data: Partial<CreateDocumentDto>
   ): Promise<Document> {
-    const response = await ApiClient.put<ApiResponse<Document>>(
-      `${this.basePath}/${id}`,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Document>>(
+          `${this.basePath}/${id}`,
+          data
+        );
+        return response.data;
+      },
+      "DocumentsService",
+      "update",
+      { id, data }
     );
-    return response.data;
   }
 
   static async delete(id: number): Promise<string> {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Document deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Document deleted";
+      },
+      "DocumentsService",
+      "delete",
+      { id }
+    );
   }
 
   static async download(id: number) {
-    return ApiClient.getBlob(`${this.basePath}/${id}/download`);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        return ApiClient.getBlob(`${this.basePath}/${id}/download`);
+      },
+      "DocumentsService",
+      "download",
+      { id }
+    );
   }
 }

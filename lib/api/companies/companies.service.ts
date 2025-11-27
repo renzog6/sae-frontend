@@ -6,6 +6,7 @@ import {
   ApiResponse,
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { Company } from "@/lib/types/domain/company";
 import {
   CompanyFormData,
@@ -16,46 +17,88 @@ export class CompaniesService {
   private static basePath = "/companies";
 
   static async getAll(query?: BaseQueryParams) {
-    const url = QueryBuilder.buildUrl(this.basePath, query);
-    const response = await ApiClient.get<PaginatedResponse<Company>>(url);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<PaginatedResponse<Company>>(url);
+        return response;
+      },
+      "CompaniesService",
+      "getAll",
+      { query }
+    );
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<ApiResponse<Company>>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Company>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "CompaniesService",
+      "getById",
+      { id }
     );
-    return response.data;
   }
 
   static async create(data: CompanyFormData) {
-    const response = await ApiClient.post<ApiResponse<Company>>(
-      this.basePath,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<Company>>(
+          this.basePath,
+          data
+        );
+        return response.data;
+      },
+      "CompaniesService",
+      "create",
+      { data }
     );
-    return response.data;
   }
 
   static async update(id: number, data: UpdateCompanyFormData) {
-    const response = await ApiClient.put<ApiResponse<Company>>(
-      `${this.basePath}/${id}`,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Company>>(
+          `${this.basePath}/${id}`,
+          data
+        );
+        return response.data;
+      },
+      "CompaniesService",
+      "update",
+      { id, data }
     );
-    return response.data;
   }
 
   static async delete(id: number) {
-    const response = await ApiClient.delete<ApiResponse<string>>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.delete<ApiResponse<string>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "CompaniesService",
+      "delete",
+      { id }
     );
-    return response.data;
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.put<ApiResponse<Company>>(
-      `${this.basePath}/${id}/restore`,
-      {}
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Company>>(
+          `${this.basePath}/${id}/restore`,
+          {}
+        );
+        return response.data;
+      },
+      "CompaniesService",
+      "restore",
+      { id }
     );
-    return response.data;
   }
 }

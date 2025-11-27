@@ -1,6 +1,7 @@
 // filepath: sae-frontend/lib/api/locations.ts
 import { ApiClient } from "./apiClient";
 import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { City, Province, Address } from "@/lib/types/shared/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
@@ -11,217 +12,242 @@ export class LocationsService {
 
   // Cities
   static async getCities(): Promise<City[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<City>>(
-        this.citiesPath
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<City>>(
+          this.citiesPath
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getCities"
+    );
   }
 
   static async getCityById(id: number): Promise<City> {
-    try {
-      const response = await ApiClient.get<ApiResponse<City>>(
-        `${this.citiesPath}/${id}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching city with ID ${id}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<City>>(
+          `${this.citiesPath}/${id}`
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "getCityById",
+      { id }
+    );
   }
 
   static async createCity(cityData: CityFormData): Promise<City> {
-    try {
-      const response = await ApiClient.post<ApiResponse<City>>(
-        this.citiesPath,
-        cityData
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating city:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<City>>(
+          this.citiesPath,
+          cityData
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "createCity",
+      { cityData }
+    );
   }
 
   static async updateCity(id: number, cityData: Partial<City>): Promise<City> {
-    try {
-      const response = await ApiClient.put<ApiResponse<City>>(
-        `${this.citiesPath}/${id}`,
-        cityData
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error updating city:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<City>>(
+          `${this.citiesPath}/${id}`,
+          cityData
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "updateCity",
+      { id, cityData }
+    );
   }
 
   static async deleteCity(id: number): Promise<string> {
-    try {
-      await ApiClient.delete(`${this.citiesPath}/${id}`);
-      return "City deleted";
-    } catch (error) {
-      console.error("Error deleting city:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.citiesPath}/${id}`);
+        return "City deleted";
+      },
+      "LocationsService",
+      "deleteCity",
+      { id }
+    );
   }
 
   // Provinces (read-only per backend controller)
   static async getProvinces(): Promise<Province[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Province>>(
-        this.provincesPath
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error("Error fetching provinces:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Province>>(
+          this.provincesPath
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getProvinces"
+    );
   }
 
   static async getProvinceById(id: number): Promise<Province> {
-    try {
-      const response = await ApiClient.get<ApiResponse<Province>>(
-        `${this.provincesPath}/${id}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching province with ID ${id}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Province>>(
+          `${this.provincesPath}/${id}`
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "getProvinceById",
+      { id }
+    );
   }
 
   static async getProvinceByCode(code: string): Promise<Province> {
-    try {
-      const response = await ApiClient.get<ApiResponse<Province>>(
-        `${this.provincesPath}/code/${code}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching province with code ${code}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Province>>(
+          `${this.provincesPath}/code/${code}`
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "getProvinceByCode",
+      { code }
+    );
   }
 
   static async getProvincesByCountryId(countryId: number): Promise<Province[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Province>>(
-        `/locations/countries/${countryId}/provinces`
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error(
-        `Error fetching provinces for country ${countryId}:`,
-        error
-      );
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Province>>(
+          `/locations/countries/${countryId}/provinces`
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getProvincesByCountryId",
+      { countryId }
+    );
   }
 
   // Addresses
   static async getAddresses(): Promise<Address[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Address>>(
-        this.addressesPath
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error("Error fetching addresses:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Address>>(
+          this.addressesPath
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getAddresses"
+    );
   }
 
   static async getAddressById(id: number): Promise<Address> {
-    try {
-      const response = await ApiClient.get<ApiResponse<Address>>(
-        `${this.addressesPath}/${id}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching address with ID ${id}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Address>>(
+          `${this.addressesPath}/${id}`
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "getAddressById",
+      { id }
+    );
   }
 
   static async createAddress(body: AddressFormData): Promise<Address> {
-    try {
-      const response = await ApiClient.post<ApiResponse<Address>>(
-        this.addressesPath,
-        body
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating address:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<Address>>(
+          this.addressesPath,
+          body
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "createAddress",
+      { body }
+    );
   }
 
   static async updateAddress(
     id: number,
     body: Partial<Address>
   ): Promise<Address> {
-    try {
-      const response = await ApiClient.put<ApiResponse<Address>>(
-        `${this.addressesPath}/${id}`,
-        body
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error updating address:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Address>>(
+          `${this.addressesPath}/${id}`,
+          body
+        );
+        return response.data;
+      },
+      "LocationsService",
+      "updateAddress",
+      { id, body }
+    );
   }
 
   static async deleteAddress(id: number): Promise<string> {
-    try {
-      await ApiClient.delete(`${this.addressesPath}/${id}`);
-      return "Address deleted";
-    } catch (error) {
-      console.error("Error deleting address:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.addressesPath}/${id}`);
+        return "Address deleted";
+      },
+      "LocationsService",
+      "deleteAddress",
+      { id }
+    );
   }
 
   static async getAddressesByCity(cityId: number): Promise<Address[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Address>>(
-        `${this.addressesPath}/city/${cityId}`
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error(`Error fetching addresses for city ${cityId}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Address>>(
+          `${this.addressesPath}/city/${cityId}`
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getAddressesByCity",
+      { cityId }
+    );
   }
 
   static async getAddressesByCompany(companyId: number): Promise<Address[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Address>>(
-        `${this.addressesPath}/company/${companyId}`
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error(
-        `Error fetching addresses for company ${companyId}:`,
-        error
-      );
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Address>>(
+          `${this.addressesPath}/company/${companyId}`
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getAddressesByCompany",
+      { companyId }
+    );
   }
 
   static async getAddressesByPerson(personId: number): Promise<Address[]> {
-    try {
-      const response = await ApiClient.get<PaginatedResponse<Address>>(
-        `${this.addressesPath}/person/${personId}`
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error(`Error fetching addresses for person ${personId}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<Address>>(
+          `${this.addressesPath}/person/${personId}`
+        );
+        return response.data || [];
+      },
+      "LocationsService",
+      "getAddressesByPerson",
+      { personId }
+    );
   }
 }

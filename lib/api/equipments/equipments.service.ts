@@ -7,6 +7,7 @@ import {
   ApiResponse,
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   Equipment,
   CreateEquipmentDto,
@@ -17,36 +18,71 @@ export class EquipmentsService {
   private static basePath = "/equipments";
 
   static async getAll(query?: BaseQueryParams) {
-    const url = QueryBuilder.buildUrl(this.basePath, query);
-    const response = await ApiClient.get<PaginatedResponse<Equipment>>(url);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<PaginatedResponse<Equipment>>(url);
+        return response;
+      },
+      "EquipmentsService",
+      "getAll",
+      { query }
+    );
   }
 
   static async getById(id: number): Promise<Equipment> {
-    const response = await ApiClient.get<ApiResponse<Equipment>>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Equipment>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "EquipmentsService",
+      "getById",
+      { id }
     );
-    return response.data;
   }
 
   static async create(dto: CreateEquipmentDto): Promise<Equipment> {
-    const response = await ApiClient.post<ApiResponse<Equipment>>(
-      this.basePath,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<Equipment>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "EquipmentsService",
+      "create",
+      { dto }
     );
-    return response.data;
   }
 
   static async update(id: number, dto: UpdateEquipmentDto): Promise<Equipment> {
-    const response = await ApiClient.put<ApiResponse<Equipment>>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Equipment>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "EquipmentsService",
+      "update",
+      { id, dto }
     );
-    return response.data;
   }
 
   static async delete(id: number): Promise<string> {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Equipment deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Equipment deleted";
+      },
+      "EquipmentsService",
+      "delete",
+      { id }
+    );
   }
 }

@@ -6,6 +6,7 @@ import {
   ApiResponse,
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { Person } from "@/lib/types/domain/employee";
 import {
   CreatePersonFormData,
@@ -16,36 +17,71 @@ export class PersonsService {
   private static basePath = "/persons";
 
   static async getAll(query?: BaseQueryParams) {
-    const url = QueryBuilder.buildUrl(this.basePath, query);
-    const response = await ApiClient.get<PaginatedResponse<Person>>(url);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<PaginatedResponse<Person>>(url);
+        return response;
+      },
+      "PersonsService",
+      "getAll",
+      { query }
+    );
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<ApiResponse<Person>>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<Person>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "PersonsService",
+      "getById",
+      { id }
     );
-    return response.data;
   }
 
   static async create(data: CreatePersonFormData) {
-    const response = await ApiClient.post<ApiResponse<Person>>(
-      this.basePath,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<Person>>(
+          this.basePath,
+          data
+        );
+        return response.data;
+      },
+      "PersonsService",
+      "create",
+      { data }
     );
-    return response.data;
   }
 
   static async update(id: number, data: UpdatePersonFormData) {
-    const response = await ApiClient.put<ApiResponse<Person>>(
-      `${this.basePath}/${id}`,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<Person>>(
+          `${this.basePath}/${id}`,
+          data
+        );
+        return response.data;
+      },
+      "PersonsService",
+      "update",
+      { id, data }
     );
-    return response.data;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Person deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Person deleted";
+      },
+      "PersonsService",
+      "delete",
+      { id }
+    );
   }
 }
