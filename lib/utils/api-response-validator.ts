@@ -1,22 +1,13 @@
 // filepath: sae-frontend/lib/utils/api-response-validator.ts
 
+import { ApiResponse, PaginatedResponse } from "@/lib/types/core/api";
+
 /**
  * Utilidades para validar que las respuestas de API sigan el formato estandarizado { data: T }
+ *
+ * Las interfaces ApiResponse y PaginatedResponse están importadas desde
+ * @/lib/types/core/api.ts para mantener consistencia.
  */
-
-export interface ApiResponse<T> {
-  data: T;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    limit: number;
-    page: number;
-    total: number;
-    totalPages: number;
-  };
-}
 
 /**
  * Valida que una respuesta individual tenga el formato { data: T }
@@ -52,38 +43,6 @@ export function validatePaginatedResponse<T>(
 }
 
 /**
- * Helper para tests: asegura que un servicio retorne el formato correcto
- */
-export function expectApiResponse<T>(
-  result: any,
-  expectedData?: T
-): ApiResponse<T> {
-  expect(validateApiResponse(result)).toBe(true);
-  expect(result).toHaveProperty("data");
-
-  if (expectedData !== undefined) {
-    expect(result.data).toEqual(expectedData);
-  }
-
-  return result as ApiResponse<T>;
-}
-
-/**
- * Helper para tests: asegura que un servicio paginado retorne el formato correcto
- */
-export function expectPaginatedResponse<T>(result: any): PaginatedResponse<T> {
-  expect(validatePaginatedResponse(result)).toBe(true);
-  expect(Array.isArray(result.data)).toBe(true);
-  expect(result).toHaveProperty("meta");
-  expect(result.meta).toHaveProperty("limit");
-  expect(result.meta).toHaveProperty("page");
-  expect(result.meta).toHaveProperty("total");
-  expect(result.meta).toHaveProperty("totalPages");
-
-  return result as PaginatedResponse<T>;
-}
-
-/**
  * Utilidad para desarrollo: valida respuestas en runtime
  */
 export function assertApiResponse<T>(
@@ -115,4 +74,25 @@ export function assertPaginatedResponse<T>(
     );
   }
   return response as PaginatedResponse<T>;
+}
+
+/**
+ * Utilidad para extraer datos de respuestas validadas
+ */
+export function extractApiData<T>(response: ApiResponse<T>): T {
+  return response.data;
+}
+
+/**
+ * Utilidad para extraer array de respuestas paginadas validadas
+ */
+export function extractPaginatedData<T>(response: PaginatedResponse<T>): T[] {
+  return response.data;
+}
+
+/**
+ * Utilidad para extraer metadata de respuestas paginadas
+ */
+export function extractPaginationMeta(response: PaginatedResponse<any>) {
+  return response.meta;
 }
