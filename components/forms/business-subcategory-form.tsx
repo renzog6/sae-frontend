@@ -41,7 +41,7 @@ export function BusinessSubcategoryForm({
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
   const { data: categoriesResponse } = useBusinessCategories();
-  const categories = categoriesResponse?.data || [];
+  const categories = categoriesResponse || [];
 
   const form = useForm<BusinessSubcategoryFormData>({
     resolver: zodResolver(BusinessSubcategorySchema),

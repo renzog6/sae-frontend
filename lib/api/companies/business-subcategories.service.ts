@@ -1,49 +1,22 @@
 // filepath: sae-frontend/lib/api/companies/business-subcategories.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { BusinessSubCategory } from "@/lib/types/company";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { BusinessSubCategory } from "@/lib/types/domain/company";
 import {
-  CreateBusinessSubCategoryDto,
-  UpdateBusinessSubCategoryDto,
-} from "@/lib/types/company";
-import { BusinessSubCategoryQueryParams } from "@/lib/types/company";
+  BusinessSubcategoryFormData,
+  UpdateBusinessSubcategoryFormData,
+} from "@/lib/validations/company";
 
 export class BusinessSubCategoriesService {
   private static basePath = "/companies/subcategories";
 
-  static async getAll(query?: BusinessSubCategoryQueryParams) {
-    if (query) {
-      const params = new URLSearchParams();
-      if (query.page) params.append("page", query.page.toString());
-      if (query.limit) params.append("limit", query.limit.toString());
-      if (query.q) params.append("q", query.q);
-      if (query.sortBy) params.append("sortBy", query.sortBy);
-      if (query.sortOrder) params.append("sortOrder", query.sortOrder);
-
-      const queryString = params.toString();
-      const url = queryString
-        ? `${this.basePath}?${queryString}`
-        : this.basePath;
-      const response = await ApiClient.get<
-        PaginatedResponse<BusinessSubCategory>
-      >(url);
-      return response;
-    } else {
-      // Fallback to non-paginated for backward compatibility
-      const response = await ApiClient.get<{ data: BusinessSubCategory[] }>(
-        this.basePath
-      );
-      return {
-        data: response.data,
-        meta: {
-          total: response.data.length,
-          page: 1,
-          limit: response.data.length,
-          totalPages: 1,
-        },
-      };
-    }
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
+    const response = await ApiClient.get<
+      PaginatedResponse<BusinessSubCategory>
+    >(url);
+    return response;
   }
 
   static async getById(id: number) {
@@ -53,7 +26,7 @@ export class BusinessSubCategoriesService {
     return response.data;
   }
 
-  static async create(data: CreateBusinessSubCategoryDto) {
+  static async create(data: BusinessSubcategoryFormData) {
     const response = await ApiClient.post<{ data: BusinessSubCategory }>(
       this.basePath,
       data
@@ -61,7 +34,7 @@ export class BusinessSubCategoriesService {
     return response.data;
   }
 
-  static async update(id: number, data: UpdateBusinessSubCategoryDto) {
+  static async update(id: number, data: UpdateBusinessSubcategoryFormData) {
     const response = await ApiClient.put<{ data: BusinessSubCategory }>(
       `${this.basePath}/${id}`,
       data

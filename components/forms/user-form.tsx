@@ -19,7 +19,7 @@ import {
   UserFormData,
   UpdateUserFormData,
 } from "@/lib/validations/auth";
-import { Role } from "@/lib/types/enums";
+import { Role } from "@/lib/types/shared/enums";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 

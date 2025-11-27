@@ -2,7 +2,7 @@ import {
   EmployeeIncidentType,
   HistoryType,
   SeverityLevel,
-} from "@/lib/types/enums";
+} from "@/lib/types/shared/enums";
 
 export const employeeIncidentTypeLabels: Record<EmployeeIncidentType, string> =
   {

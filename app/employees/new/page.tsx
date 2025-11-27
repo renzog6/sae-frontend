@@ -28,7 +28,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { EmployeesService } from "@/lib/api/employees";
-import { EmployeeStatus, Gender, MaritalStatus } from "@/lib/types/employee";
+import {
+  EmployeeStatus,
+  Gender,
+  MaritalStatus,
+} from "@/lib/types/domain/employee";
 import {
   createPersonSchema,
   type CreatePersonFormInput,
@@ -58,9 +62,7 @@ export default function EmployeeNewPage() {
       console.log("Creating person with data:", data);
 
       // Create person first
-      const person = await PersonsService.createPerson(
-        data as CreatePersonFormData
-      );
+      const person = await PersonsService.create(data as CreatePersonFormData);
 
       console.log("Person created:", person);
 

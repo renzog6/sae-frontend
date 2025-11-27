@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
-import { BusinessCategory } from "@/lib/types/company";
+import { BusinessCategory } from "@/lib/types/domain/company";
 import {
   useBusinessCategories,
   useDeleteBusinessCategory,
@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BusinessCategoryDialog } from "@/components/categories/business-category-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function BusinessCategoriesPage() {
   const { data: session } = useSession();
@@ -86,7 +86,7 @@ export default function BusinessCategoriesPage() {
   );
 
   const categories = useMemo(() => {
-    let filtered = categoriesResponse?.data || [];
+    let filtered = categoriesResponse || [];
 
     // Filter by search query (case-insensitive)
     if (debouncedQuery) {

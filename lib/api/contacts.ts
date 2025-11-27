@@ -1,7 +1,7 @@
 // file: sae-frontend/lib/api/contacts.ts
 import { ApiClient } from "./apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { Contact } from "@/lib/types/contact";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { Contact } from "@/lib/types/shared/contact";
 import {
   ContactFormData,
   UpdateContactFormData,
@@ -50,21 +50,26 @@ export class ContactsService {
   }
 
   static async getContactById(id: number) {
-    const response = await ApiClient.get<Contact>(`${this.basePath}/${id}`);
-    return response;
+    const response = await ApiClient.get<ApiResponse<Contact>>(
+      `${this.basePath}/${id}`
+    );
+    return response.data;
   }
 
   static async createContact(data: ContactFormData) {
-    const response = await ApiClient.post<Contact>(this.basePath, data);
-    return response;
+    const response = await ApiClient.post<ApiResponse<Contact>>(
+      this.basePath,
+      data
+    );
+    return response.data;
   }
 
   static async updateContact(id: number, data: UpdateContactFormData) {
-    const response = await ApiClient.put<Contact>(
+    const response = await ApiClient.put<ApiResponse<Contact>>(
       `${this.basePath}/${id}`,
       data
     );
-    return response;
+    return response.data;
   }
 
   static async deleteContact(id: number) {

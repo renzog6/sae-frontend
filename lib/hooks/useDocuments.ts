@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DocumentsService } from "@/lib/api/documents/";
-import { Document, UploadDocumentData } from "@/lib/types/document";
+import { Document, UploadDocumentData } from "@/lib/types/domain/document";
 
 export function useDocuments(filter?: {
   employeeId?: number;

@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { FileDown, FilePenLine } from "lucide-react";
-import type { EmployeeVacation } from "@/lib/types/employee";
-import { VacationType, AvailableYear } from "@/lib/types/employee";
+import type { EmployeeVacation } from "@/lib/types/domain/employee";
+import { VacationType, AvailableYear } from "@/lib/types/domain/employee";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
 import { useDownloadVacationPdf } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";

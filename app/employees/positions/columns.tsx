@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { EmployeePosition } from "@/lib/types/employee";
+import type { EmployeePosition } from "@/lib/types/domain/employee";
 import { Button } from "@/components/ui/button";
 
 export function getEmployeePositionColumns({

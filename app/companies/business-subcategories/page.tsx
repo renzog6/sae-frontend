@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
-import { BusinessSubCategory } from "@/lib/types/company";
+import { BusinessSubCategory } from "@/lib/types/domain/company";
 import {
   useBusinessSubCategories,
   useDeleteBusinessSubCategory,
@@ -37,9 +37,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BusinessSubcategoryDialog } from "@/components/categories/business-subcategory-dialog";
+import { BusinessSubCategoryDialog } from "@/components/categories/business-subcategory-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function BusinessSubCategoriesPage() {
   const { data: session } = useSession();
@@ -86,7 +86,7 @@ export default function BusinessSubCategoriesPage() {
   );
 
   const subcategories = useMemo(() => {
-    let filtered = subcategoriesResponse?.data || [];
+    let filtered = subcategoriesResponse || [];
 
     // Filter by search query (case-insensitive)
     if (debouncedQuery) {
@@ -237,7 +237,7 @@ export default function BusinessSubCategoriesPage() {
       </Card>
 
       {/* Subcategory dialog (component) */}
-      <BusinessSubcategoryDialog
+      <BusinessSubCategoryDialog
         accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(open: boolean) => {

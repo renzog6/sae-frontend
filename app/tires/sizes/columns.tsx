@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { TireSize } from "@/lib/types/tire";
+import type { TireSize } from "@/lib/types/domain/tire";
 import { Button } from "@/components/ui/button";
 import { FilePenLine, Plus } from "lucide-react";
 

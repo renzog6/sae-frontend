@@ -1,7 +1,12 @@
-// filepath: sae-frontend/types/tire.ts
+// filepath: sae-frontend/lib/types/domain/tire.ts
 
 // Import enums from shared location
-import { TireStatus, TirePosition, TireEventType, TireSide } from "./enums";
+import {
+  TireStatus,
+  TirePosition,
+  TireEventType,
+  TireSide,
+} from "../shared/enums";
 import { EquipmentAxle } from "./equipment";
 
 // ===== Tire Position Config =====

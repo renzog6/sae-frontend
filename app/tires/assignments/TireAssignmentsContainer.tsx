@@ -4,9 +4,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { useSession } from "next-auth/react";
 
-import type { Equipment } from "@/lib/types/equipment";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { EquipmentAxle } from "@/lib/types/equipment";
+import type { Equipment } from "@/lib/types/domain/equipment";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { EquipmentAxle } from "@/lib/types/domain/equipment";
 
 import { useEquipmentList, useEquipmentAxles } from "@/lib/hooks/useEquipments";
 import {

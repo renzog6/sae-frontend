@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { BusinessSubCategory } from "@/lib/types/company";
+import type { BusinessSubCategory } from "@/lib/types/domain/company";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, RotateCcw, CheckCircle, XCircle } from "lucide-react";
 

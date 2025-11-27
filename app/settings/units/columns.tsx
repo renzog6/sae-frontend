@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { Unit } from "@/lib/types/catalog";
+import type { Unit } from "@/lib/types/shared/catalogs";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, RotateCcw } from "lucide-react";
 

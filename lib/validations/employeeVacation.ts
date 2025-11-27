@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/validations/employeeVacation.ts
 import { z } from "zod";
-import type { AvailableYear } from "@/lib/types/employee";
+import type { AvailableYear } from "@/lib/types/domain/employee";
 
 export const createVacationFormInputSchema = (
   availableYears: AvailableYear[]

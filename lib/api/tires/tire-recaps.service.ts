@@ -1,12 +1,12 @@
 //filepath: sae-frontend/lib/api/tires/tire-recaps.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
+import { PaginatedResponse } from "@/lib/types/core/api";
 import {
   TireRecap,
   CreateTireRecapDto,
   UpdateTireRecapDto,
-} from "@/lib/types/tire";
+} from "@/lib/types/domain/tire";
 
 export class TireRecapsService {
   private static basePath = "/tires/recaps";

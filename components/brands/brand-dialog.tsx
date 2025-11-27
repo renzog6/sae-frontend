@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useCreateBrand, useUpdateBrand } from "@/lib/hooks/useCatalogs";
-import type { Brand } from "@/lib/types/catalog";
+import type { Brand } from "@/lib/types/shared/catalogs";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { BrandForm } from "@/components/forms/brand-form";

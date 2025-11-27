@@ -33,8 +33,8 @@ import {
   createTireInspectionSchema,
   type CreateTireInspectionFormData,
 } from "@/lib/validations/tire";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { Equipment } from "@/lib/types/equipment";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { Equipment } from "@/lib/types/domain/equipment";
 
 interface TireInspectionDialogProps {
   open: boolean;

@@ -1,4 +1,4 @@
-// filepath: sae-frontend/types/location.ts
+// filepath: sae-frontend/lib/types/shared/location.ts
 
 export interface Country {
   id: number;

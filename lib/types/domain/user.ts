@@ -1,6 +1,6 @@
-// filepath: sae-frontend/types/user.ts
+// filepath: sae-frontend/lib/types/domain/user.ts
 
-import { Role } from "./enums";
+import { Role } from "../shared/enums";
 
 export interface User {
   id: number;

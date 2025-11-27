@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { EquipmentStatus } from "@/lib/types/enums";
+import { EquipmentStatus } from "@/lib/types/shared/enums";
 import { equipmentStatusLabels } from "@/lib/constants";
 
 const statusColors: Record<EquipmentStatus, string> = {

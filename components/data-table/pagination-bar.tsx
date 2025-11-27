@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/table/pagination-bar.tsx
+// filepath: sae-frontend/components/data-table/pagination-bar.tsx
 "use client";
 
 import {

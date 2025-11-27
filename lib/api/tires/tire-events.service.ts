@@ -1,8 +1,8 @@
 //filepath: sae-frontend/lib/api/tires/tire-events.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { TireEvent } from "@/lib/types/tire";
+import { PaginatedResponse } from "@/lib/types/core/api";
+import { TireEvent } from "@/lib/types/domain/tire";
 
 export class TireEventsService {
   private static basePath = "/tires/events";

@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { EquipmentModel } from "@/lib/types/equipment";
+import type { EquipmentModel } from "@/lib/types/domain/equipment";
 import { Button } from "@/components/ui/button";
 import { FilePenLine } from "lucide-react";
 
@@ -15,49 +15,39 @@ export function getEquipmentModelColumns({
     {
       accessorKey: "code",
       header: "Código",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
-        <span>{row.original.code || "-"}</span>
-      ),
+      cell: ({ row }) => <span>{row.original.code || "-"}</span>,
     },
     {
       accessorKey: "type",
       header: "Tipo",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
-        <span>{row.original.type?.name || "-"}</span>
-      ),
+      cell: ({ row }) => <span>{row.original.type?.name || "-"}</span>,
     },
     {
       accessorKey: "brand",
       header: "Marca",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
-        <span>{row.original.brand?.name || "-"}</span>
-      ),
+      cell: ({ row }) => <span>{row.original.brand?.name || "-"}</span>,
     },
     {
       accessorKey: "name",
       header: "Nombre",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
+      cell: ({ row }) => (
         <span className="font-medium">{row.original.name}</span>
       ),
     },
     {
       accessorKey: "year",
       header: "Año",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
-        <span>{row.original.year || "-"}</span>
-      ),
+      cell: ({ row }) => <span>{row.original.year || "-"}</span>,
     },
     {
       accessorKey: "description",
       header: "Descripción",
-      cell: ({ row }: { row: Row<EquipmentModel> }) => (
-        <span>{row.original.description || "-"}</span>
-      ),
+      cell: ({ row }) => <span>{row.original.description || "-"}</span>,
     },
     {
       id: "actions",
       header: () => <div className="text-right">Acciones</div>,
-      cell: ({ row }: { row: Row<EquipmentModel> }) => {
+      cell: ({ row }) => {
         const item = row.original;
         return (
           <div className="flex justify-end gap-2">

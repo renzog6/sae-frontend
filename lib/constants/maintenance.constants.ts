@@ -1,4 +1,4 @@
-import { MaintenanceType, InspectionType } from "@/lib/types/enums";
+import { MaintenanceType, InspectionType } from "@/lib/types/shared/enums";
 
 export const maintenanceTypeLabels: Record<MaintenanceType, string> = {
   [MaintenanceType.PREVENTIVE]: "Preventivo",

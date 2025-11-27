@@ -1,4 +1,4 @@
-import { Role } from "@/lib/types/enums";
+import { Role } from "@/lib/types/shared/enums";
 
 export const roleLabels: Record<Role, string> = {
   [Role.USER]: "Usuario",

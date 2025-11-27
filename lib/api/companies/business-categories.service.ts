@@ -1,49 +1,22 @@
 // filepath: sae-frontend/lib/api/companies/business-categories.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { BusinessCategory } from "@/lib/types/company";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { BusinessCategory } from "@/lib/types/domain/company";
 import {
-  BusinessCategoryQueryParams,
-  CreateBusinessCategoryDto,
-  UpdateBusinessCategoryDto,
-} from "@/lib/types/company";
+  BusinessCategoryFormData,
+  UpdateBusinessCategoryFormData,
+} from "@/lib/validations/company";
 
 export class BusinessCategoriesService {
   private static basePath = "/companies/categories";
 
-  static async getAll(query?: BusinessCategoryQueryParams) {
-    if (query) {
-      const params = new URLSearchParams();
-      if (query.page) params.append("page", query.page.toString());
-      if (query.limit) params.append("limit", query.limit.toString());
-      if (query.q) params.append("q", query.q);
-      if (query.sortBy) params.append("sortBy", query.sortBy);
-      if (query.sortOrder) params.append("sortOrder", query.sortOrder);
-
-      const queryString = params.toString();
-      const url = queryString
-        ? `${this.basePath}?${queryString}`
-        : this.basePath;
-      const response = await ApiClient.get<PaginatedResponse<BusinessCategory>>(
-        url
-      );
-      return response;
-    } else {
-      // Fallback to non-paginated for backward compatibility
-      const response = await ApiClient.get<{ data: BusinessCategory[] }>(
-        this.basePath
-      );
-      return {
-        data: response.data,
-        meta: {
-          total: response.data.length,
-          page: 1,
-          limit: response.data.length,
-          totalPages: 1,
-        },
-      };
-    }
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
+    const response = await ApiClient.get<PaginatedResponse<BusinessCategory>>(
+      url
+    );
+    return response;
   }
 
   static async getById(id: number) {
@@ -53,7 +26,7 @@ export class BusinessCategoriesService {
     return response.data;
   }
 
-  static async create(data: CreateBusinessCategoryDto) {
+  static async create(data: BusinessCategoryFormData) {
     const response = await ApiClient.post<{ data: BusinessCategory }>(
       this.basePath,
       data
@@ -61,7 +34,7 @@ export class BusinessCategoriesService {
     return response.data;
   }
 
-  static async update(id: number, data: UpdateBusinessCategoryDto) {
+  static async update(id: number, data: UpdateBusinessCategoryFormData) {
     const response = await ApiClient.put<{ data: BusinessCategory }>(
       `${this.basePath}/${id}`,
       data
@@ -85,7 +58,7 @@ export class BusinessCategoriesService {
   }
 
   // Backward compatibility methods
-  static async getCategories(params?: BusinessCategoryQueryParams) {
+  static async getCategories(params?: BaseQueryParams) {
     return this.getAll(params);
   }
 
@@ -93,11 +66,14 @@ export class BusinessCategoriesService {
     return this.getById(id);
   }
 
-  static async createCategory(data: CreateBusinessCategoryDto) {
+  static async createCategory(data: BusinessCategoryFormData) {
     return this.create(data);
   }
 
-  static async updateCategory(id: number, data: UpdateBusinessCategoryDto) {
+  static async updateCategory(
+    id: number,
+    data: UpdateBusinessCategoryFormData
+  ) {
     return this.update(id, data);
   }
 

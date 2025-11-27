@@ -4,7 +4,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
-import { User } from "@/lib/types/user";
+import { User } from "@/lib/types/domain/user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,7 +24,7 @@ import {
 
 import { useUsers, useDeleteUser } from "@/lib/hooks/useUsers";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 import {
   AlertDialog,
   AlertDialogAction,

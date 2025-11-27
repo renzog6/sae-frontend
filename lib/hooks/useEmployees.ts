@@ -5,7 +5,10 @@ import {
   EmployeeCategoriesService,
   EmployeePositionsService,
 } from "@/lib/api/employees";
-import { EmployeeCategory, EmployeePosition } from "@/lib/types/employee";
+import {
+  EmployeeCategory,
+  EmployeePosition,
+} from "@/lib/types/domain/employee";
 import { useApiErrorHandler } from "@/lib/hooks/useApiErrorHandler";
 
 import {

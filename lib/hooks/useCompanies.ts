@@ -1,40 +1,32 @@
 // file: sae-frontend/lib/hooks/useCompanies.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  CompaniesService,
   BusinessCategoriesService,
   BusinessSubCategoriesService,
-  CompaniesService,
 } from "@/lib/api/companies";
 import {
+  Company,
   BusinessCategory,
   BusinessSubCategory,
-  Company,
-  BusinessCategoryResponse,
-  BusinessSubCategoryResponse,
-  CreateBusinessSubCategoryDto,
-  UpdateBusinessSubCategoryDto,
-} from "@/lib/types/company";
+} from "@/lib/types/domain/company";
 import {
-  BusinessCategoryFormData,
   CompanyFormData,
-  UpdateBusinessCategoryFormData,
   UpdateCompanyFormData,
+  BusinessCategoryFormData,
+  UpdateBusinessCategoryFormData,
+  BusinessSubcategoryFormData,
+  UpdateBusinessSubcategoryFormData,
 } from "@/lib/validations/company";
+import { BaseQueryParams } from "../types/core/api";
 
 // ========== Business Categories ==========
-export function useBusinessCategories(params?: {
-  page?: number;
-  limit?: number;
-  q?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  isActive?: boolean;
-}) {
-  return useQuery<BusinessCategoryResponse, Error>({
+export function useBusinessCategories(params?: BaseQueryParams) {
+  return useQuery<BusinessCategory[], Error>({
     queryKey: ["business-categories", params],
     queryFn: async () => {
-      const resp = await BusinessCategoriesService.getCategories(params);
-      return resp;
+      const response = await BusinessCategoriesService.getAll();
+      return response.data;
     },
   });
 }
@@ -88,19 +80,13 @@ export function useRestoreBusinessCategory() {
   });
 }
 
-export function useBusinessSubCategories(params?: {
-  page?: number;
-  limit?: number;
-  q?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  isActive?: boolean;
-}) {
-  return useQuery<BusinessSubCategoryResponse, Error>({
+// ========== Business SubCategories ==========
+export function useBusinessSubCategories(params?: BaseQueryParams) {
+  return useQuery<BusinessSubCategory[], Error>({
     queryKey: ["business-subcategories", params],
     queryFn: async () => {
-      const resp = await BusinessSubCategoriesService.getAll(params);
-      return resp;
+      const response = await BusinessSubCategoriesService.getAll();
+      return response.data;
     },
   });
 }
@@ -116,7 +102,7 @@ export function useBusinessSubCategory(id: number) {
 export function useCreateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateBusinessSubCategoryDto) =>
+    mutationFn: (data: BusinessSubcategoryFormData) =>
       BusinessSubCategoriesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
@@ -132,7 +118,7 @@ export function useUpdateBusinessSubCategory() {
       data,
     }: {
       id: number;
-      data: UpdateBusinessSubCategoryDto;
+      data: UpdateBusinessSubcategoryFormData;
     }) => BusinessSubCategoriesService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
@@ -165,18 +151,13 @@ export function useRestoreBusinessSubCategory() {
   });
 }
 
-export function useCompanies(params?: {
-  page?: number;
-  limit?: number;
-  q?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}) {
+// ========== Companies ==========
+export function useCompanies(params?: BaseQueryParams) {
   return useQuery<Company[], Error>({
     queryKey: ["companies", params],
     queryFn: async () => {
-      const resp = await CompaniesService.getAll(params);
-      return resp.data;
+      const response = await CompaniesService.getAll(params);
+      return response.data;
     },
   });
 }

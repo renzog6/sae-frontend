@@ -1,7 +1,11 @@
 // filepath: sae-frontend/lib/validations/person.ts
 import { z } from "zod";
-import { Gender, MaritalStatus, PersonStatus } from "@/lib/types/employee";
-import type { Person } from "@/lib/types/employee";
+import {
+  Gender,
+  MaritalStatus,
+  PersonStatus,
+} from "@/lib/types/domain/employee";
+import type { Person } from "@/lib/types/domain/employee";
 
 export const createPersonSchema = z.object({
   firstName: z.string().min(1, "Nombre requerido").max(100),

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Truck } from "lucide-react";
-import type { Equipment } from "@/lib/types/equipment";
+import type { Equipment } from "@/lib/types/domain/equipment";
 
 interface Props {
   equipments: Equipment[];

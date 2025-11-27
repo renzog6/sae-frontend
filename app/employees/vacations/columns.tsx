@@ -5,8 +5,8 @@ import type { ColumnDef, Row } from "@tanstack/react-table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import type { Employee } from "@/lib/types/employee";
-import { VacationType } from "@/lib/types/employee";
+import type { Employee } from "@/lib/types/domain/employee";
+import { VacationType } from "@/lib/types/domain/employee";
 import { formatTenure } from "@/lib/utils/date";
 import { sumEmployeeVacationDays } from "@/lib/utils/employee";
 

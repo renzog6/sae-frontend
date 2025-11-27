@@ -29,12 +29,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { TiresService } from "@/lib/api/tires";
 import { useTireDetail } from "@/lib/hooks/useTires";
-import { TireStatus } from "@/lib/types/enums";
+import { TireStatus } from "@/lib/types/shared/enums";
 import {
   updateTireSchema,
   type UpdateTireFormData,
 } from "@/lib/validations/tire";
-import { UpdateTireDto } from "@/lib/types/tire";
+import { UpdateTireDto } from "@/lib/types/domain/tire";
 
 export default function TireEditPage() {
   const params = useParams();

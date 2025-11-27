@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EquipmentStatus } from "@/lib/types/enums";
+import { EquipmentStatus } from "@/lib/types/shared/enums";
 import {
   equipmentFormSchema,
   type EquipmentFormData,

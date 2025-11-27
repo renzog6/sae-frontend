@@ -1,6 +1,6 @@
 // file: sae-frontend/lib/validations/contact.ts
 import { z } from "zod";
-import { ContactType } from "@/lib/types/contact";
+import { ContactType } from "@/lib/types/shared/contact";
 
 export const ContactSchema = z
   .object({

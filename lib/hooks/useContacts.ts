@@ -1,7 +1,7 @@
 // file: sae-frontend/lib/hooks/useContacts.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ContactsService } from "@/lib/api/contacts";
-import { Contact } from "@/lib/types/contact";
+import { Contact } from "@/lib/types/shared/contact";
 import {
   ContactFormData,
   UpdateContactFormData,

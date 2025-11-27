@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/validations/auth.ts
 import { z } from "zod";
-import { Role } from "@/lib/types/enums";
+import { Role } from "@/lib/types/shared/enums";
 
 export const loginSchema = z.object({
   email: z

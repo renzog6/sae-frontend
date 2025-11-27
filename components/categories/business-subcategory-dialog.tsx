@@ -6,7 +6,7 @@ import {
   useCreateBusinessSubcategory,
   useUpdateBusinessSubcategory,
 } from "@/lib/hooks/useCompanies";
-import type { BusinessSubcategory } from "@/lib/types/company";
+import type { BusinessSubCategory } from "@/lib/types/domain/company";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { BusinessSubcategoryForm } from "@/components/forms/business-subcategory-form";
@@ -17,10 +17,10 @@ export interface BusinessSubcategoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
-  subcategory?: BusinessSubcategory | null;
+  subcategory?: BusinessSubCategory | null;
 }
 
-export function BusinessSubcategoryDialog({
+export function BusinessSubCategoryDialog({
   accessToken,
   open,
   onOpenChange,

@@ -6,7 +6,7 @@ import {
   EmployeeHistoryResponse,
   CreateEmployeeIncidentDto,
   UpdateEmployeeIncidentDto,
-} from "@/lib/types/history";
+} from "@/lib/types/domain/history";
 
 export function useEmployeeHistory(employeeId: number | undefined) {
   return useQuery<EmployeeHistoryResponse, Error>({

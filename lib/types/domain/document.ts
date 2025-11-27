@@ -1,4 +1,4 @@
-// filepath: sae-frontend/types/document.ts
+// filepath: sae-frontend/lib/types/domain/document.ts
 
 export interface Document {
   id: number;

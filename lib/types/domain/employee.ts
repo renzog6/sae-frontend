@@ -1,4 +1,4 @@
-// filepath: sae-frontend/types/employee.ts
+// filepath: sae-frontend/lib/types/domain/employee.ts
 
 // Only Employee + Person domain and their direct employee relations.
 // Avoid duplicating shared types like Company, Address, Contacts.
@@ -6,10 +6,10 @@
 
 // Import shared types
 import { Company } from "./company";
-import { Address } from "./location";
-import { ContactLink } from "./contact";
+import { Address } from "../shared/location";
+import { ContactLink } from "../shared/contact";
 import { Document } from "./document";
-import { Inspection } from "./shared";
+import { Inspection } from "../shared/shared";
 import { EmployeeIncident } from "./history";
 
 // Re-export enums for backward compatibility
@@ -19,7 +19,7 @@ export {
   MaritalStatus,
   PersonStatus,
   VacationType,
-} from "./enums";
+} from "../shared/enums";
 
 // Import enums from shared location
 import {
@@ -28,7 +28,7 @@ import {
   MaritalStatus,
   PersonStatus,
   VacationType,
-} from "./enums";
+} from "../shared/enums";
 
 // ===== Person (only core + links as optional/unknown to avoid duplication) =====
 export type Person = {

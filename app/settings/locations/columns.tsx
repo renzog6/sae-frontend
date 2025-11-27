@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { City } from "@/lib/types/location";
+import type { City } from "@/lib/types/shared/location";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 

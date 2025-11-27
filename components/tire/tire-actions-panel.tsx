@@ -13,8 +13,8 @@ import { TireInspectionDialog } from "./tire-inspection-dialog";
 import { TireAssignmentsService } from "@/lib/api/tires";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { Equipment } from "@/lib/types/equipment";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { Equipment } from "@/lib/types/domain/equipment";
 
 interface Props {
   selectedPosition: TirePositionConfig | null;

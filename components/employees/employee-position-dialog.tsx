@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { EmployeePosition } from "@/lib/types/employee";
+import type { EmployeePosition } from "@/lib/types/domain/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EmployeePositionForm } from "@/components/forms/employee-position-form";

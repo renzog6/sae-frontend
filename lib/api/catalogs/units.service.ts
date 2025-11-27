@@ -1,49 +1,17 @@
 // filepath: sae-frontend/lib/api/catalogs/units.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { Unit } from "@/lib/types/catalog";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { Unit } from "@/lib/types/shared/catalogs";
 import { UnitFormData, UpdateUnitFormData } from "@/lib/validations/catalog";
-
-export interface UnitQueryParams {
-  page?: number;
-  limit?: number;
-  q?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
 
 export class UnitsService {
   private static basePath = "/units";
 
-  static async getAll(query?: UnitQueryParams) {
-    if (query) {
-      const params = new URLSearchParams();
-      if (query.page) params.append("page", query.page.toString());
-      if (query.limit) params.append("limit", query.limit.toString());
-      if (query.q) params.append("q", query.q);
-      if (query.sortBy) params.append("sortBy", query.sortBy);
-      if (query.sortOrder) params.append("sortOrder", query.sortOrder);
-
-      const queryString = params.toString();
-      const url = queryString
-        ? `${this.basePath}?${queryString}`
-        : this.basePath;
-      const response = await ApiClient.get<PaginatedResponse<Unit>>(url);
-      return response;
-    } else {
-      // Fallback to non-paginated for backward compatibility
-      const response = await ApiClient.get<{ data: Unit[] }>(this.basePath);
-      return {
-        data: response.data,
-        meta: {
-          total: response.data.length,
-          page: 1,
-          limit: response.data.length,
-          totalPages: 1,
-        },
-      };
-    }
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
+    const response = await ApiClient.get<PaginatedResponse<Unit>>(url);
+    return response;
   }
 
   static async getById(id: number) {

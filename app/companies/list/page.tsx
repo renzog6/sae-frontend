@@ -19,12 +19,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
-import type { Company, BusinessCategory } from "@/lib/types/company";
+import type { Company, BusinessCategory } from "@/lib/types/domain/company";
 import { useCompanies, useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { DataTable } from "@/components/data-table";
 import { getCompanyColumns } from "./columns";
 import Link from "next/link";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function CompaniesPage() {
   const { data: session } = useSession();
@@ -60,7 +60,7 @@ export default function CompaniesPage() {
 
   const { data: categoriesResponse } = useBusinessCategories();
 
-  const categories: BusinessCategory[] = categoriesResponse?.data || [];
+  const categories: BusinessCategory[] = categoriesResponse || [];
 
   const companies = useMemo(() => {
     let filtered: Company[] = companiesResponse || [];

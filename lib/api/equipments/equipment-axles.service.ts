@@ -1,32 +1,45 @@
 //filepath: sae-frontend/lib/api/equipments/equipment-axles.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
-import { unwrap } from "@/lib/api/utils";
-import { EquipmentAxle } from "@/lib/types/equipment";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { EquipmentAxle } from "@/lib/types/domain/equipment";
+
+// Interface específica para ejes de equipo
+interface EquipmentAxlesQueryParams extends BaseQueryParams {
+  equipmentId?: number;
+}
 
 export class EquipmentAxlesService {
   private static basePath = "/equipments/axles";
 
-  static async getAll(params?: {
-    equipmentId?: number;
-  }): Promise<EquipmentAxle[] | PaginatedResponse<EquipmentAxle>> {
-    const query = new URLSearchParams();
-    if (params?.equipmentId)
-      query.set("equipmentId", String(params.equipmentId));
-    const qs = query.toString();
+  static async getAll(
+    filter?: EquipmentAxlesQueryParams
+  ): Promise<PaginatedResponse<EquipmentAxle>> {
+    // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+    const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-    const response = await ApiClient.get<
-      EquipmentAxle[] | PaginatedResponse<EquipmentAxle>
-    >(`${this.basePath}${qs ? `?${qs}` : ""}`);
-    return unwrap<EquipmentAxle[] | PaginatedResponse<EquipmentAxle>>(response);
+    // 2. Filtros específicos de documentos
+    const specificParams = {
+      equipmentId: filter?.equipmentId,
+    };
+    const specificQuery = QueryBuilder.buildSpecific(specificParams);
+
+    // 3. Combinar URLs
+    const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+
+    const response = await ApiClient.get<PaginatedResponse<EquipmentAxle>>(
+      finalUrl
+    );
+
+    return response;
   }
 
   static async getById(id: number): Promise<EquipmentAxle> {
-    const response = await ApiClient.get<
-      EquipmentAxle | ApiResponse<EquipmentAxle>
-    >(`${this.basePath}/${id}`);
-    return unwrap<EquipmentAxle>(response);
+    const response = await ApiClient.get<{ data: EquipmentAxle }>(
+      `${this.basePath}/${id}`
+    );
+    return response.data;
   }
 
   static async create(data: {
@@ -36,10 +49,11 @@ export class EquipmentAxlesService {
     wheelCount: number;
     description?: string;
   }): Promise<EquipmentAxle> {
-    const response = await ApiClient.post<
-      EquipmentAxle | ApiResponse<EquipmentAxle>
-    >(this.basePath, data);
-    return unwrap<EquipmentAxle>(response);
+    const response = await ApiClient.post<{ data: EquipmentAxle }>(
+      this.basePath,
+      data
+    );
+    return response.data;
   }
 
   static async update(
@@ -52,10 +66,11 @@ export class EquipmentAxlesService {
       description?: string;
     }>
   ): Promise<EquipmentAxle> {
-    const response = await ApiClient.put<
-      EquipmentAxle | ApiResponse<EquipmentAxle>
-    >(`${this.basePath}/${id}`, data);
-    return unwrap<EquipmentAxle>(response);
+    const response = await ApiClient.put<{ data: EquipmentAxle }>(
+      `${this.basePath}/${id}`,
+      data
+    );
+    return response.data;
   }
 
   static async delete(id: number): Promise<string> {
@@ -77,17 +92,17 @@ export class EquipmentAxlesService {
       isDual: boolean;
     }>;
   }): Promise<any> {
-    const response = await ApiClient.post(
+    const response = await ApiClient.post<{ data: any }>(
       `${this.basePath}/with-positions`,
       data
     );
-    return unwrap<any>(response);
+    return response.data;
   }
 
   static async getPositionsByEquipment(equipmentId: number): Promise<any> {
-    const response = await ApiClient.get(
+    const response = await ApiClient.get<{ data: any }>(
       `${this.basePath}/positions/equipment/${equipmentId}`
     );
-    return unwrap<any>(response);
+    return response.data;
   }
 }

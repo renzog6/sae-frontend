@@ -1,7 +1,7 @@
-// filepath: sae-frontend/app/equipments/models/page.tsx
+// filepath: /sae-frontend/app/equipments/models/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,41 +18,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { EquipmentModel } from "@/lib/types/equipment";
+
+import { useBrands } from "@/lib/hooks/useCatalogs";
 import {
   useEquipmentModels,
   useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
-import { useBrands } from "@/lib/hooks/useCatalogs";
-import { DataTable } from "@/components/data-table";
+
 import { getEquipmentModelColumns } from "./columns";
 import { EquipmentModelDialog } from "@/components/equipment/equipment-model-dialog";
-import { PaginationBar } from "@/components/table/pagination-bar";
+
+import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
+import { EquipmentModel } from "@/lib/types/domain/equipment";
 
 export default function EquipmentModelsPage() {
-  // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const [query, setQuery] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const [selectedType, setSelectedType] = useState<string>("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, selectedBrand, selectedType, limit]);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
   const { data: brands = [] } = useBrands();
   const { data: typesData } = useEquipmentTypes();
   const types = Array.isArray(typesData) ? typesData : [];
+
+  const selectedTypeId =
+    selectedType !== ""
+      ? types.find((t: any) => t.name === selectedType)?.id
+      : undefined;
 
   const {
     data: modelsResponse,
@@ -61,35 +56,51 @@ export default function EquipmentModelsPage() {
   } = useEquipmentModels({
     page,
     limit,
-    typeId: selectedType
-      ? types.find((t: any) => t.name === selectedType)?.id
-      : undefined,
+    typeId: selectedTypeId,
   });
-  const models = modelsResponse?.data || [];
-  const meta = modelsResponse?.meta || {
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-  };
-  const totalPages = meta.totalPages || Math.ceil(meta.total / meta.limit);
-  const totalItems = meta.total || 0;
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-  const [selected, setSelected] = useState<EquipmentModel | null>(null);
+  const models = modelsResponse?.data ?? [];
+
+  const filteredModels = useMemo(() => {
+    return models.filter((model) => {
+      const brandMatch = !selectedBrand || model.brand?.name === selectedBrand;
+
+      const typeMatch = !selectedType || model.type?.name === selectedType;
+
+      return brandMatch && typeMatch;
+    });
+  }, [models, selectedBrand, selectedType]);
 
   const columns = useMemo(
     () =>
       getEquipmentModelColumns({
         onEdit: (item) => {
-          setSelected(item);
           setDialogMode("edit");
+          setSelected(item);
           setDialogOpen(true);
         },
       }),
     []
   );
+
+  // TanStack Table
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: filteredModels,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
+  // Dialog
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
+  const [selected, setSelected] = useState<EquipmentModel | null>(null);
+
+  const meta = modelsResponse?.meta ?? {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  };
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -97,6 +108,7 @@ export default function EquipmentModelsPage() {
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
             <CardTitle className="text-2xl">Modelos de equipos</CardTitle>
+
             <Button
               onClick={() => {
                 setDialogMode("create");
@@ -107,11 +119,11 @@ export default function EquipmentModelsPage() {
               Nuevo modelo
             </Button>
           </div>
+
           <CardDescription>Gestión de modelos de equipos</CardDescription>
 
-          {/* Filters Row */}
+          {/* Filtros */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search is now handled by DataTable */}
             <div className="flex gap-2">
               {/* Brand filter */}
               <DropdownMenu>
@@ -120,27 +132,20 @@ export default function EquipmentModelsPage() {
                     variant="outline"
                     className="min-w-[140px] justify-between"
                   >
-                    <span className="mr-2">🏷️</span> {selectedBrand || "Marca"}
+                    <span className="mr-2">🏷️</span>
+                    {selectedBrand || "Marca"}
                     <ChevronDown className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent
                   align="end"
                   className="w-48 overflow-y-auto max-h-60"
                 >
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar marca..."
-                      className="mb-2"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        // Filter is handled by the dropdown rendering below
-                      }}
-                    />
-                  </div>
                   <DropdownMenuItem onClick={() => setSelectedBrand("")}>
                     Todas las marcas
                   </DropdownMenuItem>
+
                   {brands
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((brand) => (
@@ -161,27 +166,20 @@ export default function EquipmentModelsPage() {
                     variant="outline"
                     className="min-w-[140px] justify-between"
                   >
-                    <span className="mr-2">🔧</span> {selectedType || "Tipo"}
+                    <span className="mr-2">🔧</span>
+                    {selectedType || "Tipo"}
                     <ChevronDown className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent
                   align="end"
                   className="w-48 overflow-y-auto max-h-60"
                 >
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar tipo..."
-                      className="mb-2"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        // Filter is handled by the dropdown rendering below
-                      }}
-                    />
-                  </div>
                   <DropdownMenuItem onClick={() => setSelectedType("")}>
                     Todos los tipos
                   </DropdownMenuItem>
+
                   {types
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((type) => (
@@ -197,27 +195,26 @@ export default function EquipmentModelsPage() {
             </div>
           </div>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<EquipmentModel, unknown>
-              columns={columns}
-              data={models.filter(
-                (model: any) =>
-                  !selectedBrand || model.brand?.name === selectedBrand
-              )}
-              searchableColumns={["name", "code"]}
-              searchPlaceholder="Buscar por nombre o código..."
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar por nombre o código…"
             />
           )}
+
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
+            page={meta.page}
+            totalPages={meta.totalPages}
+            totalItems={meta.total}
+            limit={meta.limit}
             onPageChange={setPage}
             onLimitChange={(newLimit) => {
               setLimit(newLimit);

@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { Equipment } from "@/lib/types/equipment";
+import type { Equipment } from "@/lib/types/domain/equipment";
 import {
   useEquipmentList,
   useEquipmentCategories,
@@ -29,8 +29,8 @@ import { DataTable } from "@/components/data-table";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PaginationBar } from "@/components/table/pagination-bar";
-import { EquipmentStatus } from "@/lib/types/enums";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EquipmentStatus } from "@/lib/types/shared/enums";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 

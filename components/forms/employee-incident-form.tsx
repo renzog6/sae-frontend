@@ -26,7 +26,7 @@ import {
   type EmployeeIncidentFormData,
   type EmployeeIncidentFormInput,
 } from "@/lib/validations/employeeIncident";
-import { EmployeeIncidentType } from "@/lib/types/history";
+import { EmployeeIncidentType } from "@/lib/types/domain/history";
 import { employeeIncidentTypeLabels } from "@/lib/constants";
 
 export interface EmployeeIncidentFormProps {

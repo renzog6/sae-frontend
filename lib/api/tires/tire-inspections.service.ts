@@ -1,12 +1,12 @@
 //filepath: sae-frontend/lib/api/tires/tire-inspections.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
+import { PaginatedResponse } from "@/lib/types/core/api";
 import {
   TireInspection,
   CreateTireInspectionDto,
   UpdateTireInspectionDto,
-} from "@/lib/types/tire";
+} from "@/lib/types/domain/tire";
 
 export class TireInspectionsService {
   private static basePath = "/tires/inspections";

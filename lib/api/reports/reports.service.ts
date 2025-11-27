@@ -1,7 +1,6 @@
 // filepath: sae-frontend/lib/api/reports/reports.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
-import { GenerateReportDto } from "@/lib/types/report";
+import { GenerateReportDto } from "@/lib/types/domain/report";
 
 export class ReportsService {
   private static basePath = "/reports";

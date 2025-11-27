@@ -17,12 +17,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { EquipmentCategory } from "@/lib/types/equipment";
+import type { EquipmentCategory } from "@/lib/types/domain/equipment";
 import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentCategoryColumns } from "./columns";
 import { EquipmentCategoryDialog } from "@/components/equipment/equipment-category-dialog";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EquipmentCategoriesPage() {
   // Pagination state

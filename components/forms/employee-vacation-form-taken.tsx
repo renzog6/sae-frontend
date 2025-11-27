@@ -26,7 +26,7 @@ import {
   type EmployeeVacationFormInput,
 } from "@/lib/validations/employeeVacation";
 import { Label } from "@/components/ui/label";
-import type { AvailableYear } from "@/lib/types/employee";
+import type { AvailableYear } from "@/lib/types/domain/employee";
 
 export interface EmployeeVacationFormProps {
   onSubmit: (data: EmployeeVacationFormData) => void;

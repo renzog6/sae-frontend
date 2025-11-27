@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { EquipmentType } from "@/lib/types/equipment";
+import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { Button } from "@/components/ui/button";
 import { FilePenLine } from "lucide-react";
 

@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/validations/employeeIncident.ts
 import { z } from "zod";
-import { EmployeeIncidentType } from "@/lib/types/history";
+import { EmployeeIncidentType } from "@/lib/types/domain/history";
 
 export const createEmployeeIncidentFormInputSchema = z.object({
   type: z.nativeEnum(EmployeeIncidentType),

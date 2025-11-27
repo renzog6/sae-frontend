@@ -1,8 +1,7 @@
 //filepath: sae-frontend/lib/api/tires/tire-sizes.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { unwrap } from "@/lib/api/utils";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   TireSize,
   CreateTireSizeDto,
@@ -10,23 +9,15 @@ import {
   TireSizeAlias,
   CreateTireSizeAliasDto,
   UpdateTireSizeAliasDto,
-} from "@/lib/types/tire";
+} from "@/lib/types/domain/tire";
 
 // ===== TIRE SIZE =====
 export class TireSizesService {
   private static basePath = "/tires/sizes";
 
-  static async getAll(
-    params: { page?: number; limit?: number; query?: string } = {}
-  ) {
-    const query = new URLSearchParams();
-    if (params.page) query.append("page", params.page.toString());
-    if (params.limit) query.append("limit", params.limit.toString());
-    if (params.query) query.append("query", params.query);
-
-    const response = await ApiClient.get<PaginatedResponse<TireSize>>(
-      `${this.basePath}?${query.toString()}`
-    );
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
+    const response = await ApiClient.get<PaginatedResponse<TireSize>>(url);
     return response;
   }
 
@@ -62,20 +53,26 @@ export class TireSizeAliasesService {
     const response = await ApiClient.get<
       TireSizeAlias[] | PaginatedResponse<TireSizeAlias>
     >(`/tires/sizes/${sizeId}/aliases`);
-    return unwrap<TireSizeAlias[] | PaginatedResponse<TireSizeAlias>>(response);
+    if (response && typeof response === "object" && "data" in response) {
+      return response.data;
+    }
+    return response;
   }
 
   static async create(dto: CreateTireSizeAliasDto) {
-    const response = await ApiClient.post<TireSizeAlias>(this.basePath, dto);
-    return unwrap<TireSizeAlias>(response);
+    const response = await ApiClient.post<{ data: TireSizeAlias }>(
+      this.basePath,
+      dto
+    );
+    return response.data;
   }
 
   static async update(id: number, dto: UpdateTireSizeAliasDto) {
-    const response = await ApiClient.put<TireSizeAlias>(
+    const response = await ApiClient.put<{ data: TireSizeAlias }>(
       `${this.basePath}/${id}`,
       dto
     );
-    return unwrap<TireSizeAlias>(response);
+    return response.data;
   }
 
   static async delete(id: number) {

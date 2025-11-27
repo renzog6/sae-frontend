@@ -1,40 +1,50 @@
 // filepath: sae-frontend/lib/api/documents/documents.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { unwrap } from "@/lib/api/utils";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   Document,
   UploadDocumentData,
   CreateDocumentDto,
-} from "@/lib/types/document";
+} from "@/lib/types/domain/document";
+
+// Interface específica para documentos
+interface DocumentQueryParams extends BaseQueryParams {
+  employeeId?: number;
+  companyId?: number;
+  equipmentId?: number; // 👈 PARA EL FUTURO
+}
 
 export class DocumentsService {
   private static basePath = "/documents";
 
-  static async getAll(filter?: {
-    employeeId?: number;
-    companyId?: number;
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<Document>> {
-    const query = new URLSearchParams();
-    if (filter?.employeeId) query.set("employeeId", String(filter.employeeId));
-    if (filter?.companyId) query.set("companyId", String(filter.companyId));
-    if (filter?.page) query.set("page", String(filter.page));
-    if (filter?.limit) query.set("limit", String(filter.limit));
-    const qs = query.toString();
-    const response = await ApiClient.get<PaginatedResponse<Document>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
-    );
+  static async getAll(
+    filter?: DocumentQueryParams
+  ): Promise<PaginatedResponse<Document>> {
+    // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+    const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+
+    // 2. Filtros específicos de documentos
+    const specificParams = {
+      employeeId: filter?.employeeId,
+      companyId: filter?.companyId,
+      equipmentId: filter?.equipmentId, // 👈 LISTO PARA EL FUTURO
+    };
+    const specificQuery = QueryBuilder.buildSpecific(specificParams);
+
+    // 3. Combinar URLs
+    const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+
+    const response = await ApiClient.get<PaginatedResponse<Document>>(finalUrl);
     return response;
   }
 
   static async getById(id: number): Promise<Document> {
-    const response = await ApiClient.get<Document | { data: Document }>(
+    const response = await ApiClient.get<{ data: Document }>(
       `${this.basePath}/${id}`
     );
-    return unwrap<Document>(response);
+    return response.data;
   }
 
   static async upload(data: UploadDocumentData): Promise<Document> {
@@ -50,22 +60,22 @@ export class DocumentsService {
       formData.append("companyId", String(data.companyId));
     }
 
-    const response = await ApiClient.post<Document | { data: Document }>(
+    const response = await ApiClient.post<{ data: Document }>(
       "/documents/upload",
       formData
     );
-    return unwrap<Document>(response);
+    return response.data;
   }
 
   static async update(
     id: number,
     data: Partial<CreateDocumentDto>
   ): Promise<Document> {
-    const response = await ApiClient.put<Document | { data: Document }>(
+    const response = await ApiClient.put<{ data: Document }>(
       `${this.basePath}/${id}`,
       data
     );
-    return unwrap<Document>(response);
+    return response.data;
   }
 
   static async delete(id: number): Promise<string> {

@@ -1,12 +1,12 @@
 //filepath: sae-frontend/lib/api/tires/tire-rotations.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
+import { PaginatedResponse } from "@/lib/types/core/api";
 import {
   TireRotation,
   CreateTireRotationDto,
   UpdateTireRotationDto,
-} from "@/lib/types/tire";
+} from "@/lib/types/domain/tire";
 
 export class TireRotationsService {
   private static basePath = "/tires/rotations";

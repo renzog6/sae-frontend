@@ -1,27 +1,21 @@
 //filepath: sae-frontend/lib/api/equipments/equipment-categories.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
-import { unwrap } from "@/lib/api/utils";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   EquipmentCategory,
   CreateEquipmentCategoryDto,
   UpdateEquipmentCategoryDto,
-} from "@/lib/types/equipment";
+} from "@/lib/types/domain/equipment";
 
 export class EquipmentCategoriesService {
   private static basePath = "/equipments/categories";
 
-  static async getAll(params?: {
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<EquipmentCategory>> {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
     const response = await ApiClient.get<PaginatedResponse<EquipmentCategory>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
+      url
     );
     return response;
   }

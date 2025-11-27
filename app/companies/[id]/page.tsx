@@ -12,15 +12,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CompanyForm } from "@/components/companies/company-form";
-import type { Company } from "@/lib/types/company";
+import type { Company } from "@/lib/types/domain/company";
 import type {
   CompanyFormData,
   UpdateCompanyFormData,
 } from "@/lib/validations/company";
 import { CompaniesService } from "@/lib/api/companies";
 import { Button } from "@/components/ui/button";
-import type { Address } from "@/lib/types/location";
-import type { Contact } from "@/lib/types/contact";
+import type { Address } from "@/lib/types/shared/location";
+import type { Contact } from "@/lib/types/shared/contact";
 import { useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
@@ -163,7 +163,7 @@ export default function CompanyDetailPage() {
     onUpdated?: (newId: number | undefined) => void;
   }) {
     const { data: categoriesResponse, isLoading } = useBusinessCategories();
-    const categories = categoriesResponse?.data || [];
+    const categories = categoriesResponse || [];
     const [adding, setAdding] = useState(false);
     const [savingCat, setSavingCat] = useState(false);
     const [selectedId, setSelectedId] = useState<number | "">(

@@ -1,44 +1,43 @@
 //filepath: sae-frontend/lib/api/tires/tire-assignments.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { TireAssignment, MountTireDto, UnmountTireDto } from "@/lib/types/tire";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import {
+  TireAssignment,
+  MountTireDto,
+  UnmountTireDto,
+} from "@/lib/types/domain/tire";
 
-// Interfaz para parámetros de consultas de asignaciones
-interface TireAssignmentParams {
-  page?: number;
-  limit?: number;
+// Interface específica para asignaciones de neumáticos
+interface TireAssignmentsQueryParams extends BaseQueryParams {
   equipmentId?: number;
   tireId?: number;
-  status?: string;
-  serialNumber?: string; // Soporte para búsqueda por serialNumber
+  serialNumber?: string;
 }
 
 export class TireAssignmentsService {
   private static basePath = "/tires/assignments";
 
-  /**
-   * Obtiene todas las asignaciones de neumáticos con filtros opcionales
-   * @param params - Parámetros de paginación y filtrado
-   * @returns Lista paginada de asignaciones
-   * @throws Error si la solicitud falla
-   */
   static async getAll(
-    params: TireAssignmentParams = {}
+    filter?: TireAssignmentsQueryParams
   ): Promise<PaginatedResponse<TireAssignment>> {
     try {
-      const query = new URLSearchParams();
-      if (params.page) query.append("page", params.page.toString());
-      if (params.limit) query.append("limit", params.limit.toString());
-      if (params.equipmentId)
-        query.append("equipmentId", params.equipmentId.toString());
-      if (params.tireId) query.append("tireId", params.tireId.toString());
-      if (params.status) query.append("status", params.status);
-      if (params.serialNumber)
-        query.append("serialNumber", params.serialNumber);
+      // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+      const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+
+      // 2. Filtros específicos de documentos
+      const specificParams = {
+        equipmentId: filter?.equipmentId,
+      };
+      const specificQuery = QueryBuilder.buildSpecific(specificParams);
+
+      // 3. Combinar URLs
+      const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
 
       const response = await ApiClient.get<PaginatedResponse<TireAssignment>>(
-        `${this.basePath}?${query.toString()}`
+        finalUrl
       );
+
       return response;
     } catch (error) {
       throw new Error(

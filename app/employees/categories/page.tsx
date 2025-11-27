@@ -11,12 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EmployeeCategory } from "@/lib/types/employee";
+import type { EmployeeCategory } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
 import { DataTable } from "@/components/data-table";
 import { getEmployeeCategoryColumns } from "./columns";
 import { EmployeeCategoryDialog } from "@/components/employees/employee-category-dialog";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EmployeeCategoriesPage() {
   const { data: session } = useSession();

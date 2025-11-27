@@ -1,4 +1,4 @@
-import { EquipmentStatus } from "@/lib/types/enums";
+import { EquipmentStatus } from "@/lib/types/shared/enums";
 
 export const equipmentStatusLabels: Record<EquipmentStatus, string> = {
   [EquipmentStatus.ACTIVE]: "Activo",

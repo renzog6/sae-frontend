@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { EquipmentCategory } from "@/lib/types/equipment";
+import type { EquipmentCategory } from "@/lib/types/domain/equipment";
 import { Button } from "@/components/ui/button";
 
 export function getEquipmentCategoryColumns({

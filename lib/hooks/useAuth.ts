@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AuthService } from "@/lib/api/auth-service";
-import { AuthResponse } from "@/lib/types/auth";
+import { AuthResponse } from "@/lib/types/core/auth";
 
 export interface UseAuthReturn {
   accessToken: string | null;

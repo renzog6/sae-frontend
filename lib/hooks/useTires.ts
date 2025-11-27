@@ -18,7 +18,7 @@ import {
   UpdateTireSizeAliasDto,
   CreateTireModelDto,
   UpdateTireModelDto,
-} from "@/lib/types/tire";
+} from "@/lib/types/domain/tire";
 
 // Tire Models
 export function useTireModels(

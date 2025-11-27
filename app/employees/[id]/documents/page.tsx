@@ -43,7 +43,7 @@ import {
   useDeleteDocument,
   useDownloadDocument,
 } from "@/lib/hooks/useDocuments";
-import { Document } from "@/lib/types/document";
+import { Document } from "@/lib/types/domain/document";
 import {
   uploadDocumentSchema,
   type UploadDocumentFormData,

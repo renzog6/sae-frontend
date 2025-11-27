@@ -1,4 +1,4 @@
-// filepath: sae-frontend/types/enums.ts
+// filepath: sae-frontend/lib/types/shared/enums.ts
 
 // ===== Enums from schema.prisma =====
 
@@ -6,17 +6,6 @@
 export enum Role {
   USER = "USER",
   ADMIN = "ADMIN",
-}
-
-// Contact types
-export enum ContactType {
-  EMAIL = "EMAIL",
-  PHONE = "PHONE",
-  WHATSAPP = "WHATSAPP",
-  TELEGRAM = "TELEGRAM",
-  INSTAGRAM = "INSTAGRAM",
-  LINKEDIN = "LINKEDIN",
-  OTHER = "OTHER",
 }
 
 // Employee statuses

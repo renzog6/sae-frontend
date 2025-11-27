@@ -4,7 +4,7 @@
 import * as React from "react";
 import type { UnitFormData } from "@/lib/validations/catalog";
 import { useCreateUnit, useUpdateUnit } from "@/lib/hooks/useCatalogs";
-import type { Unit } from "@/lib/types/catalog";
+import type { Unit } from "@/lib/types/shared/catalogs";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { UnitForm } from "@/components/forms/unit-form";

@@ -36,7 +36,7 @@ import {
   EmployeeIncidentType,
   HistoryType,
   SeverityLevel,
-} from "@/lib/types/history";
+} from "@/lib/types/domain/history";
 
 type HistoryItem =
   | (EmployeeIncident & { itemType: "incident" })

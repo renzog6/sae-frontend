@@ -35,8 +35,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { createTireSchema, CreateTireFormData } from "@/lib/validations/tire";
-import { TireModel } from "@/lib/types/tire";
-import { TireStatus, TirePosition } from "@/lib/types/enums";
+import { TireModel } from "@/lib/types/domain/tire";
+import { TireStatus, TirePosition } from "@/lib/types/shared/enums";
 import { Loader2, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 

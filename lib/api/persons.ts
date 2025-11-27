@@ -1,7 +1,12 @@
 // filepath: sae-frontend/lib/api/persons.ts
 import { ApiClient } from "./apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { Person } from "@/lib/types/employee";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { Person } from "@/lib/types/domain/employee";
 import {
   CreatePersonFormData,
   UpdatePersonFormData,
@@ -10,50 +15,36 @@ import {
 export class PersonsService {
   private static basePath = "/persons";
 
-  static async getPersons(params?: { page?: number; limit?: number }) {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
-    const response = await ApiClient.get<PaginatedResponse<Person>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
-    );
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
+    const response = await ApiClient.get<PaginatedResponse<Person>>(url);
     return response;
   }
 
-  static async getPersonById(id: number) {
-    const response = await ApiClient.get<Person | { data: Person }>(
+  static async getById(id: number) {
+    const response = await ApiClient.get<ApiResponse<Person>>(
       `${this.basePath}/${id}`
     );
-    // Handle both direct response and wrapped response
-    return response && typeof response === "object" && "data" in response
-      ? response.data
-      : response;
+    return response.data;
   }
 
-  static async createPerson(data: CreatePersonFormData) {
-    const response = await ApiClient.post<Person | { data: Person }>(
+  static async create(data: CreatePersonFormData) {
+    const response = await ApiClient.post<ApiResponse<Person>>(
       this.basePath,
       data
     );
-    // Handle both direct response and wrapped response
-    return response && typeof response === "object" && "data" in response
-      ? response.data
-      : response;
+    return response.data;
   }
 
-  static async updatePerson(id: number, data: UpdatePersonFormData) {
-    const response = await ApiClient.put<Person | { data: Person }>(
+  static async update(id: number, data: UpdatePersonFormData) {
+    const response = await ApiClient.put<ApiResponse<Person>>(
       `${this.basePath}/${id}`,
       data
     );
-    // Handle both direct response and wrapped response
-    return response && typeof response === "object" && "data" in response
-      ? response.data
-      : response;
+    return response.data;
   }
 
-  static async deletePerson(id: number) {
+  static async delete(id: number) {
     await ApiClient.delete(`${this.basePath}/${id}`);
     return "Person deleted";
   }

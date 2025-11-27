@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTireEvents } from "@/lib/hooks/useTires";
-import { TireEventType } from "@/lib/types/enums";
+import { TireEventType } from "@/lib/types/shared/enums";
 
 export default function TireReportsEventsPage() {
   const { data: session } = useSession();

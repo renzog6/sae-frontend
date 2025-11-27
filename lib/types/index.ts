@@ -1,4 +1,23 @@
-//filepath: sae-frontend/lib/types/index.ts
+// filepath: sae-frontend/lib/types/index.ts
 
-export * from "./tire";
-export * from "./report";
+// Export core types
+export * from "./core/api";
+export * from "./core/auth";
+export * from "./core/common";
+
+// Export domain types
+export * from "./domain/company";
+export * from "./domain/document";
+export * from "./domain/employee";
+export * from "./domain/equipment";
+export * from "./domain/history";
+export * from "./domain/report";
+export * from "./domain/tire";
+export * from "./domain/user";
+
+// Export shared types
+export * from "./shared/catalogs";
+export * from "./shared/contact";
+export * from "./shared/enums";
+export * from "./shared/location";
+export * from "./shared/shared";

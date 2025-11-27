@@ -1,4 +1,4 @@
-// filepath: sae-frontend/lib/types/report.ts
+// filepath: sae-frontend/lib/types/domain/report.ts
 
 export enum ReportType {
   EMPLOYEE_LIST = "employee_list",

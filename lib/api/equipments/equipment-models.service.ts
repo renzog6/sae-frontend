@@ -1,29 +1,39 @@
 //filepath: sae-frontend/lib/api/equipments/equipment-models.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { ApiResponse, PaginatedResponse } from "@/lib/types/api";
-import { unwrap } from "@/lib/api/utils";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   EquipmentModel,
   CreateEquipmentModelDto,
   UpdateEquipmentModelDto,
-} from "@/lib/types/equipment";
+} from "@/lib/types/domain/equipment";
+
+// Interface específica para modelos de equipo
+interface EquipmentModelsQueryParams extends BaseQueryParams {
+  typeId?: number;
+}
 
 export class EquipmentModelsService {
   private static basePath = "/equipments/models";
 
-  static async getAll(params?: {
-    typeId?: number;
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<EquipmentModel>> {
-    const query = new URLSearchParams();
-    if (params?.typeId) query.set("typeId", String(params.typeId));
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
+  static async getAll(
+    filter?: EquipmentModelsQueryParams
+  ): Promise<PaginatedResponse<EquipmentModel>> {
+    // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+    const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+
+    // 2. Filtros específicos de documentos
+    const specificParams = {
+      typeId: filter?.typeId,
+    };
+    const specificQuery = QueryBuilder.buildSpecific(specificParams);
+
+    // 3. Combinar URLs
+    const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+
     const response = await ApiClient.get<PaginatedResponse<EquipmentModel>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
+      finalUrl
     );
     return response;
   }

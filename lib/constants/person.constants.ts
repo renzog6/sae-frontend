@@ -1,4 +1,4 @@
-import { Gender, MaritalStatus, PersonStatus } from "@/lib/types/enums";
+import { Gender, MaritalStatus, PersonStatus } from "@/lib/types/shared/enums";
 
 export const genderLabels: Record<Gender, string> = {
   [Gender.MALE]: "Masculino",

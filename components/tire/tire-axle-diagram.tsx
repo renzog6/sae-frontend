@@ -4,10 +4,10 @@
 import React, { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Settings } from "lucide-react";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { EquipmentAxle } from "@/lib/types/equipment";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { EquipmentAxle } from "@/lib/types/domain/equipment";
 import { tireStatusColors } from "@/lib/utils/tires";
-import { TireSide } from "@/lib/types/enums";
+import { TireSide } from "@/lib/types/shared/enums";
 
 interface Props {
   axles: EquipmentAxle[];

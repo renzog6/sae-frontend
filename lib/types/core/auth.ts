@@ -1,5 +1,5 @@
-// filepath: sae-frontend/types/auth.ts
-import { User } from "./user";
+// filepath: sae-frontend/lib/types/core/auth.ts
+import { User } from "../domain/user";
 
 export interface LoginCredentials {
   email: string;

@@ -20,8 +20,8 @@ import {
   UpdateEquipmentModelDto,
   CreateEquipmentDto,
   UpdateEquipmentDto,
-} from "@/lib/types/equipment";
-import { PaginatedResponse } from "@/lib/types/api";
+} from "@/lib/types/domain/equipment";
+import { PaginatedResponse } from "@/lib/types/core/api";
 
 // ===== EQUIPMENT AXLES =====
 

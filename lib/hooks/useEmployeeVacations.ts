@@ -10,7 +10,7 @@ import {
   EmployeeVacation,
   CreateEmployeeVacationDto,
   UpdateEmployeeVacationDto,
-} from "@/lib/types/employee";
+} from "@/lib/types/domain/employee";
 
 export function useEmployeeVacations(page?: number, limit?: number) {
   return useQuery<EmployeeVacation[], Error>({

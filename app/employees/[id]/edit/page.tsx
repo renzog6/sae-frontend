@@ -32,7 +32,7 @@ import {
   EmployeeStatus,
   Gender,
   MaritalStatus,
-} from "@/lib/types/employee";
+} from "@/lib/types/domain/employee";
 import {
   employeeToUpdateForm,
   updateEmployeeSchema,
@@ -170,7 +170,7 @@ export default function EmployeeDetailPage() {
     setSaving(true);
     setError(null);
     try {
-      await PersonsService.updatePerson(
+      await PersonsService.update(
         personId,
         data as unknown as UpdatePersonFormData
       );

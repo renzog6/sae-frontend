@@ -19,14 +19,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { Tire } from "@/lib/types/tire";
-import { TireStatus } from "@/lib/types/enums";
+import type { Tire } from "@/lib/types/domain/tire";
+import { TireStatus } from "@/lib/types/shared/enums";
 import { useTires } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table";
 import { getTireColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 type StatusFilter = "ALL" | TireStatus;
 

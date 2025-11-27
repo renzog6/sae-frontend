@@ -1,7 +1,7 @@
 //filepath: /sae-frontend/lib/api/apiClient.ts
 
 import { getSession, signOut } from "next-auth/react";
-import { AuthResponse, LoginCredentials } from "@/lib/types/auth";
+import { AuthResponse, LoginCredentials } from "@/lib/types/core/auth";
 
 // Detecta entorno automáticamente
 const API_BASE_URL =

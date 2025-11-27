@@ -5,7 +5,7 @@ import type { ColumnDef, Row } from "@tanstack/react-table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import type { Tire } from "@/lib/types/tire";
+import type { Tire } from "@/lib/types/domain/tire";
 
 export function getTireColumns(): ColumnDef<Tire>[] {
   return [

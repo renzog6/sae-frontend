@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { CityForm } from "@/components/forms/city-form";
 import { useCreateCity, useUpdateCity } from "@/lib/hooks/useLocations";
-import type { City } from "@/lib/types/location";
+import type { City } from "@/lib/types/shared/location";
 import type { CityFormData } from "@/lib/validations/location";
 import { motion, useReducedMotion } from "framer-motion";
 import { useToast } from "@/components/ui/toaster";

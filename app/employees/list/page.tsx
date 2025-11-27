@@ -13,17 +13,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { Employee } from "@/lib/types/employee";
-import { EmployeeStatus } from "@/lib/types/employee";
+import type { Employee } from "@/lib/types/domain/employee";
+import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table";
 import { useGenerateReport } from "@/lib/hooks/useReports";
-import { ReportType } from "@/lib/types/report";
+import { ReportType } from "@/lib/types/domain/report";
 
 import { getEmployeeColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 type StatusFilter = "ALL" | EmployeeStatus;
 

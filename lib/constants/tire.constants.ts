@@ -4,7 +4,7 @@ import {
   TireEventType,
   AxleType,
   TireSide,
-} from "@/lib/types/enums";
+} from "@/lib/types/shared/enums";
 
 // Tire status labels
 export const tireStatusLabels: Record<TireStatus, string> = {

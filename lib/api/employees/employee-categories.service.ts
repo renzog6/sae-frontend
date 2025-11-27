@@ -1,26 +1,21 @@
 //filepath: sae-frontend/lib/api/employees/employee-categories.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   EmployeeCategory,
   CreateEmployeeCategoryDto,
   UpdateEmployeeCategoryDto,
-} from "@/lib/types/employee";
+} from "@/lib/types/domain/employee";
 
 export class EmployeeCategoriesService {
   private static basePath = "/employee-categories";
 
-  static async getAll(params?: {
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<EmployeeCategory>> {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
+  static async getAll(query?: BaseQueryParams) {
+    const url = QueryBuilder.buildUrl(this.basePath, query);
     const response = await ApiClient.get<PaginatedResponse<EmployeeCategory>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
+      url
     );
     return response;
   }

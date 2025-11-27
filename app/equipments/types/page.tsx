@@ -18,12 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { EquipmentType } from "@/lib/types/equipment";
+import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table";
 import { getEquipmentTypeColumns } from "./columns";
 import { EquipmentTypeDialog } from "@/components/equipment/equipment-type-dialog";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EquipmentTypesPage() {
   // Pagination state

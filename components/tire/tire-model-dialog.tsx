@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { TireModel } from "@/lib/types/tire";
+import type { TireModel } from "@/lib/types/domain/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { TireModelForm } from "@/components/forms/tire-model-form";

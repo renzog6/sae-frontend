@@ -1,5 +1,5 @@
-// file: sae-frontend/types/contact.ts
-import { PaginatedResponse } from "./api";
+// filepath: sae-frontend/lib/types/shared/contact.ts
+import { PaginatedResponse } from "../core/api";
 
 export enum ContactType {
   EMAIL = "EMAIL",

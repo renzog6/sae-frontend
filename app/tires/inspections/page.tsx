@@ -12,23 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, Search } from "lucide-react";
 import { useTireInspections } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireInspectionColumns } from "./columns";
 
 export default function TireInspectionsPage() {
@@ -67,6 +53,7 @@ export default function TireInspectionsPage() {
     ? inspectionsData
     : (inspectionsData as any)?.data ?? [];
   const totalPages = (inspectionsData as any)?.meta?.totalPages ?? 1;
+  const totalItems = (inspectionsData as any)?.meta?.total ?? 0;
 
   const columns = useMemo(() => getTireInspectionColumns(), []);
 
@@ -95,44 +82,7 @@ export default function TireInspectionsPage() {
               />
             </div>
             <div className="flex gap-2">
-              {/* Page size selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[120px] justify-between"
-                  >
-                    <span className="mr-2">📊</span> {limit}/pág
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(10);
-                    }}
-                  >
-                    10
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(50);
-                    }}
-                  >
-                    50
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(100);
-                    }}
-                  >
-                    100
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Page size selector is now in PaginationBar */}
             </div>
           </div>
         </CardHeader>
@@ -145,36 +95,17 @@ export default function TireInspectionsPage() {
             <DataTable columns={columns} data={inspections} />
           )}
           {/* Pagination controls */}
-          <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        isActive={p === page}
-                        onClick={() => setPage(p)}
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setPage(1);
+              setLimit(newLimit);
+            }}
+          />
         </CardContent>
       </Card>
     </div>

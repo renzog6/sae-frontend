@@ -1,19 +1,18 @@
-// filepath: sae-frontend/types/history.ts
+// filepath: sae-frontend/lib/types/domain/history.ts
 
 // Import enums from shared location
 import {
   EmployeeIncidentType,
   HistoryType,
   SeverityLevel,
-  MaintenanceType,
-  InspectionType,
-} from "./enums";
-import { Equipment } from "./equipment";
-import { Person } from "./employee";
-import { Company } from "./company";
+} from "../shared/enums";
 
 // Re-export enums for backward compatibility
-export { EmployeeIncidentType, HistoryType, SeverityLevel } from "./enums";
+export {
+  EmployeeIncidentType,
+  HistoryType,
+  SeverityLevel,
+} from "../shared/enums";
 
 export interface EmployeeIncident {
   id: number;

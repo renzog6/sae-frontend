@@ -1,13 +1,9 @@
-// filepath: sae-frontend/types/equipment.ts
+// filepath: sae-frontend/lib/types/domain/equipment.ts
 
 // Import shared types and enums
-import {
-  Brand,
-  Inspection,
-  EquipmentMaintenance,
-  EquipmentPart,
-} from "./shared";
-import { AxleType, EquipmentStatus } from "./enums";
+import { Inspection, EquipmentMaintenance } from "../shared/shared";
+import { Brand } from "../shared/catalogs";
+import { AxleType, EquipmentStatus } from "../shared/enums";
 import { Company } from "./company";
 import { TirePositionConfig } from "./tire";
 
@@ -156,3 +152,41 @@ export type CreateEquipmentDto = {
 };
 
 export type UpdateEquipmentDto = Partial<CreateEquipmentDto>;
+
+// ===== Junction table types =====
+
+export interface EquipmentModelPart {
+  modelId: number;
+  partId: number;
+  createdAt: string;
+  model: EquipmentModel;
+  part: import("../shared/shared").Part;
+}
+
+export interface EquipmentPart {
+  equipmentId: number;
+  partId: number;
+  quantity?: number | null;
+  createdAt: string;
+  part: import("../shared/shared").Part;
+  equipment: Equipment;
+}
+
+// ===== DTOs for junction tables =====
+
+export interface CreateEquipmentModelPartDto {
+  modelId: number;
+  partId: number;
+}
+
+export interface UpdateEquipmentModelPartDto
+  extends Partial<CreateEquipmentModelPartDto> {}
+
+export interface CreateEquipmentPartDto {
+  equipmentId: number;
+  partId: number;
+  quantity?: number;
+}
+
+export interface UpdateEquipmentPartDto
+  extends Partial<CreateEquipmentPartDto> {}

@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/api/locations.ts
 import { ApiClient } from "./apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { City, Province, Address } from "@/lib/types/location";
+import { PaginatedResponse } from "@/lib/types/core/api";
+import { City, Province, Address } from "@/lib/types/shared/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
 export class LocationsService {

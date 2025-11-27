@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/hooks/useLocations.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { LocationsService } from "@/lib/api/locations";
-import { City, Province, Address } from "@/lib/types/location";
+import { City, Province, Address } from "@/lib/types/shared/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
 // List all cities

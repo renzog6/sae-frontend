@@ -1,17 +1,22 @@
 // filepath: sae-frontend/lib/api/users.ts
 import { ApiClient } from "./apiClient";
-import { User } from "@/lib/types/user";
-import { PaginatedResponse, ApiResponse } from "@/lib/types/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { User } from "@/lib/types/domain/user";
 import { UserFormData } from "@/lib/validations/auth";
 
 export class UsersService {
   private static basePath = "/users";
 
-  static async getUsers(): Promise<PaginatedResponse<User>> {
+  static async getAll(query?: BaseQueryParams) {
     try {
-      const response = await ApiClient.get<PaginatedResponse<User>>(
-        this.basePath
-      );
+      const url = QueryBuilder.buildUrl(this.basePath, query);
+      const response = await ApiClient.get<PaginatedResponse<User>>(url);
+
       return response;
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -19,40 +24,45 @@ export class UsersService {
     }
   }
 
-  static async getUserById(id: number): Promise<User> {
+  static async getById(id: number): Promise<User> {
     try {
-      const response = await ApiClient.get<User>(`${this.basePath}/${id}`);
-      return response;
+      const response = await ApiClient.get<ApiResponse<User>>(
+        `${this.basePath}/${id}`
+      );
+      return response.data;
     } catch (error) {
       console.error(`Error fetching user with ID ${id}:`, error);
       throw error;
     }
   }
 
-  static async createUser(userData: UserFormData): Promise<User> {
+  static async create(userData: UserFormData): Promise<User> {
     try {
-      const response = await ApiClient.post<User>(this.basePath, userData);
-      return response;
+      const response = await ApiClient.post<ApiResponse<User>>(
+        this.basePath,
+        userData
+      );
+      return response.data;
     } catch (error) {
       console.error("Error creating user:", error);
       throw error;
     }
   }
 
-  static async updateUser(id: number, userData: Partial<User>): Promise<User> {
+  static async update(id: number, userData: Partial<User>): Promise<User> {
     try {
-      const response = await ApiClient.put<User>(
+      const response = await ApiClient.put<ApiResponse<User>>(
         `${this.basePath}/${id}`,
         userData
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
     }
   }
 
-  static async deleteUser(id: number): Promise<void> {
+  static async delete(id: number): Promise<void> {
     try {
       await ApiClient.delete<void>(`${this.basePath}/${id}`);
     } catch (error) {

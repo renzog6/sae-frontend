@@ -1,4 +1,5 @@
-import { EmployeeStatus, VacationType } from "@/lib/types/enums";
+// filepath: sae-frontend/lib/constants/employee.constants.ts
+import { EmployeeStatus, VacationType } from "@/lib/types/shared/enums";
 
 export const employeeStatusLabels: Record<EmployeeStatus, string> = {
   [EmployeeStatus.ACTIVE]: "Activo",

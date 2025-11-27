@@ -11,12 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { City } from "@/lib/types/location";
+import { City } from "@/lib/types/shared/location";
 import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "@/components/data-table";
 import { getCityColumns } from "./columns";
-import { PaginationBar } from "@/components/table/pagination-bar";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
 import {
   AlertDialog,
   AlertDialogAction,

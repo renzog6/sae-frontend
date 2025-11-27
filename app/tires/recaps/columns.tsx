@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { TireRecap } from "@/lib/types/tire";
+import type { TireRecap } from "@/lib/types/domain/tire";
 
 export function getTireRecapColumns(): ColumnDef<TireRecap>[] {
   return [

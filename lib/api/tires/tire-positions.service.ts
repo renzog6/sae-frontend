@@ -1,8 +1,8 @@
 //filepath: sae-frontend/lib/api/tires/tire-positions.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/api";
-import { TirePositionConfig } from "@/lib/types/tire";
+import { PaginatedResponse } from "@/lib/types/core/api";
+import { TirePositionConfig } from "@/lib/types/domain/tire";
 
 // ===== TIRE POSITION =====
 

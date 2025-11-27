@@ -26,9 +26,9 @@ import { AxleDiagram } from "../tire/tire-axle-diagram";
 import { EquipmentSelector } from "@/components/equipment/equipment-selector";
 import { useEquipmentList } from "@/lib/hooks/useEquipments";
 import { axleTypeLabels } from "@/lib/constants";
-import { AxleType, TireSide } from "@/lib/types/enums";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { Equipment, EquipmentAxle } from "@/lib/types/equipment";
+import { AxleType, TireSide } from "@/lib/types/shared/enums";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { Equipment, EquipmentAxle } from "@/lib/types/domain/equipment";
 import { EquipmentAxlesService } from "@/lib/api/equipments";
 import {
   useEquipmentAxles,

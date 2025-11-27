@@ -2,7 +2,7 @@
 "use client";
 
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { Brand } from "@/lib/types/catalog";
+import type { Brand } from "@/lib/types/shared/catalogs";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 

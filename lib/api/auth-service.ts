@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { ApiClient } from "./apiClient";
-import { LoginCredentials, AuthResponse } from "@/lib/types/auth";
+import { LoginCredentials, AuthResponse } from "@/lib/types/core/auth";
 
 export class AuthService {
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {

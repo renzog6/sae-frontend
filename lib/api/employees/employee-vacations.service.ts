@@ -1,27 +1,19 @@
 //filepath: sae-frontend/lib/api/employees/employee-vacations.service.ts
-
 import { ApiClient } from "@/lib/api/apiClient";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   EmployeeVacation,
   CreateEmployeeVacationDto,
   UpdateEmployeeVacationDto,
-} from "@/lib/types/employee";
-import { PaginatedResponse } from "@/lib/types/api";
+} from "@/lib/types/domain/employee";
 
 export class EmployeeVacationsService {
   private static basePath = "/employee-vacations";
 
-  static async getAll(params?: {
-    page?: number;
-    limit?: number;
-  }): Promise<EmployeeVacation[]> {
+  static async getAll(query?: BaseQueryParams) {
     try {
-      const query = new URLSearchParams();
-      if (params?.page) query.append("page", params.page.toString());
-      if (params?.limit) query.append("limit", params.limit.toString());
-      const url = `${this.basePath}${
-        query.toString() ? `?${query.toString()}` : ""
-      }`;
+      const url = QueryBuilder.buildUrl(this.basePath, query);
       const response = await ApiClient.get<PaginatedResponse<EmployeeVacation>>(
         url
       );

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Download } from "lucide-react";
-import { ReportFormat, ReportType } from "@/lib/types/report";
+import { ReportFormat, ReportType } from "@/lib/types/domain/report";
 import { useGenerateReport } from "@/lib/hooks/useReports";
 import { toast } from "sonner";
 

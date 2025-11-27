@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { EmployeeCategory } from "@/lib/types/employee";
+import type { EmployeeCategory } from "@/lib/types/domain/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EmployeeCategoryForm } from "@/components/forms/employee-category-form";

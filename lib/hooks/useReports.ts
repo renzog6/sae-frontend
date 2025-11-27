@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { ReportsService } from "@/lib/api/reports";
-import { GenerateReportDto } from "@/lib/types/report";
+import { GenerateReportDto } from "@/lib/types/domain/report";
 
 export function useGenerateReport() {
   return useMutation({

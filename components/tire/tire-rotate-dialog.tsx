@@ -30,8 +30,8 @@ import {
   useTireAssignments,
 } from "@/lib/hooks/useTires";
 import { useEquipmentList } from "@/lib/hooks/useEquipments";
-import type { TirePositionConfig } from "@/lib/types/tire";
-import type { Equipment } from "@/lib/types/equipment";
+import type { TirePositionConfig } from "@/lib/types/domain/tire";
+import type { Equipment } from "@/lib/types/domain/equipment";
 
 interface Props {
   open: boolean;

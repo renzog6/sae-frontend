@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Truck } from "lucide-react";
-import type { Equipment } from "@/lib/types/equipment";
+import type { Equipment } from "@/lib/types/domain/equipment";
 import { useState } from "react";
 
 interface EquipmentSelectorDialogProps {
