@@ -1,6 +1,7 @@
 // file: sae-frontend/lib/api/contacts.ts
 import { ApiClient } from "./apiClient";
 import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { Contact } from "@/lib/types/shared/contact";
 import {
   ContactFormData,
@@ -11,13 +12,8 @@ export class ContactsService {
   private static basePath = "/contacts";
 
   static async getContacts(params?: { page?: number; limit?: number }) {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
-    const response = await ApiClient.get<PaginatedResponse<Contact>>(
-      `${this.basePath}${qs ? `?${qs}` : ""}`
-    );
+    const url = QueryBuilder.buildUrl(this.basePath, params);
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(url);
     return response;
   }
 
@@ -25,13 +21,9 @@ export class ContactsService {
     companyId: number,
     params?: { page?: number; limit?: number }
   ) {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
-    const response = await ApiClient.get<PaginatedResponse<Contact>>(
-      `${this.basePath}/company/${companyId}${qs ? `?${qs}` : ""}`
-    );
+    const baseUrl = `${this.basePath}/company/${companyId}`;
+    const url = QueryBuilder.buildUrl(baseUrl, params);
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(url);
     return response;
   }
 
@@ -39,13 +31,9 @@ export class ContactsService {
     personId: number,
     params?: { page?: number; limit?: number }
   ) {
-    const query = new URLSearchParams();
-    if (params?.page) query.set("page", String(params.page));
-    if (params?.limit) query.set("limit", String(params.limit));
-    const qs = query.toString();
-    const response = await ApiClient.get<PaginatedResponse<Contact>>(
-      `${this.basePath}/person/${personId}${qs ? `?${qs}` : ""}`
-    );
+    const baseUrl = `${this.basePath}/person/${personId}`;
+    const url = QueryBuilder.buildUrl(baseUrl, params);
+    const response = await ApiClient.get<PaginatedResponse<Contact>>(url);
     return response;
   }
 
