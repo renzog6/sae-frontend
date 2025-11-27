@@ -1,7 +1,12 @@
 // filepath: sae-frontend/lib/api/companies/business-categories.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { BusinessCategory } from "@/lib/types/domain/company";
 import {
   BusinessCategoryFormData,
@@ -12,49 +17,91 @@ export class BusinessCategoriesService {
   private static basePath = "/companies/categories";
 
   static async getAll(query?: BaseQueryParams) {
-    const url = QueryBuilder.buildUrl(this.basePath, query);
-    const response = await ApiClient.get<PaginatedResponse<BusinessCategory>>(
-      url
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<
+          PaginatedResponse<BusinessCategory>
+        >(url);
+        return response;
+      },
+      "BusinessCategoriesService",
+      "getAll",
+      { query }
     );
-    return response;
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<{ data: BusinessCategory }>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<BusinessCategory>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "BusinessCategoriesService",
+      "getById",
+      { id }
     );
-    return response.data;
   }
 
   static async create(data: BusinessCategoryFormData) {
-    const response = await ApiClient.post<{ data: BusinessCategory }>(
-      this.basePath,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<BusinessCategory>>(
+          this.basePath,
+          data
+        );
+        return response.data;
+      },
+      "BusinessCategoriesService",
+      "create",
+      { data }
     );
-    return response.data;
   }
 
   static async update(id: number, data: UpdateBusinessCategoryFormData) {
-    const response = await ApiClient.put<{ data: BusinessCategory }>(
-      `${this.basePath}/${id}`,
-      data
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<BusinessCategory>>(
+          `${this.basePath}/${id}`,
+          data
+        );
+        return response.data;
+      },
+      "BusinessCategoriesService",
+      "update",
+      { id, data }
     );
-    return response.data;
   }
 
   static async delete(id: number) {
-    const response = await ApiClient.delete<{ data: string }>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.delete<ApiResponse<string>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "BusinessCategoriesService",
+      "delete",
+      { id }
     );
-    return response.data;
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.put<{ data: BusinessCategory }>(
-      `${this.basePath}/${id}/restore`,
-      {}
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<BusinessCategory>>(
+          `${this.basePath}/${id}/restore`,
+          {}
+        );
+        return response.data;
+      },
+      "BusinessCategoriesService",
+      "restore",
+      { id }
     );
-    return response.data;
   }
 
   // Backward compatibility methods

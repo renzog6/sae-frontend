@@ -1,4 +1,4 @@
-// lib/utils/api-error-handler.ts
+// filepath: sae-frontend/lib/utils/api-error-handler.ts
 import { getSession } from "next-auth/react";
 import { logger } from "./logger";
 

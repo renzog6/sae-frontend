@@ -1,7 +1,8 @@
 //filepath: sae-frontend/lib/api/tires/tire-rotations.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   TireRotation,
   CreateTireRotationDto,
@@ -12,41 +13,85 @@ export class TireRotationsService {
   private static basePath = "/tires/rotations";
 
   static async getAll() {
-    const response = await ApiClient.get<PaginatedResponse<TireRotation>>(
-      this.basePath
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<PaginatedResponse<TireRotation>>(
+          this.basePath
+        );
+        return response;
+      },
+      "TireRotationsService",
+      "getAll"
     );
-    return response;
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<TireRotation>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<TireRotation>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "TireRotationsService",
+      "getById",
+      { id }
     );
-    return response;
   }
 
   static async getByTire(tireId: number) {
-    const response = await ApiClient.get<TireRotation[]>(
-      `${this.basePath}/tire/${tireId}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<TireRotation[]>(
+          `${this.basePath}/tire/${tireId}`
+        );
+        return response;
+      },
+      "TireRotationsService",
+      "getByTire",
+      { tireId }
     );
-    return response;
   }
 
   static async create(dto: CreateTireRotationDto) {
-    const response = await ApiClient.post<TireRotation>(this.basePath, dto);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<TireRotation>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "TireRotationsService",
+      "create",
+      { dto }
+    );
   }
 
   static async update(id: number, dto: UpdateTireRotationDto) {
-    const response = await ApiClient.put<TireRotation>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<TireRotation>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "TireRotationsService",
+      "update",
+      { id, dto }
     );
-    return response;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Tire rotation deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Tire rotation deleted";
+      },
+      "TireRotationsService",
+      "delete",
+      { id }
+    );
   }
 }

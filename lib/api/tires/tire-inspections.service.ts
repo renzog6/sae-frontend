@@ -1,7 +1,8 @@
 //filepath: sae-frontend/lib/api/tires/tire-inspections.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   TireInspection,
   CreateTireInspectionDto,
@@ -12,50 +13,95 @@ export class TireInspectionsService {
   private static basePath = "/tires/inspections";
 
   static async getAll(params?: { page?: number; limit?: number; q?: string }) {
-    const queryParams = new URLSearchParams();
-    if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.limit) queryParams.append("limit", params.limit.toString());
-    if (params?.q) queryParams.append("q", params.q);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const queryParams = new URLSearchParams();
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        if (params?.q) queryParams.append("q", params.q);
 
-    const url = queryParams.toString()
-      ? `${this.basePath}?${queryParams.toString()}`
-      : this.basePath;
+        const url = queryParams.toString()
+          ? `${this.basePath}?${queryParams.toString()}`
+          : this.basePath;
 
-    const response = await ApiClient.get<PaginatedResponse<TireInspection>>(
-      url
+        const response = await ApiClient.get<PaginatedResponse<TireInspection>>(
+          url
+        );
+        return response;
+      },
+      "TireInspectionsService",
+      "getAll",
+      { params }
     );
-    return response;
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<TireInspection>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<TireInspection>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "TireInspectionsService",
+      "getById",
+      { id }
     );
-    return response;
   }
 
   static async getByTire(tireId: number) {
-    const response = await ApiClient.get<TireInspection[]>(
-      `${this.basePath}/tire/${tireId}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<TireInspection[]>(
+          `${this.basePath}/tire/${tireId}`
+        );
+        return response;
+      },
+      "TireInspectionsService",
+      "getByTire",
+      { tireId }
     );
-    return response;
   }
 
   static async create(dto: CreateTireInspectionDto) {
-    const response = await ApiClient.post<TireInspection>(this.basePath, dto);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<TireInspection>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "TireInspectionsService",
+      "create",
+      { dto }
+    );
   }
 
   static async update(id: number, dto: UpdateTireInspectionDto) {
-    const response = await ApiClient.put<TireInspection>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<TireInspection>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "TireInspectionsService",
+      "update",
+      { id, dto }
     );
-    return response;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Tire inspection deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Tire inspection deleted";
+      },
+      "TireInspectionsService",
+      "delete",
+      { id }
+    );
   }
 }

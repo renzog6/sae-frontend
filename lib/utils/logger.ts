@@ -1,4 +1,4 @@
-// lib/utils/logger.ts
+// filepath: sae-frontend/lib/utils/logger.ts
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogEntry {

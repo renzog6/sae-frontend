@@ -34,14 +34,6 @@
 
 ## Recomendaciones de Estandarización Adicional
 
-### 1. Query Building Unificado
-
-Migrar `contacts.ts` y `locations.ts` a usar `QueryBuilder.buildUrl()` en lugar de construcción manual.
-
-### 2. Estilo de Exports Consistente
-
-Cambiar `catalogs/index.ts` a usar `export *` para consistencia.
-
 ### 3. Manejo de Errores Estandarizado
 
 - Crear utilidad común para try-catch con logging consistente
@@ -56,12 +48,6 @@ Implementar clase base abstracta que incluya:
 - Manejo de errores consistente
 - Logging automático
 - Paths base consistentes
-
-### 5. Convenciones de Naming
-
-- Estandarizar nombres de métodos: `getAll`, `getById`, `create`, `update`, `delete`
-- Remover métodos de compatibilidad backward
-- Usar nombres descriptivos pero consistentes
 
 ### 6. Documentación
 
@@ -103,20 +89,3 @@ Implementar clase base abstracta que incluya:
 - Agregar documentación completa
 - Crear tests para validar consistencia
 - Actualizar README con guías de uso
-
-## Beneficios Esperados
-
-1. **Reducción de Boilerplate**: Base class reduce código duplicado
-2. **Consistencia Total**: Comportamiento predecible en todos los servicios
-3. **Mantenibilidad**: Cambios centralizados afectan todos los servicios
-4. **Developer Experience**: API más intuitiva y fácil de usar
-5. **Type Safety**: Mejor tipado previene errores en runtime
-6. **Debugging**: Error handling consistente facilita troubleshooting
-
-## Priorización
-
-- **Alta**: Query building, Base service class, Error handling
-- **Media**: Exports, Naming conventions
-- **Baja**: Documentación adicional (después de implementación)
-
-Esta estandarización completa transformará la API en un sistema robusto, mantenible y escalable.

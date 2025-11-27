@@ -1,7 +1,12 @@
 //filepath: sae-frontend/lib/api/employees/employee-vacations.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   EmployeeVacation,
   CreateEmployeeVacationDto,
@@ -12,77 +17,94 @@ export class EmployeeVacationsService {
   private static basePath = "/employee-vacations";
 
   static async getAll(query?: BaseQueryParams) {
-    try {
-      const url = QueryBuilder.buildUrl(this.basePath, query);
-      const response = await ApiClient.get<PaginatedResponse<EmployeeVacation>>(
-        url
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error("Error fetching employee vacations:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<
+          PaginatedResponse<EmployeeVacation>
+        >(url);
+        return response.data || [];
+      },
+      "EmployeeVacationsService",
+      "getAll",
+      { query }
+    );
   }
 
   static async getById(id: number): Promise<EmployeeVacation> {
-    try {
-      const response = await ApiClient.get<EmployeeVacation>(
-        `${this.basePath}/${id}`
-      );
-      return response;
-    } catch (error) {
-      console.error(`Error fetching employee vacation with ID ${id}:`, error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<EmployeeVacation>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "EmployeeVacationsService",
+      "getById",
+      { id }
+    );
   }
 
   static async create(dto: CreateEmployeeVacationDto) {
-    try {
-      const response = await ApiClient.post<EmployeeVacation>(
-        this.basePath,
-        dto
-      );
-      return response;
-    } catch (error) {
-      console.error("Error creating vacation:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<EmployeeVacation>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "EmployeeVacationsService",
+      "create",
+      { dto }
+    );
   }
 
   static async update(id: number, dto: UpdateEmployeeVacationDto) {
-    try {
-      const response = await ApiClient.put<EmployeeVacation>(
-        `${this.basePath}/${id}`,
-        dto
-      );
-      return response;
-    } catch (error) {
-      console.error("Error updating vacation:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<EmployeeVacation>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "EmployeeVacationsService",
+      "update",
+      { id, dto }
+    );
   }
 
   static async delete(id: number): Promise<string> {
-    try {
-      await ApiClient.delete(`${this.basePath}/${id}`);
-      return "Vacation deleted";
-    } catch (error) {
-      console.error("Error deleting vacation:", error);
-      throw error;
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Vacation deleted";
+      },
+      "EmployeeVacationsService",
+      "delete",
+      { id }
+    );
   }
 
   static async downloadPdf(id: number) {
-    const blob = await ApiClient.getBlob(`${this.basePath}/${id}/pdf`);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const blob = await ApiClient.getBlob(`${this.basePath}/${id}/pdf`);
 
-    const filename = `Vacaciones_${id}.pdf`;
-    const link = document.createElement("a");
-    const blobUrl = URL.createObjectURL(blob);
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(blobUrl);
+        const filename = `Vacaciones_${id}.pdf`;
+        const link = document.createElement("a");
+        const blobUrl = URL.createObjectURL(blob);
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
+      },
+      "EmployeeVacationsService",
+      "downloadPdf",
+      { id }
+    );
   }
 }

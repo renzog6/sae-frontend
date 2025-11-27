@@ -1,7 +1,8 @@
 //filepath: sae-frontend/lib/api/tires/tire-positions.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { TirePositionConfig } from "@/lib/types/domain/tire";
 
 // ===== TIRE POSITION =====
@@ -10,27 +11,48 @@ export class TirePositionsService {
   private static basePath = "/tires/positions";
 
   static async getAll(params: { axleId?: number } = {}) {
-    const query = new URLSearchParams();
-    if (params.axleId) query.append("axleId", params.axleId.toString());
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const query = new URLSearchParams();
+        if (params.axleId) query.append("axleId", params.axleId.toString());
 
-    const response = await ApiClient.get<PaginatedResponse<TirePositionConfig>>(
-      `${this.basePath}?${query.toString()}`
+        const response = await ApiClient.get<
+          PaginatedResponse<TirePositionConfig>
+        >(`${this.basePath}?${query.toString()}`);
+        return response;
+      },
+      "TirePositionConfigsService",
+      "getAll",
+      { params }
     );
-    return response;
   }
 
   static async getByEquipment(equipmentId: number) {
-    const response = await ApiClient.get<TirePositionConfig[]>(
-      `/equipments/axles/positions/equipment/${equipmentId}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<TirePositionConfig[]>(
+          `/equipments/axles/positions/equipment/${equipmentId}`
+        );
+        return response;
+      },
+      "TirePositionConfigsService",
+      "getByEquipment",
+      { equipmentId }
     );
-    return response;
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<TirePositionConfig>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<TirePositionConfig>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "TirePositionConfigsService",
+      "getById",
+      { id }
     );
-    return response;
   }
 
   static async create(dto: {
@@ -39,11 +61,18 @@ export class TirePositionsService {
     side: string;
     isDual: boolean;
   }) {
-    const response = await ApiClient.post<TirePositionConfig>(
-      this.basePath,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<TirePositionConfig>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "TirePositionConfigsService",
+      "create",
+      { dto }
     );
-    return response;
   }
 
   static async update(
@@ -55,16 +84,30 @@ export class TirePositionsService {
       isDual: boolean;
     }>
   ) {
-    const response = await ApiClient.put<TirePositionConfig>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<TirePositionConfig>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "TirePositionConfigsService",
+      "update",
+      { id, dto }
     );
-    return response;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Tire position config deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Tire position config deleted";
+      },
+      "TirePositionConfigsService",
+      "delete",
+      { id }
+    );
   }
 }
 
@@ -74,27 +117,48 @@ export class TirePositionConfigsService {
   private static basePath = "/tires/positions";
 
   static async getAll(params: { axleId?: number } = {}) {
-    const query = new URLSearchParams();
-    if (params.axleId) query.append("axleId", params.axleId.toString());
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const query = new URLSearchParams();
+        if (params.axleId) query.append("axleId", params.axleId.toString());
 
-    const response = await ApiClient.get<PaginatedResponse<TirePositionConfig>>(
-      `${this.basePath}?${query.toString()}`
+        const response = await ApiClient.get<
+          PaginatedResponse<TirePositionConfig>
+        >(`${this.basePath}?${query.toString()}`);
+        return response;
+      },
+      "TirePositionsService",
+      "getAll",
+      { params }
     );
-    return response;
   }
 
   static async getByEquipment(equipmentId: number) {
-    const response = await ApiClient.get<TirePositionConfig[]>(
-      `/equipments/axles/positions/equipment/${equipmentId}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<TirePositionConfig[]>(
+          `/equipments/axles/positions/equipment/${equipmentId}`
+        );
+        return response;
+      },
+      "TirePositionsService",
+      "getByEquipment",
+      { equipmentId }
     );
-    return response;
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<TirePositionConfig>(
-      `${this.basePath}/${id}`
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<TirePositionConfig>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "TirePositionsService",
+      "getById",
+      { id }
     );
-    return response;
   }
 
   static async create(dto: {
@@ -103,11 +167,18 @@ export class TirePositionConfigsService {
     side: string;
     isDual: boolean;
   }) {
-    const response = await ApiClient.post<TirePositionConfig>(
-      this.basePath,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<TirePositionConfig>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "TirePositionsService",
+      "create",
+      { dto }
     );
-    return response;
   }
 
   static async update(
@@ -119,15 +190,29 @@ export class TirePositionConfigsService {
       isDual: boolean;
     }>
   ) {
-    const response = await ApiClient.put<TirePositionConfig>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<TirePositionConfig>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "TirePositionsService",
+      "update",
+      { id, dto }
     );
-    return response;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Tire position config deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Tire position config deleted";
+      },
+      "TirePositionsService",
+      "delete",
+      { id }
+    );
   }
 }

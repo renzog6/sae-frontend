@@ -1,7 +1,12 @@
 //filepath: sae-frontend/lib/api/tires/tire-assignments.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   TireAssignment,
   MountTireDto,
@@ -21,29 +26,30 @@ export class TireAssignmentsService {
   static async getAll(
     filter?: TireAssignmentsQueryParams
   ): Promise<PaginatedResponse<TireAssignment>> {
-    try {
-      // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
-      const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-      // 2. Filtros específicos de documentos
-      const specificParams = {
-        equipmentId: filter?.equipmentId,
-      };
-      const specificQuery = QueryBuilder.buildSpecific(specificParams);
+        // 2. Filtros específicos de documentos
+        const specificParams = {
+          equipmentId: filter?.equipmentId,
+        };
+        const specificQuery = QueryBuilder.buildSpecific(specificParams);
 
-      // 3. Combinar URLs
-      const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+        // 3. Combinar URLs
+        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
 
-      const response = await ApiClient.get<PaginatedResponse<TireAssignment>>(
-        finalUrl
-      );
+        const response = await ApiClient.get<PaginatedResponse<TireAssignment>>(
+          finalUrl
+        );
 
-      return response;
-    } catch (error) {
-      throw new Error(
-        `Error al obtener asignaciones: ${(error as Error).message}`
-      );
-    }
+        return response;
+      },
+      "TireAssignmentsService",
+      "getAll",
+      { filter }
+    );
   }
 
   /**
@@ -57,22 +63,21 @@ export class TireAssignmentsService {
     equipmentId: number,
     params: { page?: number; limit?: number } = {}
   ): Promise<PaginatedResponse<TireAssignment>> {
-    try {
-      const query = new URLSearchParams();
-      if (params.page) query.append("page", params.page.toString());
-      if (params.limit) query.append("limit", params.limit.toString());
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const query = new URLSearchParams();
+        if (params.page) query.append("page", params.page.toString());
+        if (params.limit) query.append("limit", params.limit.toString());
 
-      const response = await ApiClient.get<PaginatedResponse<TireAssignment>>(
-        `${this.basePath}/open?equipmentId=${equipmentId}&${query.toString()}`
-      );
-      return response;
-    } catch (error) {
-      throw new Error(
-        `Error al obtener asignaciones abiertas para equipo ${equipmentId}: ${
-          (error as Error).message
-        }`
-      );
-    }
+        const response = await ApiClient.get<PaginatedResponse<TireAssignment>>(
+          `${this.basePath}/open?equipmentId=${equipmentId}&${query.toString()}`
+        );
+        return response;
+      },
+      "TireAssignmentsService",
+      "getOpenByEquipment",
+      { equipmentId, params }
+    );
   }
 
   /**
@@ -81,16 +86,16 @@ export class TireAssignmentsService {
    * @throws Error si la solicitud falla
    */
   static async getOpen(): Promise<TireAssignment[]> {
-    try {
-      const response = await ApiClient.get<TireAssignment[]>(
-        `${this.basePath}/open`
-      );
-      return response;
-    } catch (error) {
-      throw new Error(
-        `Error al obtener asignaciones abiertas: ${(error as Error).message}`
-      );
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<TireAssignment[]>(
+          `${this.basePath}/open`
+        );
+        return response;
+      },
+      "TireAssignmentsService",
+      "getOpen"
+    );
   }
 
   /**
@@ -100,16 +105,17 @@ export class TireAssignmentsService {
    * @throws Error si la asignación no existe
    */
   static async getById(id: number): Promise<TireAssignment> {
-    try {
-      const response = await ApiClient.get<TireAssignment>(
-        `${this.basePath}/${id}`
-      );
-      return response;
-    } catch (error) {
-      throw new Error(
-        `Error al obtener asignación ${id}: ${(error as Error).message}`
-      );
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.get<ApiResponse<TireAssignment>>(
+          `${this.basePath}/${id}`
+        );
+        return response.data;
+      },
+      "TireAssignmentsService",
+      "getById",
+      { id }
+    );
   }
 
   /**
@@ -119,15 +125,18 @@ export class TireAssignmentsService {
    * @throws Error si el montaje falla (e.g., posición ocupada)
    */
   static async mount(dto: MountTireDto): Promise<TireAssignment> {
-    try {
-      const response = await ApiClient.post<TireAssignment>(
-        `${this.basePath}/mount`,
-        dto
-      );
-      return response;
-    } catch (error) {
-      throw new Error(`Error al montar neumático: ${(error as Error).message}`);
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<TireAssignment>>(
+          `${this.basePath}/mount`,
+          dto
+        );
+        return response.data;
+      },
+      "TireAssignmentsService",
+      "mount",
+      { dto }
+    );
   }
 
   /**
@@ -141,19 +150,18 @@ export class TireAssignmentsService {
     assignmentId: number,
     dto: UnmountTireDto
   ): Promise<TireAssignment> {
-    try {
-      const response = await ApiClient.put<TireAssignment>(
-        `${this.basePath}/unmount`,
-        dto
-      );
-      return response;
-    } catch (error) {
-      throw new Error(
-        `Error al desmontar asignación ${assignmentId}: ${
-          (error as Error).message
-        }`
-      );
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<TireAssignment>>(
+          `${this.basePath}/unmount`,
+          dto
+        );
+        return response.data;
+      },
+      "TireAssignmentsService",
+      "unmount",
+      { assignmentId, dto }
+    );
   }
 
   /**
@@ -163,13 +171,14 @@ export class TireAssignmentsService {
    * @throws Error si la eliminación falla
    */
   static async delete(id: number): Promise<string> {
-    try {
-      await ApiClient.delete(`${this.basePath}/${id}`);
-      return "Assignment deleted";
-    } catch (error) {
-      throw new Error(
-        `Error al eliminar asignación ${id}: ${(error as Error).message}`
-      );
-    }
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Assignment deleted";
+      },
+      "TireAssignmentsService",
+      "delete",
+      { id }
+    );
   }
 }

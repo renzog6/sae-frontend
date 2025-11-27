@@ -1,8 +1,13 @@
 //filepath: sae-frontend/lib/api/employees/employee-categories.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {
   EmployeeCategory,
   CreateEmployeeCategoryDto,
@@ -13,28 +18,59 @@ export class EmployeeCategoriesService {
   private static basePath = "/employee-categories";
 
   static async getAll(query?: BaseQueryParams) {
-    const url = QueryBuilder.buildUrl(this.basePath, query);
-    const response = await ApiClient.get<PaginatedResponse<EmployeeCategory>>(
-      url
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, query);
+        const response = await ApiClient.get<
+          PaginatedResponse<EmployeeCategory>
+        >(url);
+        return response;
+      },
+      "EmployeeCategoriesService",
+      "getAll",
+      { query }
     );
-    return response;
   }
 
   static async create(dto: CreateEmployeeCategoryDto) {
-    const response = await ApiClient.post<EmployeeCategory>(this.basePath, dto);
-    return response;
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.post<ApiResponse<EmployeeCategory>>(
+          this.basePath,
+          dto
+        );
+        return response.data;
+      },
+      "EmployeeCategoriesService",
+      "create",
+      { dto }
+    );
   }
 
   static async update(id: number, dto: UpdateEmployeeCategoryDto) {
-    const response = await ApiClient.put<EmployeeCategory>(
-      `${this.basePath}/${id}`,
-      dto
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const response = await ApiClient.put<ApiResponse<EmployeeCategory>>(
+          `${this.basePath}/${id}`,
+          dto
+        );
+        return response.data;
+      },
+      "EmployeeCategoriesService",
+      "update",
+      { id, dto }
     );
-    return response;
   }
 
   static async delete(id: number) {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Category deleted";
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        await ApiClient.delete(`${this.basePath}/${id}`);
+        return "Category deleted";
+      },
+      "EmployeeCategoriesService",
+      "delete",
+      { id }
+    );
   }
 }
