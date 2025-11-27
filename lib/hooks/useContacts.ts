@@ -12,7 +12,7 @@ export function useContacts(params?: { page?: number; limit?: number }) {
   return useQuery<Contact[], Error>({
     queryKey: ["contacts", params?.page ?? 1, params?.limit ?? 50],
     queryFn: async () => {
-      const resp = await ContactsService.getContacts(params);
+      const resp = await ContactsService.getAll(params);
       return Array.isArray(resp) ? resp : resp.data;
     },
   });
@@ -81,7 +81,7 @@ export function useContactsByCompany(
 export function useContact(id: number) {
   return useQuery<Contact, Error>({
     queryKey: ["contact", id],
-    queryFn: () => ContactsService.getContactById(id),
+    queryFn: () => ContactsService.getById(id),
     enabled: !!id,
   });
 }
@@ -90,7 +90,7 @@ export function useContact(id: number) {
 export function useCreateContact() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: ContactFormData) => ContactsService.createContact(data),
+    mutationFn: (data: ContactFormData) => ContactsService.create(data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       // Invalidate all company-scoped contact lists
@@ -115,7 +115,7 @@ export function useUpdateContact() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateContactFormData }) =>
-      ContactsService.updateContact(id, data),
+      ContactsService.update(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       queryClient.invalidateQueries({ queryKey: ["contact", id] });
@@ -128,7 +128,7 @@ export function useUpdateContact() {
 export function useDeleteContact() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => ContactsService.deleteContact(id),
+    mutationFn: (id: number) => ContactsService.delete(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
       queryClient.invalidateQueries({ queryKey: ["contact", id] });

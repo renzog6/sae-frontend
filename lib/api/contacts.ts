@@ -11,7 +11,7 @@ import {
 export class ContactsService {
   private static basePath = "/contacts";
 
-  static async getContacts(params?: { page?: number; limit?: number }) {
+  static async getAll(params?: { page?: number; limit?: number }) {
     const url = QueryBuilder.buildUrl(this.basePath, params);
     const response = await ApiClient.get<PaginatedResponse<Contact>>(url);
     return response;
@@ -37,14 +37,14 @@ export class ContactsService {
     return response;
   }
 
-  static async getContactById(id: number) {
+  static async getById(id: number) {
     const response = await ApiClient.get<ApiResponse<Contact>>(
       `${this.basePath}/${id}`
     );
     return response.data;
   }
 
-  static async createContact(data: ContactFormData) {
+  static async create(data: ContactFormData) {
     const response = await ApiClient.post<ApiResponse<Contact>>(
       this.basePath,
       data
@@ -52,7 +52,7 @@ export class ContactsService {
     return response.data;
   }
 
-  static async updateContact(id: number, data: UpdateContactFormData) {
+  static async update(id: number, data: UpdateContactFormData) {
     const response = await ApiClient.put<ApiResponse<Contact>>(
       `${this.basePath}/${id}`,
       data
@@ -60,7 +60,7 @@ export class ContactsService {
     return response.data;
   }
 
-  static async deleteContact(id: number) {
+  static async delete(id: number) {
     await ApiClient.delete(`${this.basePath}/${id}`);
     return "Contact deleted";
   }
