@@ -1,7 +1,11 @@
 //filepath: sae-frontend/lib/api/equipments/equipments.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   Equipment,
@@ -19,12 +23,14 @@ export class EquipmentsService {
   }
 
   static async getById(id: number): Promise<Equipment> {
-    const response = await ApiClient.get<Equipment>(`${this.basePath}/${id}`);
-    return response;
+    const response = await ApiClient.get<ApiResponse<Equipment>>(
+      `${this.basePath}/${id}`
+    );
+    return response.data;
   }
 
   static async create(dto: CreateEquipmentDto): Promise<Equipment> {
-    const response = await ApiClient.post<{ data: Equipment }>(
+    const response = await ApiClient.post<ApiResponse<Equipment>>(
       this.basePath,
       dto
     );
@@ -32,7 +38,7 @@ export class EquipmentsService {
   }
 
   static async update(id: number, dto: UpdateEquipmentDto): Promise<Equipment> {
-    const response = await ApiClient.put<{ data: Equipment }>(
+    const response = await ApiClient.put<ApiResponse<Equipment>>(
       `${this.basePath}/${id}`,
       dto
     );

@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/api/locations.ts
 import { ApiClient } from "./apiClient";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
 import { City, Province, Address } from "@/lib/types/shared/location";
 import { CityFormData, AddressFormData } from "@/lib/validations/location";
 
@@ -24,8 +24,10 @@ export class LocationsService {
 
   static async getCityById(id: number): Promise<City> {
     try {
-      const response = await ApiClient.get<City>(`${this.citiesPath}/${id}`);
-      return response;
+      const response = await ApiClient.get<ApiResponse<City>>(
+        `${this.citiesPath}/${id}`
+      );
+      return response.data;
     } catch (error) {
       console.error(`Error fetching city with ID ${id}:`, error);
       throw error;
@@ -34,8 +36,11 @@ export class LocationsService {
 
   static async createCity(cityData: CityFormData): Promise<City> {
     try {
-      const response = await ApiClient.post<City>(this.citiesPath, cityData);
-      return response;
+      const response = await ApiClient.post<ApiResponse<City>>(
+        this.citiesPath,
+        cityData
+      );
+      return response.data;
     } catch (error) {
       console.error("Error creating city:", error);
       throw error;
@@ -44,11 +49,11 @@ export class LocationsService {
 
   static async updateCity(id: number, cityData: Partial<City>): Promise<City> {
     try {
-      const response = await ApiClient.put<City>(
+      const response = await ApiClient.put<ApiResponse<City>>(
         `${this.citiesPath}/${id}`,
         cityData
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error updating city:", error);
       throw error;
@@ -80,10 +85,10 @@ export class LocationsService {
 
   static async getProvinceById(id: number): Promise<Province> {
     try {
-      const response = await ApiClient.get<Province>(
+      const response = await ApiClient.get<ApiResponse<Province>>(
         `${this.provincesPath}/${id}`
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error(`Error fetching province with ID ${id}:`, error);
       throw error;
@@ -92,10 +97,10 @@ export class LocationsService {
 
   static async getProvinceByCode(code: string): Promise<Province> {
     try {
-      const response = await ApiClient.get<Province>(
+      const response = await ApiClient.get<ApiResponse<Province>>(
         `${this.provincesPath}/code/${code}`
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error(`Error fetching province with code ${code}:`, error);
       throw error;
@@ -132,10 +137,10 @@ export class LocationsService {
 
   static async getAddressById(id: number): Promise<Address> {
     try {
-      const response = await ApiClient.get<Address>(
+      const response = await ApiClient.get<ApiResponse<Address>>(
         `${this.addressesPath}/${id}`
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error(`Error fetching address with ID ${id}:`, error);
       throw error;
@@ -144,8 +149,11 @@ export class LocationsService {
 
   static async createAddress(body: AddressFormData): Promise<Address> {
     try {
-      const response = await ApiClient.post<Address>(this.addressesPath, body);
-      return response;
+      const response = await ApiClient.post<ApiResponse<Address>>(
+        this.addressesPath,
+        body
+      );
+      return response.data;
     } catch (error) {
       console.error("Error creating address:", error);
       throw error;
@@ -157,11 +165,11 @@ export class LocationsService {
     body: Partial<Address>
   ): Promise<Address> {
     try {
-      const response = await ApiClient.put<Address>(
+      const response = await ApiClient.put<ApiResponse<Address>>(
         `${this.addressesPath}/${id}`,
         body
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error updating address:", error);
       throw error;

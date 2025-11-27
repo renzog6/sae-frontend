@@ -1,6 +1,10 @@
 // filepath: sae-frontend/lib/api/companies/companies.service.ts
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { Company } from "@/lib/types/domain/company";
 import {
@@ -18,14 +22,14 @@ export class CompaniesService {
   }
 
   static async getById(id: number) {
-    const response = await ApiClient.get<{ data: Company }>(
+    const response = await ApiClient.get<ApiResponse<Company>>(
       `${this.basePath}/${id}`
     );
     return response.data;
   }
 
   static async create(data: CompanyFormData) {
-    const response = await ApiClient.post<{ data: Company }>(
+    const response = await ApiClient.post<ApiResponse<Company>>(
       this.basePath,
       data
     );
@@ -33,7 +37,7 @@ export class CompaniesService {
   }
 
   static async update(id: number, data: UpdateCompanyFormData) {
-    const response = await ApiClient.put<{ data: Company }>(
+    const response = await ApiClient.put<ApiResponse<Company>>(
       `${this.basePath}/${id}`,
       data
     );
@@ -41,14 +45,14 @@ export class CompaniesService {
   }
 
   static async delete(id: number) {
-    const response = await ApiClient.delete<{ data: string }>(
+    const response = await ApiClient.delete<ApiResponse<string>>(
       `${this.basePath}/${id}`
     );
     return response.data;
   }
 
   static async restore(id: number) {
-    const response = await ApiClient.put<{ data: Company }>(
+    const response = await ApiClient.put<ApiResponse<Company>>(
       `${this.basePath}/${id}/restore`,
       {}
     );

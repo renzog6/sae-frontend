@@ -1,7 +1,11 @@
 // filepath: sae-frontend/lib/api/documents/documents.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import {
+  BaseQueryParams,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import {
   Document,
@@ -41,7 +45,7 @@ export class DocumentsService {
   }
 
   static async getById(id: number): Promise<Document> {
-    const response = await ApiClient.get<{ data: Document }>(
+    const response = await ApiClient.get<ApiResponse<Document>>(
       `${this.basePath}/${id}`
     );
     return response.data;
@@ -60,7 +64,7 @@ export class DocumentsService {
       formData.append("companyId", String(data.companyId));
     }
 
-    const response = await ApiClient.post<{ data: Document }>(
+    const response = await ApiClient.post<ApiResponse<Document>>(
       "/documents/upload",
       formData
     );
@@ -71,7 +75,7 @@ export class DocumentsService {
     id: number,
     data: Partial<CreateDocumentDto>
   ): Promise<Document> {
-    const response = await ApiClient.put<{ data: Document }>(
+    const response = await ApiClient.put<ApiResponse<Document>>(
       `${this.basePath}/${id}`,
       data
     );
