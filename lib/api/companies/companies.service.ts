@@ -58,17 +58,4 @@ export class CompaniesService {
     );
     return response.data;
   }
-
-  // Backward compatibility methods
-  static async getCompanyById(id: number) {
-    return this.getById(id);
-  }
-
-  static async createCompany(data: CompanyFormData) {
-    return this.create(data);
-  }
-
-  static async updateCompany(id: number, data: UpdateCompanyFormData) {
-    return this.update(id, data);
-  }
 }
