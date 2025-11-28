@@ -19,9 +19,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import type { Equipment } from "@/lib/types/domain/equipment";
+import type {
+  Equipment,
+  EquipmentCategory,
+  EquipmentType,
+} from "@/lib/types/domain/equipment";
 import {
-  useEquipmentList,
+  useEquipments,
   useEquipmentCategories,
   useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
@@ -61,6 +65,7 @@ export default function EquipmentListPage() {
     setPage(1);
   }, [debouncedQuery, selectedStatus, selectedCategory, selectedType, limit]);
 
+  const { useGetAll: useEquipmentList } = useEquipments();
   const {
     data: equipmentResponse,
     isLoading,
@@ -70,13 +75,16 @@ export default function EquipmentListPage() {
     limit: 100, // Get all equipment to enable client-side filtering
   });
 
+  const { useGetAll: useGetCategories } = useEquipmentCategories();
   const {
     data: categoriesResponse = {
       data: [],
       meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
     },
-  } = useEquipmentCategories();
-  const { data: typesData } = useEquipmentTypes();
+  } = useGetCategories();
+
+  const { useGetAll: useGetTypes } = useEquipmentTypes();
+  const { data: typesData } = useGetTypes();
   const types = Array.isArray(typesData) ? typesData : [];
 
   const categories = categoriesResponse.data;
@@ -88,7 +96,7 @@ export default function EquipmentListPage() {
     if (debouncedQuery) {
       const query = debouncedQuery.toLowerCase();
       filtered = filtered.filter(
-        (item) =>
+        (item: Equipment) =>
           item.name?.toLowerCase().includes(query) ||
           item.internalCode?.toLowerCase().includes(query) ||
           item.licensePlate?.toLowerCase().includes(query)
@@ -97,23 +105,27 @@ export default function EquipmentListPage() {
 
     // Filter by status
     if (selectedStatus && selectedStatus !== "ALL") {
-      filtered = filtered.filter((item) => item.status === selectedStatus);
+      filtered = filtered.filter(
+        (item: Equipment) => item.status === selectedStatus
+      );
     }
 
     // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(
-        (item) => item.category?.name === selectedCategory
+        (item: Equipment) => item.category?.name === selectedCategory
       );
     }
 
     // Filter by type
     if (selectedType) {
-      filtered = filtered.filter((item) => item.type?.name === selectedType);
+      filtered = filtered.filter(
+        (item: Equipment) => item.type?.name === selectedType
+      );
     }
 
     // Sort by type name A-Z
-    return filtered.sort((a, b) => {
+    return filtered.sort((a: Equipment, b: Equipment) => {
       const typeA = a.type?.name || "";
       const typeB = b.type?.name || "";
       return typeA.localeCompare(typeB);
@@ -253,8 +265,10 @@ export default function EquipmentListPage() {
                     Todas las categorías
                   </DropdownMenuItem>
                   {categories
-                    ?.sort((a, b) => a.name.localeCompare(b.name))
-                    .map((category) => (
+                    ?.sort((a: EquipmentCategory, b: EquipmentCategory) =>
+                      a.name.localeCompare(b.name)
+                    )
+                    .map((category: EquipmentCategory) => (
                       <DropdownMenuItem
                         key={category.id}
                         onClick={() => setSelectedCategory(category.name)}
@@ -294,8 +308,10 @@ export default function EquipmentListPage() {
                     Todos los tipos
                   </DropdownMenuItem>
                   {types
-                    ?.sort((a, b) => a.name.localeCompare(b.name))
-                    .map((type) => (
+                    ?.sort((a: EquipmentType, b: EquipmentType) =>
+                      a.name.localeCompare(b.name)
+                    )
+                    .map((type: EquipmentType) => (
                       <DropdownMenuItem
                         key={type.id}
                         onClick={() => setSelectedType(type.name)}

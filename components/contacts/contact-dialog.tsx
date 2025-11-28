@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContactSchema, type ContactFormData } from "@/lib/validations/contact";
-import { ContactType } from "@/lib/types/shared/contact";
+import { ContactType } from "@/lib/types/shared/enums";
 
 export interface ContactDialogProps {
   open: boolean;
@@ -76,7 +76,7 @@ export function ContactDialog({
         </DialogHeader>
         <UIForm {...form}>
           <form onSubmit={form.handleSubmit(submit)} className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="type"
@@ -85,7 +85,7 @@ export function ContactDialog({
                     <FormLabel>Tipo</FormLabel>
                     <FormControl>
                       <select
-                        className="w-full h-10 px-2 border border-slate-200 rounded text-slate-700"
+                        className="w-full h-10 px-2 border rounded border-slate-200 text-slate-700"
                         value={field.value}
                         onChange={(e) =>
                           field.onChange(e.target.value as ContactType)
@@ -148,7 +148,7 @@ export function ContactDialog({
                   <Button
                     type="button"
                     variant="destructive"
-                    className="bg-red-500 hover:bg-red-600 text-white"
+                    className="text-white bg-red-500 hover:bg-red-600"
                     onClick={() => {
                       if (
                         confirm(
@@ -175,7 +175,7 @@ export function ContactDialog({
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="text-white bg-amber-500 hover:bg-amber-600"
                 >
                   Guardar
                 </Button>

@@ -13,19 +13,19 @@ import {
 } from "@/components/ui/card";
 
 import { UserForm } from "@/components/forms/user-form";
-import { useCreateUser } from "@/lib/hooks/useUsers";
-import { UserFormData, UpdateUserFormData } from "@/lib/validations/auth";
+import { useUsers } from "@/lib/hooks/useUsers";
+import { UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function NewUserPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const createUserMutation = useCreateUser();
+  const createUserMutation = useUsers().useCreate();
 
-  const handleSubmit = async (data: UserFormData | UpdateUserFormData) => {
+  const handleSubmit = async (data: UpdateUserFormData) => {
     try {
       setError(null);
-      await createUserMutation.mutateAsync(data as UserFormData);
+      await createUserMutation.mutateAsync(data as any);
       router.push("/users");
     } catch (err) {
       console.error("Error creating user:", err);

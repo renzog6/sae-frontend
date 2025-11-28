@@ -24,7 +24,7 @@ import { FileDown, FilePenLine } from "lucide-react";
 import type { EmployeeVacation } from "@/lib/types/domain/employee";
 import { VacationType, AvailableYear } from "@/lib/types/domain/employee";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import { useDownloadVacationPdf } from "@/lib/hooks/useEmployeeVacations";
+import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
 import { formatDate, formatTenure, calcAge } from "@/lib/utils/date";
 import { sumVacationDays } from "@/lib/utils/employee";
@@ -45,7 +45,7 @@ export default function EmployeeVacationsDetailPage() {
 
   const { data: employee, isLoading, error, refetch } = useEmployeeDetail(id);
 
-  const downloadPdfMutation = useDownloadVacationPdf();
+  const downloadPdfMutation = useEmployeeVacations().useDownloadPdf();
 
   // Dialog state
   const [openAssignAnnual, setOpenAssignAnnual] = useState(false); // ASSIGNED

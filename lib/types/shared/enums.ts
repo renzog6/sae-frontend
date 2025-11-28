@@ -162,6 +162,17 @@ export enum AxleType {
   TAG = "TAG",
 }
 
+// Contact types
+export enum ContactType {
+  EMAIL = "EMAIL",
+  PHONE = "PHONE",
+  WHATSAPP = "WHATSAPP",
+  TELEGRAM = "TELEGRAM",
+  INSTAGRAM = "INSTAGRAM",
+  LINKEDIN = "LINKEDIN",
+  OTHER = "OTHER",
+}
+
 // Tire side
 export enum TireSide {
   LEFT = "LEFT",

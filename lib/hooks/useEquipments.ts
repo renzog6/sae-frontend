@@ -1,4 +1,5 @@
 // filepath: sae-frontend/lib/hooks/useEquipments.ts
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   EquipmentsService,
@@ -7,336 +8,119 @@ import {
   EquipmentCategoriesService,
   EquipmentAxlesService,
 } from "@/lib/api/equipments";
-import {
-  Equipment,
-  EquipmentCategory,
-  EquipmentType,
-  EquipmentModel,
-  CreateEquipmentCategoryDto,
-  UpdateEquipmentCategoryDto,
-  CreateEquipmentTypeDto,
-  UpdateEquipmentTypeDto,
-  CreateEquipmentModelDto,
-  UpdateEquipmentModelDto,
-  CreateEquipmentDto,
-  UpdateEquipmentDto,
-} from "@/lib/types/domain/equipment";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { CreateAxleWithPositionsDto } from "@/lib/types/domain/equipment";
+import { BaseQueryParams } from "@/lib/types/core/api";
 
 // ===== EQUIPMENT AXLES =====
+export const useEquipmentAxles = () => {
+  const base = createApiHooks(EquipmentAxlesService, "equipmentAxles");
 
-export function useEquipmentAxles(params?: { equipmentId?: number }) {
-  return useQuery({
-    queryKey: ["equipment-axles", params?.equipmentId ?? ""],
-    queryFn: () => EquipmentAxlesService.getAll(params),
-    enabled: !!params?.equipmentId,
-  });
-}
+  // CREATE WITH POSITIONS
+  const useCreateAxleWithPositions = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (data: CreateAxleWithPositionsDto) =>
+        EquipmentAxlesService.createWithPositions(data),
+      onSuccess: (_, variables) => {
+        // invalidate both: axles list and positions list
+        queryClient.invalidateQueries({
+          queryKey: ["equipmentAxles", "list"],
+        });
 
-export function useEquipmentAxleDetail(id: number | undefined) {
-  return useQuery({
-    queryKey: ["equipment-axles", id],
-    queryFn: () => EquipmentAxlesService.getById(id as number),
-    enabled: typeof id === "number",
-  });
-}
+        if (variables.axle?.equipmentId) {
+          queryClient.invalidateQueries({
+            queryKey: [
+              "equipmentAxles",
+              "positions",
+              variables.axle.equipmentId,
+            ],
+          });
+        }
+      },
+    });
+  };
 
-export function useCreateEquipmentAxle() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: {
-      axle: {
-        equipmentId: number;
-        order: number;
-        axleType: string;
-        wheelCount: number;
-        description?: string;
-      };
-      positions: Array<{
-        positionKey: string;
-        side: string;
-        isDual: boolean;
-      }>;
-    }) => EquipmentAxlesService.createWithPositions(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-      qc.invalidateQueries({ queryKey: ["tire-position-configs-equipment"] });
-    },
-  });
-}
+  // GET POSITIONS BY EQUIPMENT
+  const useAxlePositionsByEquipment = (equipmentId: number) => {
+    return useQuery({
+      queryKey: ["equipmentAxles", "positions", equipmentId],
+      queryFn: () => EquipmentAxlesService.getPositionsByEquipment(equipmentId),
+      enabled: !!equipmentId,
+    });
+  };
 
-export function useUpdateEquipmentAxle() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: {
-      id: number;
-      data: Partial<{
-        equipmentId: number;
-        order: number;
-        axleType: string;
-        wheelCount: number;
-        description?: string;
-      }>;
-    }) => EquipmentAxlesService.update(vars.id, vars.data),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-      qc.invalidateQueries({ queryKey: ["equipment-axles", vars.id] });
-    },
-  });
-}
+  return {
+    ...base,
+    useCreateAxleWithPositions,
+    useAxlePositionsByEquipment,
+  };
+};
 
-export function useDeleteEquipmentAxle() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => EquipmentAxlesService.delete(id),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment-axles"] });
-      qc.invalidateQueries({ queryKey: ["equipment-axles", id] });
-    },
-  });
-}
+//==== EQUIPMENT CATEGORIES =====
+// Si en el futuro querés agregar filtros, esto se puede extender.
+export interface EquipmentCategoriesQueryParams extends BaseQueryParams {}
 
-// Categories
-export function useEquipmentCategories(params?: {
-  page?: number;
-  limit?: number;
-}) {
-  return useQuery<PaginatedResponse<EquipmentCategory>, Error>({
-    queryKey: ["equipment-categories", params?.page ?? 1, params?.limit ?? 10],
-    queryFn: () => EquipmentCategoriesService.getAll(params),
-  });
-}
+export const useEquipmentCategories = () => {
+  const base = createApiHooks(
+    EquipmentCategoriesService,
+    "equipmentCategories"
+  );
 
-export function useCreateEquipmentCategory() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateEquipmentCategoryDto) =>
-      EquipmentCategoriesService.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment-categories"] });
-    },
-  });
-}
+  // 🟦 Ejemplo de endpoint adicional (placeholder):
+  // const useGetSomethingExtra = () => ...
 
-export function useUpdateEquipmentCategory() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: { id: number; data: UpdateEquipmentCategoryDto }) =>
-      EquipmentCategoriesService.update(vars.id, vars.data),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment-categories"] });
-      qc.invalidateQueries({ queryKey: ["equipment-category", vars.id] });
-    },
-  });
-}
+  return {
+    ...base,
+    // useGetSomethingExtra, // <--- futuro
+  };
+};
 
-export function useDeleteEquipmentCategory() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => EquipmentCategoriesService.delete(id),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment-categories"] });
-      qc.invalidateQueries({ queryKey: ["equipment-category", id] });
-    },
-  });
-}
+//==== EQUIPMENT TYPES =====
+export const useEquipmentTypes = () => {
+  const base = createApiHooks(EquipmentTypesService, "equipmentTypes");
 
-// Types
-export function useEquipmentTypes(params?: {
-  categoryId?: number;
-  page?: number;
-  limit?: number;
-}) {
-  return useQuery({
-    queryKey: [
-      "equipment-types",
-      params?.categoryId ?? "",
-      params?.page ?? 1,
-      params?.limit ?? 10,
-    ],
-    queryFn: () => EquipmentTypesService.getAll(params),
-  });
-}
+  const useGetByCategory = (categoryId: number) =>
+    useQuery({
+      queryKey: ["equipmentTypes", "byCategory", categoryId],
+      queryFn: () => EquipmentTypesService.getByCategory(categoryId),
+      enabled: !!categoryId,
+    });
 
-export function useEquipmentTypeDetail(id: number | undefined) {
-  return useQuery({
-    queryKey: ["equipment-types", id],
-    queryFn: () => EquipmentTypesService.getById(id as number),
-    enabled: typeof id === "number",
-  });
-}
+  return {
+    ...base,
+    useGetByCategory,
+  };
+};
 
-export function useCreateEquipmentType() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateEquipmentTypeDto) =>
-      EquipmentTypesService.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment-types"] });
-    },
-  });
-}
+//==== EQUIPMENT MODELS =====
+export const useEquipmentModels = () => {
+  const base = createApiHooks(EquipmentModelsService, "equipmentModels");
 
-export function useUpdateEquipmentType() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: { id: number; data: UpdateEquipmentTypeDto }) =>
-      EquipmentTypesService.update(vars.id, vars.data),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment-types"] });
-      qc.invalidateQueries({ queryKey: ["equipment-types", vars.id] });
-    },
-  });
-}
+  const useGetByType = (typeId: number) =>
+    useQuery({
+      queryKey: ["equipmentModels", "byType", typeId],
+      queryFn: () => EquipmentModelsService.getByType(typeId),
+      enabled: !!typeId,
+    });
 
-export function useDeleteEquipmentType() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => EquipmentTypesService.delete(id),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment-types"] });
-      qc.invalidateQueries({ queryKey: ["equipment-types", id] });
-    },
-  });
-}
+  return {
+    ...base,
+    useGetByType,
+  };
+};
 
-export function useEquipmentTypesByCategory(categoryId: number) {
-  return useQuery<EquipmentType[], Error>({
-    queryKey: ["equipment-types", "category", categoryId],
-    queryFn: () => EquipmentTypesService.getByCategory(categoryId),
-  });
-}
+//==== EQUIPMENT =====
+// Si en el futuro querés agregar filtros, esto se puede extender.
+export interface EquipmentsQueryParams extends BaseQueryParams {}
 
-// Models
-export function useEquipmentModels(params?: {
-  typeId?: number;
-  page?: number;
-  limit?: number;
-}) {
-  return useQuery<PaginatedResponse<EquipmentModel>, Error>({
-    queryKey: [
-      "equipment-models",
-      params?.typeId ?? "",
-      params?.page ?? 1,
-      params?.limit ?? 10,
-    ],
-    queryFn: () => EquipmentModelsService.getAll(params),
-  });
-}
+export const useEquipments = () => {
+  const base = createApiHooks(EquipmentsService, "equipments");
 
-export function useEquipmentModelDetail(id: number | undefined) {
-  return useQuery({
-    queryKey: ["equipment-models", id],
-    queryFn: () => EquipmentModelsService.getById(id as number),
-    enabled: typeof id === "number",
-  });
-}
+  // 🟦 Ejemplo de endpoint adicional (placeholder):
+  // const useGetSomethingExtra = () => ...
 
-export function useCreateEquipmentModel() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateEquipmentModelDto) =>
-      EquipmentModelsService.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment-models"] });
-    },
-  });
-}
-
-export function useUpdateEquipmentModel() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: { id: number; data: UpdateEquipmentModelDto }) =>
-      EquipmentModelsService.update(vars.id, vars.data),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment-models"] });
-      qc.invalidateQueries({ queryKey: ["equipment-models", vars.id] });
-    },
-  });
-}
-
-export function useDeleteEquipmentModel() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => EquipmentModelsService.delete(id),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment-models"] });
-      qc.invalidateQueries({ queryKey: ["equipment-models", id] });
-    },
-  });
-}
-
-export function useEquipmentModelsByType(typeId: number) {
-  return useQuery<EquipmentModel[], Error>({
-    queryKey: ["equipment-models", "type", typeId],
-    queryFn: () => EquipmentModelsService.getByType(typeId),
-  });
-}
-
-// Equipment
-export function useEquipmentList(params?: {
-  page?: number;
-  limit?: number;
-  typeId?: number;
-  modelId?: number;
-  categoryId?: number;
-  year?: number;
-  status?: string;
-}) {
-  return useQuery<PaginatedResponse<Equipment>, Error>({
-    queryKey: [
-      "equipment",
-      params?.page ?? 1,
-      params?.limit ?? 10,
-      params?.typeId ?? "",
-      params?.modelId ?? "",
-      params?.categoryId ?? "",
-      params?.year ?? "",
-      params?.status ?? "",
-    ],
-    queryFn: () => {
-      return EquipmentsService.getAll(params);
-    },
-  });
-}
-
-export function useEquipmentDetail(id: number | undefined) {
-  return useQuery({
-    queryKey: ["equipment", id],
-    queryFn: () => EquipmentsService.getById(id as number),
-    enabled: typeof id === "number",
-  });
-}
-
-export function useCreateEquipment() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateEquipmentDto) => EquipmentsService.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["equipment"] });
-    },
-  });
-}
-
-export function useUpdateEquipment() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (vars: { id: number; data: UpdateEquipmentDto }) =>
-      EquipmentsService.update(vars.id, vars.data),
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ["equipment"] });
-      qc.invalidateQueries({ queryKey: ["equipment", vars.id] });
-    },
-  });
-}
-
-export function useDeleteEquipment() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => EquipmentsService.delete(id),
-    onSuccess: (_message, id) => {
-      qc.invalidateQueries({ queryKey: ["equipment"] });
-      qc.invalidateQueries({ queryKey: ["equipment", id] });
-    },
-  });
-}
+  return {
+    ...base,
+    // useGetSomethingExtra, // <--- futuro
+  };
+};

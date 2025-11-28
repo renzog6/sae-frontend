@@ -46,7 +46,8 @@ export function EquipmentModelForm({
   onCancel,
   error,
 }: EquipmentModelFormProps) {
-  const { data: typesData } = useEquipmentTypes();
+  const { useGetAll } = useEquipmentTypes();
+  const { data: typesData } = useGetAll();
   const types = Array.isArray(typesData)
     ? typesData
     : (typesData as any)?.data || [];

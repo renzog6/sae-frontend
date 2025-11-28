@@ -44,13 +44,16 @@ export default function EquipmentTypesPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
-  const { data: typesData, isLoading, error } = useEquipmentTypes();
+  const { useGetAll } = useEquipmentTypes();
+  const { data: typesData, isLoading, error } = useGetAll();
   const types = Array.isArray(typesData)
     ? typesData
     : (typesData as any)?.data || [];
 
   const sortedTypes = useMemo(() => {
-    return types.sort((a: any, b: any) => a.name.localeCompare(b.name));
+    return types.sort((a: EquipmentType, b: EquipmentType) =>
+      a.name.localeCompare(b.name)
+    );
   }, [types]);
 
   // Calculate pagination based on filtered data

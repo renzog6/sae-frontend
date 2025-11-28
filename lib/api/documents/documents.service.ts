@@ -1,138 +1,118 @@
 // filepath: sae-frontend/lib/api/documents/documents.service.ts
 
+import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+
 import {
   BaseQueryParams,
   PaginatedResponse,
   ApiResponse,
 } from "@/lib/types/core/api";
-import { QueryBuilder } from "@/lib/api/queryBuilder";
-import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+
 import {
   Document,
   UploadDocumentData,
   CreateDocumentDto,
 } from "@/lib/types/domain/document";
 
-// Interface específica para documentos
-interface DocumentQueryParams extends BaseQueryParams {
+import { QueryBuilder } from "@/lib/api/queryBuilder";
+
+export interface DocumentQueryParams extends BaseQueryParams {
   employeeId?: number;
   companyId?: number;
-  equipmentId?: number; // 👈 PARA EL FUTURO
+  equipmentId?: number; // Preparado para futuro
 }
 
-export class DocumentsService {
-  private static basePath = "/documents";
+class DocumentsServiceClass extends BaseApiService<
+  Document,
+  CreateDocumentDto,
+  Partial<CreateDocumentDto>
+> {
+  protected basePath = "/documents";
 
-  static async getAll(
+  /**
+   * Override: GET ALL con filtros especiales
+   * Mantiene paginado y filtros dinámicos employeeId/companyId/equipmentId
+   */
+  async getAll(
     filter?: DocumentQueryParams
   ): Promise<PaginatedResponse<Document>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
+        // 1. Query estándar (page, limit, search)
         const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-        // 2. Filtros específicos de documentos
+        // 2. Filtros específicos (documentos por entidad)
         const specificParams = {
           employeeId: filter?.employeeId,
           companyId: filter?.companyId,
-          equipmentId: filter?.equipmentId, // 👈 LISTO PARA EL FUTURO
+          equipmentId: filter?.equipmentId,
         };
+
         const specificQuery = QueryBuilder.buildSpecific(specificParams);
 
-        // 3. Combinar URLs
+        // 3. URL final combinada
         const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
 
-        const response = await ApiClient.get<PaginatedResponse<Document>>(
-          finalUrl
-        );
-        return response;
+        return ApiClient.get<PaginatedResponse<Document>>(finalUrl);
       },
-      "DocumentsService",
+      this.constructor.name,
       "getAll",
       { filter }
     );
   }
 
-  static async getById(id: number): Promise<Document> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.get<ApiResponse<Document>>(
-          `${this.basePath}/${id}`
-        );
-        return response.data;
-      },
-      "DocumentsService",
-      "getById",
-      { id }
-    );
-  }
-
-  static async upload(data: UploadDocumentData): Promise<Document> {
+  /**
+   * UPLOAD con FormData
+   * Endpoint custom: /documents/upload
+   */
+  async upload(data: UploadDocumentData): Promise<Document> {
     return ApiErrorHandler.handleApiCall(
       async () => {
         const formData = new FormData();
+
         formData.append("file", data.file);
         if (data.description) formData.append("description", data.description);
-        // Only append one of employeeId or companyId, not both
-        // FormData converts undefined to "undefined" string, so we must check !== undefined
-        if (data.employeeId !== undefined) {
+        if (data.employeeId !== undefined)
           formData.append("employeeId", String(data.employeeId));
-        }
-        if (data.companyId !== undefined) {
+        if (data.companyId !== undefined)
           formData.append("companyId", String(data.companyId));
-        }
 
-        const response = await ApiClient.post<ApiResponse<Document>>(
-          "/documents/upload",
+        const res = await ApiClient.post<ApiResponse<Document>>(
+          `${this.basePath}/upload`,
           formData
         );
-        return response.data;
+        return res.data;
       },
-      "DocumentsService",
+      this.constructor.name,
       "upload",
       { data }
     );
   }
 
-  static async update(
-    id: number,
-    data: Partial<CreateDocumentDto>
-  ): Promise<Document> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.put<ApiResponse<Document>>(
-          `${this.basePath}/${id}`,
-          data
-        );
-        return response.data;
-      },
-      "DocumentsService",
-      "update",
-      { id, data }
-    );
+  /**
+   * DOWNLOAD usando método centralizado del BaseApiService
+   */
+  async downloadById(id: number): Promise<void> {
+    return this.downloadFile(`${id}/download`, `file_${id}`);
   }
 
-  static async delete(id: number): Promise<string> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        await ApiClient.delete(`${this.basePath}/${id}`);
-        return "Document deleted";
-      },
-      "DocumentsService",
-      "delete",
-      { id }
-    );
+  /**
+   * Preview en nueva pestaña (PDF viewer)
+   * Opcional pero muy útil
+   */
+  async preview(id: number): Promise<void> {
+    return this.openInNewTab(`${id}/download`);
   }
 
-  static async download(id: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        return ApiClient.getBlob(`${this.basePath}/${id}/download`);
-      },
-      "DocumentsService",
-      "download",
-      { id }
-    );
+  /**
+   * Helper: método que llama al BaseApiService.download()
+   * con nombre generado dinámicamente
+   */
+  private async downloadFile(relativePath: string, filename: string) {
+    return super.download(relativePath, filename);
   }
 }
+
+export const DocumentsService = new DocumentsServiceClass();

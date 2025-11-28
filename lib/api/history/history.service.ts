@@ -1,6 +1,6 @@
-// filepath: sae-frontend/lib/api/history.ts
+// filepath: sae-frontend/lib/api/history/history.service.ts
 
-import { ApiClient } from "./apiClient";
+import { ApiClient } from "../apiClient";
 import { ApiResponse } from "@/lib/types/core/api";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import {

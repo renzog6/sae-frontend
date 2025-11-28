@@ -26,6 +26,7 @@ import {
   type EquipmentTypeFormData,
 } from "@/lib/validations/equipment";
 import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
+import type { EquipmentCategory } from "@/lib/types/domain/equipment";
 
 interface EquipmentTypeFormProps {
   onSubmit: (data: EquipmentTypeFormData) => void;
@@ -44,12 +45,13 @@ export function EquipmentTypeForm({
   onCancel,
   error,
 }: EquipmentTypeFormProps) {
+  const { useGetAll } = useEquipmentCategories();
   const {
     data: categoriesResponse = {
       data: [],
       meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
     },
-  } = useEquipmentCategories();
+  } = useGetAll();
 
   const categories = categoriesResponse.data;
 
@@ -126,7 +128,7 @@ export function EquipmentTypeForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {categories.map((category: EquipmentCategory) => (
                     <SelectItem
                       key={category.id}
                       value={category.id.toString()}

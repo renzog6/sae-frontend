@@ -6,11 +6,7 @@ import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EquipmentTypeForm } from "@/components/forms/equipment-type-form";
-import {
-  useCreateEquipmentType,
-  useUpdateEquipmentType,
-  useDeleteEquipmentType,
-} from "@/lib/hooks/useEquipments";
+import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,9 +33,10 @@ export function EquipmentTypeDialog({
   type,
 }: EquipmentTypeDialogProps) {
   const { toast } = useToast();
-  const { mutate: createType, isPending: creating } = useCreateEquipmentType();
-  const { mutate: updateType, isPending: updating } = useUpdateEquipmentType();
-  const { mutate: deleteType, isPending: deleting } = useDeleteEquipmentType();
+  const { useCreate, useUpdate, useDelete } = useEquipmentTypes();
+  const { mutate: createType, isPending: creating } = useCreate();
+  const { mutate: updateType, isPending: updating } = useUpdate();
+  const { mutate: deleteType, isPending: deleting } = useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -64,7 +61,7 @@ export function EquipmentTypeDialog({
       });
     } else if (mode === "edit" && type) {
       updateType(
-        { id: type.id, data },
+        { id: type.id, dto: data },
         {
           onSuccess: () => {
             toast({

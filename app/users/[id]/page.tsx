@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 
 import { UserForm } from "@/components/forms/user-form";
-import { useUpdateUser, useUser } from "@/lib/hooks/useUsers";
+import { useUsers } from "@/lib/hooks/useUsers";
 import { UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function EditUserPage() {
@@ -24,14 +24,15 @@ export default function EditUserPage() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const { data: user, isLoading: isLoadingUser } = useUser(userId);
+  const { data: user, isLoading: isLoadingUser } =
+    useUsers().useGetById(userId);
 
-  const updateUserMutation = useUpdateUser();
+  const updateUserMutation = useUsers().useUpdate();
 
   const handleSubmit = async (data: UpdateUserFormData) => {
     try {
       setError(null);
-      await updateUserMutation.mutateAsync({ id: userId, userData: data });
+      await updateUserMutation.mutateAsync({ id: userId, dto: data });
       router.push("/users");
     } catch (err) {
       console.error("Error updating user:", err);

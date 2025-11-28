@@ -9,15 +9,11 @@ import type {
 } from "@/lib/types/domain/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
-import {
-  useCreateEmployeeVacation,
-  useUpdateEmployeeVacation,
-} from "@/lib/hooks/useEmployeeVacations";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { EmployeeVacationFormTaken } from "@/components/forms/employee-vacation-form-taken";
 import { EmployeeVacationFormAssigned } from "@/components/forms/employee-vacation-form-assigned";
-import { useDeleteEmployeeVacation } from "@/lib/hooks/useEmployeeVacations";
+import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 
 export interface EmployeeVacationDialogProps {
   accessToken: string;
@@ -44,11 +40,11 @@ export function EmployeeVacationDialog({
 }: EmployeeVacationDialogProps) {
   const { toast } = useToast();
   const { mutate: createVacation, isPending: creating } =
-    useCreateEmployeeVacation();
+    useEmployeeVacations().useCreate();
   const { mutate: updateVacation, isPending: updating } =
-    useUpdateEmployeeVacation();
+    useEmployeeVacations().useUpdate();
   const { mutate: deleteVacation, isPending: deleting } =
-    useDeleteEmployeeVacation();
+    useEmployeeVacations().useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -110,7 +106,7 @@ export function EmployeeVacationDialog({
       updateVacation(
         {
           id: vacation.id,
-          vacationData: {
+          dto: {
             ...data,
             type: fixedType,
           },

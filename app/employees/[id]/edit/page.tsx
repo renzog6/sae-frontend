@@ -59,7 +59,7 @@ import {
   type UpdatePersonFormInput,
   type UpdatePersonFormData,
 } from "@/lib/validations/person";
-import { PersonsService } from "@/lib/api/persons";
+import { PersonsService } from "@/lib/api/persons/persons.service";
 import { genderLabels, maritalLabels } from "@/lib/constants";
 import { Plus, SquarePen } from "lucide-react";
 

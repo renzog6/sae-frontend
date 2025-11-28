@@ -70,12 +70,12 @@ export interface CreateAddressDto {
   number?: string;
   floor?: string;
   apartment?: string;
-  cityId: number;
-  latitude?: number;
-  longitude?: number;
   neighborhood?: string;
   reference?: string;
+  latitude?: number;
+  longitude?: number;
   isActive?: boolean;
+  cityId: number;
   personId?: number;
   companyId?: number;
 }

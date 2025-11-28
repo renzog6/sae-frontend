@@ -29,7 +29,7 @@ import {
   useTirePositionConfigsByEquipment,
   useTireAssignments,
 } from "@/lib/hooks/useTires";
-import { useEquipmentList } from "@/lib/hooks/useEquipments";
+import { useEquipments } from "@/lib/hooks/useEquipments";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { Equipment } from "@/lib/types/domain/equipment";
 
@@ -66,6 +66,7 @@ export const TireRotateDialog: React.FC<Props> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch available equipments for rotation
+  const { useGetAll: useEquipmentList } = useEquipments();
   const { data: equipments, isLoading: equipmentsLoading } = useEquipmentList({
     page: 1,
     limit: 100,

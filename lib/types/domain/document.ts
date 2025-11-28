@@ -14,7 +14,7 @@ export interface Document {
 
 export interface UploadDocumentData {
   file: File;
-  description: string;
+  description?: string;
   employeeId?: number;
   companyId?: number;
 }

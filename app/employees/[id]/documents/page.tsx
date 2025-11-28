@@ -37,12 +37,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import {
-  useDocuments,
-  useUploadDocument,
-  useDeleteDocument,
-  useDownloadDocument,
-} from "@/lib/hooks/useDocuments";
+import { useDocuments } from "@/lib/hooks/useDocuments";
 import { Document } from "@/lib/types/domain/document";
 import {
   uploadDocumentSchema,
@@ -84,12 +79,14 @@ export default function EmployeeDocumentsPage() {
   const { data: session } = useSession();
 
   const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
-  const { data: documentsData, isLoading: documentsLoading } = useDocuments({
+  const documentsHooks = useDocuments();
+  const { useGetAll, useUpload, useDelete, useDownload } = documentsHooks;
+  const { data: documentsData, isLoading: documentsLoading } = useGetAll({
     employeeId: id,
   });
-  const uploadMutation = useUploadDocument();
-  const deleteMutation = useDeleteDocument();
-  const downloadMutation = useDownloadDocument();
+  const uploadMutation = useUpload();
+  const deleteMutation = useDelete();
+  const downloadMutation = useDownload();
 
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -103,7 +100,7 @@ export default function EmployeeDocumentsPage() {
     },
   });
 
-  const documents: Document[] = documentsData ?? [];
+  const documents: Document[] = documentsData?.data ?? [];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -139,20 +136,8 @@ export default function EmployeeDocumentsPage() {
     }
   };
 
-  const handleDownload = async (documentId: number, filename: string) => {
-    try {
-      const blob = await downloadMutation.mutateAsync(documentId);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
+  const handleDownload = (documentId: number, filename: string) => {
+    downloadMutation.mutate(documentId);
   };
 
   const handleDelete = async (documentId: number) => {

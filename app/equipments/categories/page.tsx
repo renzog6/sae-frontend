@@ -43,11 +43,12 @@ export default function EquipmentCategoriesPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useEquipmentCategories();
   const {
     data: categoriesResponse,
     isLoading,
     error,
-  } = useEquipmentCategories({ page, limit });
+  } = useGetAll({ page, limit });
   console.log("Categories response:", categoriesResponse);
   console.log("Categories error:", error);
 

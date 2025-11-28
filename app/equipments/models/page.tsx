@@ -31,7 +31,7 @@ import { EquipmentModelDialog } from "@/components/equipment/equipment-model-dia
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { DataTable } from "@/components/data-table/data-table";
 import { useDataTable } from "@/components/data-table/use-data-table";
-import { EquipmentModel } from "@/lib/types/domain/equipment";
+import { EquipmentModel, EquipmentType } from "@/lib/types/domain/equipment";
 
 export default function EquipmentModelsPage() {
   const [page, setPage] = useState(1);
@@ -41,19 +41,21 @@ export default function EquipmentModelsPage() {
   const [selectedType, setSelectedType] = useState("");
 
   const { data: brands = [] } = useBrands();
-  const { data: typesData } = useEquipmentTypes();
+  const { useGetAll: useGetTypes } = useEquipmentTypes();
+  const { data: typesData } = useGetTypes();
   const types = Array.isArray(typesData) ? typesData : [];
 
   const selectedTypeId =
     selectedType !== ""
-      ? types.find((t: any) => t.name === selectedType)?.id
+      ? types.find((t: EquipmentType) => t.name === selectedType)?.id
       : undefined;
 
+  const { useGetAll: useGetModels } = useEquipmentModels();
   const {
     data: modelsResponse,
     isLoading,
     error,
-  } = useEquipmentModels({
+  } = useGetModels({
     page,
     limit,
     typeId: selectedTypeId,
@@ -62,7 +64,7 @@ export default function EquipmentModelsPage() {
   const models = modelsResponse?.data ?? [];
 
   const filteredModels = useMemo(() => {
-    return models.filter((model) => {
+    return models.filter((model: EquipmentModel) => {
       const brandMatch = !selectedBrand || model.brand?.name === selectedBrand;
 
       const typeMatch = !selectedType || model.type?.name === selectedType;
@@ -147,8 +149,8 @@ export default function EquipmentModelsPage() {
                   </DropdownMenuItem>
 
                   {brands
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((brand) => (
+                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .map((brand: any) => (
                       <DropdownMenuItem
                         key={brand.id}
                         onClick={() => setSelectedBrand(brand.name)}
@@ -181,8 +183,10 @@ export default function EquipmentModelsPage() {
                   </DropdownMenuItem>
 
                   {types
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((type) => (
+                    .sort((a: EquipmentType, b: EquipmentType) =>
+                      a.name.localeCompare(b.name)
+                    )
+                    .map((type: EquipmentType) => (
                       <DropdownMenuItem
                         key={type.id}
                         onClick={() => setSelectedType(type.name)}

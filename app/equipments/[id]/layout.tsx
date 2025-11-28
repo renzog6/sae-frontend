@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEquipmentDetail } from "@/lib/hooks/useEquipments";
+import { useEquipments } from "@/lib/hooks/useEquipments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Truck, Edit, Settings, CircleDot, History } from "lucide-react";
@@ -27,11 +27,11 @@ export default function EquipmentLayout({ children }: { children: ReactNode }) {
   const params = useParams();
   const id = params?.id as string;
 
-  const {
-    data: equipment,
-    isLoading,
-    error,
-  } = useEquipmentDetail(id ? parseInt(id) : undefined);
+  const { useGetById: useEquipmentDetail } = useEquipments();
+
+  const equipmentId = id ? parseInt(id) : 0;
+
+  const { data: equipment, isLoading, error } = useEquipmentDetail(equipmentId);
 
   if (isLoading) {
     return (

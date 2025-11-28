@@ -1,5 +1,5 @@
 // filepath: sae-frontend/lib/constants/contact.constants.ts
-import { ContactType } from "@/lib/types/shared/contact";
+import { ContactType } from "@/lib/types/shared/enums";
 
 export const contactTypeLabels: Record<ContactType, string> = {
   [ContactType.EMAIL]: "Email",

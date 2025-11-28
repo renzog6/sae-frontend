@@ -1,3 +1,3 @@
 // filepath: sae-frontend/lib/api/reports/index.ts
 
-export * from "./reports.service";
+export * from "./users.service";

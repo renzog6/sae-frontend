@@ -1,75 +1,73 @@
-//filepath: sae-frontend/lib/api/equipments/equipment-models.service.ts
+// filepath: sae-frontend/lib/api/equipments/equipment-models.service.ts
 
+import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
-import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
+
 import {
   EquipmentModel,
   CreateEquipmentModelDto,
   UpdateEquipmentModelDto,
 } from "@/lib/types/domain/equipment";
 
-// Interface específica para modelos de equipo
-interface EquipmentModelsQueryParams extends BaseQueryParams {
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+
+// Query params extendidos
+export interface EquipmentModelsQueryParams extends BaseQueryParams {
   typeId?: number;
 }
 
-export class EquipmentModelsService {
-  private static basePath = "/equipments/models";
+class EquipmentModelsServiceClass extends BaseApiService<
+  EquipmentModel,
+  CreateEquipmentModelDto,
+  UpdateEquipmentModelDto
+> {
+  protected basePath = "/equipments/models";
 
-  static async getAll(
+  /**
+   * Override: getAll con filtros extendidos
+   */
+  async getAll(
     filter?: EquipmentModelsQueryParams
   ): Promise<PaginatedResponse<EquipmentModel>> {
-    // 1. URL base con filtros comunes (paginación, búsqueda, etc.)
-    const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        // 1. Query paginada estándar
+        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-    // 2. Filtros específicos de documentos
-    const specificParams = {
-      typeId: filter?.typeId,
-    };
-    const specificQuery = QueryBuilder.buildSpecific(specificParams);
+        // 2. Query específica (filtro por typeId)
+        const specificParams = {
+          typeId: filter?.typeId,
+        };
+        const specificQuery = QueryBuilder.buildSpecific(specificParams);
 
-    // 3. Combinar URLs
-    const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+        // 3. Combinación final
+        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
 
-    const response = await ApiClient.get<PaginatedResponse<EquipmentModel>>(
-      finalUrl
+        return ApiClient.get<PaginatedResponse<EquipmentModel>>(finalUrl);
+      },
+      this.constructor.name,
+      "getAll",
+      { filter }
     );
-    return response;
   }
 
-  static async getById(id: number): Promise<EquipmentModel> {
-    const response = await ApiClient.get<EquipmentModel>(
-      `${this.basePath}/${id}`
+  /**
+   * GET por tipo
+   * GET /equipments/models/type/:typeId
+   */
+  async getByType(typeId: number): Promise<EquipmentModel[]> {
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = `${this.basePath}/type/${typeId}`;
+        return ApiClient.get<EquipmentModel[]>(url);
+      },
+      this.constructor.name,
+      "getByType",
+      { typeId }
     );
-    return response;
-  }
-
-  static async create(dto: CreateEquipmentModelDto): Promise<EquipmentModel> {
-    const response = await ApiClient.post<EquipmentModel>(this.basePath, dto);
-    return response;
-  }
-
-  static async update(
-    id: number,
-    dto: UpdateEquipmentModelDto
-  ): Promise<EquipmentModel> {
-    const response = await ApiClient.put<EquipmentModel>(
-      `${this.basePath}/${id}`,
-      dto
-    );
-    return response;
-  }
-
-  static async delete(id: number): Promise<string> {
-    await ApiClient.delete(`${this.basePath}/${id}`);
-    return "Model deleted";
-  }
-
-  static async getByType(typeId: number): Promise<EquipmentModel[]> {
-    const response = await ApiClient.get<EquipmentModel[]>(
-      `${this.basePath}/type/${typeId}`
-    );
-    return response;
   }
 }
+
+export const EquipmentModelsService = new EquipmentModelsServiceClass();

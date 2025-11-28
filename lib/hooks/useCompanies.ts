@@ -11,13 +11,13 @@ import {
   BusinessSubCategory,
 } from "@/lib/types/domain/company";
 import {
-  CompanyFormData,
-  UpdateCompanyFormData,
-  BusinessCategoryFormData,
-  UpdateBusinessCategoryFormData,
-  BusinessSubcategoryFormData,
-  UpdateBusinessSubcategoryFormData,
-} from "@/lib/validations/company";
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  CreateBusinessCategoryDto,
+  UpdateBusinessCategoryDto,
+  CreateBusinessSubcategoryDto,
+  UpdateBusinessSubcategoryDto,
+} from "@/lib/types/domain/company";
 import { BaseQueryParams } from "../types/core/api";
 
 // ========== Business Categories ==========
@@ -34,8 +34,8 @@ export function useBusinessCategories(params?: BaseQueryParams) {
 export function useCreateBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: BusinessCategoryFormData) =>
-      BusinessCategoriesService.createCategory(data),
+    mutationFn: (data: CreateBusinessCategoryDto) =>
+      BusinessCategoriesService.create(data),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["business-categories"] }),
   });
@@ -49,8 +49,8 @@ export function useUpdateBusinessCategory() {
       data,
     }: {
       id: number;
-      data: UpdateBusinessCategoryFormData;
-    }) => BusinessCategoriesService.updateCategory(id, data),
+      data: UpdateBusinessCategoryDto;
+    }) => BusinessCategoriesService.update(id, data),
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -61,7 +61,7 @@ export function useUpdateBusinessCategory() {
 export function useDeleteBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessCategoriesService.deleteCategory(id),
+    mutationFn: (id: number) => BusinessCategoriesService.delete(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -72,7 +72,7 @@ export function useDeleteBusinessCategory() {
 export function useRestoreBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessCategoriesService.restoreCategory(id),
+    mutationFn: (id: number) => BusinessCategoriesService.restore(id),
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -102,7 +102,7 @@ export function useBusinessSubCategory(id: number) {
 export function useCreateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: BusinessSubcategoryFormData) =>
+    mutationFn: (data: CreateBusinessSubcategoryDto) =>
       BusinessSubCategoriesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
@@ -118,7 +118,7 @@ export function useUpdateBusinessSubCategory() {
       data,
     }: {
       id: number;
-      data: UpdateBusinessSubcategoryFormData;
+      data: UpdateBusinessSubcategoryDto;
     }) => BusinessSubCategoriesService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
@@ -173,7 +173,7 @@ export function useCompany(id: number) {
 export function useCreateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CompanyFormData) => CompaniesService.create(data),
+    mutationFn: (data: CreateCompanyDto) => CompaniesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
@@ -183,7 +183,7 @@ export function useCreateCompany() {
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateCompanyFormData }) =>
+    mutationFn: ({ id, data }: { id: number; data: UpdateCompanyDto }) =>
       CompaniesService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });

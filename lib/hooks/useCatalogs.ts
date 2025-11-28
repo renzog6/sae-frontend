@@ -3,11 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BrandsService, UnitsService } from "@/lib/api/catalogs";
 import { Brand, Unit } from "@/lib/types/shared/catalogs";
 import {
-  BrandFormData,
-  UpdateBrandFormData,
-  UnitFormData,
-  UpdateUnitFormData,
-} from "@/lib/validations/catalog";
+  CreateBrandDto,
+  UpdateBrandDto,
+  CreateUnitDto,
+  UpdateUnitDto,
+} from "@/lib/types/shared/catalogs";
 
 // ===== Brands =====
 export function useBrands() {
@@ -31,7 +31,7 @@ export function useBrand(id: number) {
 export function useCreateBrand() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: BrandFormData) => BrandsService.create(data),
+    mutationFn: (data: CreateBrandDto) => BrandsService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
     },
@@ -41,7 +41,7 @@ export function useCreateBrand() {
 export function useUpdateBrand() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateBrandFormData }) =>
+    mutationFn: ({ id, data }: { id: number; data: UpdateBrandDto }) =>
       BrandsService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
@@ -94,7 +94,7 @@ export function useUnit(id: number) {
 export function useCreateUnit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: UnitFormData) => UnitsService.create(data),
+    mutationFn: (data: CreateUnitDto) => UnitsService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
     },
@@ -104,7 +104,7 @@ export function useCreateUnit() {
 export function useUpdateUnit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateUnitFormData }) =>
+    mutationFn: ({ id, data }: { id: number; data: UpdateUnitDto }) =>
       UnitsService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["units"] });

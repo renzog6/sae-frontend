@@ -1,7 +1,7 @@
 // filepath: sae-frontend/lib/hooks/useHistory.ts
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { HistoryService } from "@/lib/api/history";
+import { HistoryService } from "@/lib/api/history/history.service";
 import {
   EmployeeHistoryResponse,
   CreateEmployeeIncidentDto,

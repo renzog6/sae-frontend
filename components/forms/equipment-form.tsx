@@ -33,9 +33,8 @@ import {
   useEquipmentCategories,
   useEquipmentTypes,
   useEquipmentModels,
-  useCreateEquipment,
-  useUpdateEquipment,
 } from "@/lib/hooks/useEquipments";
+import { useEquipments } from "@/lib/hooks/useEquipments";
 import { useCompanies } from "@/lib/hooks/useCompanies";
 import { useToast } from "@/components/ui/toaster";
 
@@ -53,12 +52,13 @@ export function EquipmentForm({
   isEdit = false,
 }: EquipmentFormProps) {
   const { toast } = useToast();
+  const { useGetAll: useGetCategories } = useEquipmentCategories();
   const {
     data: categoriesResponse = {
       data: [],
       meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
     },
-  } = useEquipmentCategories();
+  } = useGetCategories();
   const { data: companies = [] } = useCompanies();
 
   const categories = categoriesResponse.data;
@@ -106,31 +106,19 @@ export function EquipmentForm({
   const selectedCategoryId = form.watch("categoryId");
   const selectedTypeId = form.watch("typeId");
 
-  const { data: typesData } = useEquipmentTypes({
-    categoryId: selectedCategoryId,
-    page: 1,
-    limit: 100,
-  });
+  const { useGetByCategory } = useEquipmentTypes();
+  const { data: typesData } = useGetByCategory(selectedCategoryId || 0);
   const types = Array.isArray(typesData)
     ? typesData
     : (typesData as any)?.data || [];
 
-  const {
-    data: modelsResponse = {
-      data: [],
-      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
-    },
-  } = useEquipmentModels({
-    typeId: selectedTypeId,
-    page: 1,
-    limit: 100,
-  });
+  const { useGetByType } = useEquipmentModels();
+  const { data: models } = useGetByType(selectedTypeId || 0);
 
-  const models = modelsResponse.data;
+  const { useCreate, useUpdate } = useEquipments();
+  const { mutate: createEquipment, isPending } = useCreate();
 
-  const { mutate: createEquipment, isPending } = useCreateEquipment();
-
-  const { mutate: updateEquipment, isPending: updating } = useUpdateEquipment();
+  const { mutate: updateEquipment, isPending: updating } = useUpdate();
 
   const handleSubmit = (data: EquipmentFormData) => {
     const submitData = {
@@ -141,7 +129,7 @@ export function EquipmentForm({
     if (isEdit) {
       // Update existing equipment
       updateEquipment(
-        { id: (defaultValues as any)?.id || 0, data: submitData },
+        { id: (defaultValues as any)?.id || 0, dto: submitData },
         {
           onSuccess: () => {
             toast({
@@ -303,7 +291,7 @@ export function EquipmentForm({
                 <FormLabel>Modelo</FormLabel>
                 <FormControl>
                   <Combobox
-                    options={models
+                    options={(models || [])
                       .filter((model: any) =>
                         model.name.toLowerCase().includes("")
                       )

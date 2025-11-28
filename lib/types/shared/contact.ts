@@ -1,15 +1,5 @@
 // filepath: sae-frontend/lib/types/shared/contact.ts
-import { PaginatedResponse } from "../core/api";
-
-export enum ContactType {
-  EMAIL = "EMAIL",
-  PHONE = "PHONE",
-  WHATSAPP = "WHATSAPP",
-  TELEGRAM = "TELEGRAM",
-  INSTAGRAM = "INSTAGRAM",
-  LINKEDIN = "LINKEDIN",
-  OTHER = "OTHER",
-}
+import { ContactType } from "./enums";
 
 export interface ContactLink {
   id: number;
@@ -30,15 +20,6 @@ export interface Contact {
   contactLinks?: ContactLink[];
 }
 
-export interface CreateContactDto {
-  type: ContactType;
-  value: string;
-  label?: string;
-  information?: string;
-}
-
-export interface UpdateContactDto extends Partial<CreateContactDto> {}
-
 export interface CreateContactLinkDto {
   contactId: number;
   companyId?: number;
@@ -46,6 +27,3 @@ export interface CreateContactLinkDto {
 }
 
 export interface UpdateContactLinkDto extends Partial<CreateContactLinkDto> {}
-
-// Helpers
-export type ContactsPage = PaginatedResponse<Contact>;

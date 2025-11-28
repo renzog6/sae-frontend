@@ -8,7 +8,7 @@ import type { Equipment } from "@/lib/types/domain/equipment";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { EquipmentAxle } from "@/lib/types/domain/equipment";
 
-import { useEquipmentList, useEquipmentAxles } from "@/lib/hooks/useEquipments";
+import { useEquipments, useEquipmentAxles } from "@/lib/hooks/useEquipments";
 import {
   useTirePositionConfigsByEquipment,
   useTireAssignments,
@@ -36,6 +36,7 @@ export function TireAssignmentsContainer() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Data fetching (hooks existentes)
+  const { useGetAll: useEquipmentList } = useEquipments();
   const {
     data: equipmentsData,
     isLoading: isLoadingEquipments,
@@ -54,8 +55,9 @@ export function TireAssignmentsContainer() {
       : (equipmentsData as any).data ?? [];
   }, [equipmentsData]);
 
-  const { data: axlesData, isLoading: isLoadingAxles } = useEquipmentAxles(
-    selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
+  const { useGetAll: useGetAxles } = useEquipmentAxles();
+  const { data: axlesData, isLoading: isLoadingAxles } = useGetAxles(
+    selectedEquipmentId ? { equipmentId: selectedEquipmentId } : {}
   );
 
   const axles: EquipmentAxle[] = useMemo(() => {

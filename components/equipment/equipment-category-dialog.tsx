@@ -6,11 +6,7 @@ import type { EquipmentCategory } from "@/lib/types/domain/equipment";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EquipmentCategoryForm } from "@/components/forms/equipment-category-form";
-import {
-  useCreateEquipmentCategory,
-  useUpdateEquipmentCategory,
-  useDeleteEquipmentCategory,
-} from "@/lib/hooks/useEquipments";
+import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,12 +33,10 @@ export function EquipmentCategoryDialog({
   category,
 }: EquipmentCategoryDialogProps) {
   const { toast } = useToast();
-  const { mutate: createCategory, isPending: creating } =
-    useCreateEquipmentCategory();
-  const { mutate: updateCategory, isPending: updating } =
-    useUpdateEquipmentCategory();
-  const { mutate: deleteCategory, isPending: deleting } =
-    useDeleteEquipmentCategory();
+  const { useCreate, useUpdate, useDelete } = useEquipmentCategories();
+  const { mutate: createCategory, isPending: creating } = useCreate();
+  const { mutate: updateCategory, isPending: updating } = useUpdate();
+  const { mutate: deleteCategory, isPending: deleting } = useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -67,7 +61,7 @@ export function EquipmentCategoryDialog({
       });
     } else if (mode === "edit" && category) {
       updateCategory(
-        { id: category.id, data },
+        { id: category.id, dto: data },
         {
           onSuccess: () => {
             toast({

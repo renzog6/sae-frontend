@@ -7,6 +7,29 @@ import { AxleType, EquipmentStatus } from "../shared/enums";
 import { Company } from "./company";
 import { TirePositionConfig } from "./tire";
 
+// ===== Axles DTOs =====
+
+export interface CreateEquipmentAxleDto {
+  equipmentId: number;
+  order: number; // Eje 1, 2, 3...
+  axleType: AxleType; // Enum
+  wheelCount: number;
+  description?: string;
+}
+
+export interface UpdateEquipmentAxleDto
+  extends Partial<CreateEquipmentAxleDto> {}
+
+export interface CreateAxleWithPositionsDto {
+  axle: CreateEquipmentAxleDto;
+
+  positions: Array<{
+    positionKey: string; // Ej: "1L", "2R"
+    side: string; // Ej: "left" | "right"
+    isDual: boolean; // Simple o dual
+  }>;
+}
+
 // ===== Equipment Axle =====
 export interface EquipmentAxle {
   id: number;

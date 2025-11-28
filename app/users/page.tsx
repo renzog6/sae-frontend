@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useUsers, useDeleteUser } from "@/lib/hooks/useUsers";
+import { useUsers } from "@/lib/hooks/useUsers";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import {
@@ -39,8 +39,12 @@ import { useToast } from "@/components/ui/toaster";
 
 export default function UsersPage() {
   const { data: session } = useSession();
-  const { data: usersResponse, isLoading: loading, error } = useUsers();
-  const { mutate: deleteUser, isPending: deleting } = useDeleteUser();
+  const {
+    data: usersResponse,
+    isLoading: loading,
+    error,
+  } = useUsers().useGetAll();
+  const { mutate: deleteUser, isPending: deleting } = useUsers().useDelete();
   const router = useRouter();
   const { toast } = useToast();
 

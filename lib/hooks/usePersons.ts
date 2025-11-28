@@ -1,6 +1,6 @@
 // filepath: sae-frontend/lib/hooks/usePersons.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PersonsService } from "@/lib/api/persons";
+import { PersonsService } from "@/lib/api/persons/persons.service";
 import { Person } from "@/lib/types/domain/employee";
 import { PaginatedResponse } from "@/lib/types/core/api";
 import {

@@ -2,10 +2,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import {
-  useEquipmentDetail,
-  useUpdateEquipment,
-} from "@/lib/hooks/useEquipments";
+import { useEquipments } from "@/lib/hooks/useEquipments";
 import { EquipmentForm } from "@/components/forms/equipment-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -21,11 +18,12 @@ export default function EquipmentEditPage() {
 
   const id = params?.id as string;
 
-  const {
-    data: equipment,
-    isLoading,
-    error,
-  } = useEquipmentDetail(id ? parseInt(id) : undefined);
+  const { useGetById: useEquipmentDetail, useUpdate: useUpdateEquipment } =
+    useEquipments();
+
+  const equipmentId = id ? parseInt(id) : 0;
+
+  const { data: equipment, isLoading, error } = useEquipmentDetail(equipmentId);
 
   const { mutate: updateEquipment, isPending } = useUpdateEquipment();
 
@@ -57,7 +55,7 @@ export default function EquipmentEditPage() {
 
   const handleSubmit = (data: any) => {
     updateEquipment(
-      { id: equipment.id, data },
+      { id: equipment.id, dto: data },
       {
         onSuccess: () => {
           toast({

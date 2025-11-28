@@ -2,7 +2,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEquipmentDetail } from "@/lib/hooks/useEquipments";
+import { useEquipments } from "@/lib/hooks/useEquipments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,11 @@ export default function EquipmentDetailPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const {
-    data: equipment,
-    isLoading,
-    error,
-  } = useEquipmentDetail(id ? parseInt(id) : undefined);
+  const { useGetById: useEquipmentDetail } = useEquipments();
+
+  const equipmentId = id ? parseInt(id) : 0;
+
+  const { data: equipment, isLoading, error } = useEquipmentDetail(equipmentId);
 
   if (isLoading) {
     return (
@@ -68,8 +68,10 @@ export default function EquipmentDetailPage() {
                 Estado
               </label>
               <div className="mt-1">
-                <Badge className={statusColors[equipment.status]}>
-                  {equipmentStatusLabels[equipment.status]}
+                <Badge
+                  className={statusColors[equipment.status as EquipmentStatus]}
+                >
+                  {equipmentStatusLabels[equipment.status as EquipmentStatus]}
                 </Badge>
               </div>
             </div>

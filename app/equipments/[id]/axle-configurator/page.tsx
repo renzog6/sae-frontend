@@ -18,7 +18,8 @@ export default function AxleConfiguratorPage() {
   const [showConfigurator, setShowConfigurator] = useState(false);
 
   // Fetch existing axles and positions
-  const { data: axlesData, isLoading: axlesLoading } = useEquipmentAxles({
+  const { useGetAll: useGetAxles } = useEquipmentAxles();
+  const { data: axlesData, isLoading: axlesLoading } = useGetAxles({
     equipmentId: parseInt(equipmentId),
   });
 

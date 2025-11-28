@@ -24,16 +24,12 @@ import { Badge } from "@/components/ui/badge";
 import { Save, Settings, Eye, Plus, Trash2 } from "lucide-react";
 import { AxleDiagram } from "../tire/tire-axle-diagram";
 import { EquipmentSelector } from "@/components/equipment/equipment-selector";
-import { useEquipmentList } from "@/lib/hooks/useEquipments";
+import { useEquipments, useEquipmentAxles } from "@/lib/hooks/useEquipments";
 import { axleTypeLabels } from "@/lib/constants";
 import { AxleType, TireSide } from "@/lib/types/shared/enums";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { Equipment, EquipmentAxle } from "@/lib/types/domain/equipment";
 import { EquipmentAxlesService } from "@/lib/api/equipments";
-import {
-  useEquipmentAxles,
-  useCreateEquipmentAxle,
-} from "@/lib/hooks/useEquipments";
 import { useTirePositionConfigsByEquipment } from "@/lib/hooks/useTires";
 
 interface Props {
@@ -68,6 +64,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
   const [showPreview, setShowPreview] = useState(false);
 
   // Data fetching
+  const { useGetAll: useEquipmentList } = useEquipments();
   const { data: equipmentsData, isLoading: equipmentsLoading } =
     useEquipmentList({
       page: 1,
@@ -76,7 +73,8 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
     });
 
   // Fetch existing axles for selected equipment
-  const { data: existingAxles, isLoading: axlesLoading } = useEquipmentAxles({
+  const { useGetAll: useGetAxles } = useEquipmentAxles();
+  const { data: existingAxles, isLoading: axlesLoading } = useGetAxles({
     equipmentId: selectedEquipmentId || 0,
   });
 
@@ -85,7 +83,8 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
     useTirePositionConfigsByEquipment(selectedEquipmentId || 0);
 
   // Mutation for creating axle with positions
-  const createAxleMutation = useCreateEquipmentAxle();
+  const { useCreateAxleWithPositions } = useEquipmentAxles();
+  const createAxleMutation = useCreateAxleWithPositions();
 
   const equipments: Equipment[] = Array.isArray(equipmentsData)
     ? equipmentsData
@@ -240,7 +239,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
         axle: {
           equipmentId: selectedEquipmentId!,
           order: parseInt(axleForm.order),
-          axleType: axleForm.axleType,
+          axleType: axleForm.axleType as AxleType,
           wheelCount: parseInt(axleForm.wheelCount),
           description: axleForm.description,
         },

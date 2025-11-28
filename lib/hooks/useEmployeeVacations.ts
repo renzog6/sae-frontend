@@ -1,77 +1,27 @@
 // filepath: sae-frontend/lib/hooks/useEmployeeVacations.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EmployeeVacationsService } from "@/lib/api/employees";
-import {
-  EmployeeVacationFormData,
-  UpdateEmployeeVacationFormData,
-} from "@/lib/validations/employeeVacation";
-import {
-  EmployeeVacation,
-  CreateEmployeeVacationDto,
-  UpdateEmployeeVacationDto,
-} from "@/lib/types/domain/employee";
 
-export function useEmployeeVacations(page?: number, limit?: number) {
-  return useQuery<EmployeeVacation[], Error>({
-    queryKey: ["employeeVacations", page, limit],
-    queryFn: () => EmployeeVacationsService.getAll({ page, limit }),
-  });
-}
+/**
+ * Hook base que provee: useGetAll, useGetById, useCreate, useUpdate, useDelete.
+ */
+const baseHooks = createApiHooks(EmployeeVacationsService, "employeeVacations");
 
-export function useEmployeeVacation(id: number) {
-  return useQuery<EmployeeVacation, Error>({
-    queryKey: ["employeeVacation", id],
-    queryFn: () => EmployeeVacationsService.getById(id),
-    enabled: !!id,
-  });
-}
+/**
+ * Hooks extendidos para métodos extra del servicio,
+ * como descargar PDFs u otros endpoints que no son CRUD.
+ */
+export const useEmployeeVacations = () => {
+  const qc = useQueryClient();
 
-export function useCreateEmployeeVacation() {
-  const queryClient = useQueryClient();
+  const useDownloadPdf = () =>
+    useMutation({
+      mutationFn: (id: number) => EmployeeVacationsService.downloadPdf(id),
+    });
 
-  return useMutation({
-    mutationFn: (vacationData: CreateEmployeeVacationDto) =>
-      EmployeeVacationsService.create(vacationData),
-    onSuccess: () => {
-      // Invalidar y refetch la lista de vacaciones de empleados
-      queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
-    },
-  });
-}
-
-export function useUpdateEmployeeVacation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      vacationData,
-    }: {
-      id: number;
-      vacationData: UpdateEmployeeVacationDto;
-    }) => EmployeeVacationsService.update(id, vacationData),
-    onSuccess: () => {
-      // Invalidar tanto la lista de vacaciones como la vacación individual
-      queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
-      queryClient.invalidateQueries({ queryKey: ["employeeVacation"] });
-    },
-  });
-}
-
-export function useDeleteEmployeeVacation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: number) => EmployeeVacationsService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["employeeVacations"] });
-    },
-  });
-}
-
-export function useDownloadVacationPdf() {
-  return useMutation({
-    mutationFn: (id: number) => EmployeeVacationsService.downloadPdf(id),
-  });
-}
+  return {
+    ...baseHooks,
+    useDownloadPdf,
+  };
+};

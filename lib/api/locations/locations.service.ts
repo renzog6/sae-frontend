@@ -1,9 +1,9 @@
-// filepath: sae-frontend/lib/api/locations.ts
-import { ApiClient } from "./apiClient";
+// filepath: sae-frontend/lib/api/locations/locations.service.ts
+import { ApiClient } from "../apiClient";
 import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { City, Province, Address } from "@/lib/types/shared/location";
-import { CityFormData, AddressFormData } from "@/lib/validations/location";
+import { CreateCityDto, CreateAddressDto } from "@/lib/types/shared/location";
 
 export class LocationsService {
   private static citiesPath = "/locations/cities";
@@ -38,7 +38,7 @@ export class LocationsService {
     );
   }
 
-  static async createCity(cityData: CityFormData): Promise<City> {
+  static async createCity(cityData: CreateCityDto): Promise<City> {
     return ApiErrorHandler.handleApiCall(
       async () => {
         const response = await ApiClient.post<ApiResponse<City>>(
@@ -164,7 +164,7 @@ export class LocationsService {
     );
   }
 
-  static async createAddress(body: AddressFormData): Promise<Address> {
+  static async createAddress(body: CreateAddressDto): Promise<Address> {
     return ApiErrorHandler.handleApiCall(
       async () => {
         const response = await ApiClient.post<ApiResponse<Address>>(

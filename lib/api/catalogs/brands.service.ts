@@ -1,97 +1,33 @@
 // filepath: sae-frontend/lib/api/catalogs/brands.service.ts
+import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
-import {
-  BaseQueryParams,
-  PaginatedResponse,
-  ApiResponse,
-} from "@/lib/types/core/api";
-import { QueryBuilder } from "@/lib/api/queryBuilder";
+import { ApiResponse } from "@/lib/types/core/api";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
-import { Brand } from "@/lib/types/shared/catalogs";
-import { BrandFormData, UpdateBrandFormData } from "@/lib/validations/catalog";
+import {
+  Brand,
+  CreateBrandDto,
+  UpdateBrandDto,
+} from "@/lib/types/shared/catalogs";
 
-export class BrandsService {
-  private static basePath = "/brands";
+class BrandsServiceClass extends BaseApiService<
+  Brand,
+  CreateBrandDto,
+  UpdateBrandDto
+> {
+  protected basePath = "/brands";
 
-  static async getAll(query?: BaseQueryParams) {
+  /**
+   * Método adicional: RESTORE
+   * /brands/:id/restore  (PUT)
+   */
+  async restore(id: number): Promise<Brand> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const url = QueryBuilder.buildUrl(this.basePath, query);
-        const response = await ApiClient.get<PaginatedResponse<Brand>>(url);
-        return response;
-      },
-      "BrandsService",
-      "getAll",
-      { query }
-    );
-  }
-
-  static async getById(id: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.get<ApiResponse<Brand>>(
-          `${this.basePath}/${id}`
-        );
-        return response.data;
-      },
-      "BrandsService",
-      "getById",
-      { id }
-    );
-  }
-
-  static async create(data: BrandFormData) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.post<ApiResponse<Brand>>(
-          this.basePath,
-          data
-        );
-        return response.data;
-      },
-      "BrandsService",
-      "create",
-      { data }
-    );
-  }
-
-  static async update(id: number, data: UpdateBrandFormData) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.put<ApiResponse<Brand>>(
-          `${this.basePath}/${id}`,
-          data
-        );
-        return response.data;
-      },
-      "BrandsService",
-      "update",
-      { id, data }
-    );
-  }
-
-  static async delete(id: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.delete<ApiResponse<string>>(
-          `${this.basePath}/${id}`
-        );
-        return response.data;
-      },
-      "BrandsService",
-      "delete",
-      { id }
-    );
-  }
-
-  static async restore(id: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.put<ApiResponse<Brand>>(
+        const res = await ApiClient.put<ApiResponse<Brand>>(
           `${this.basePath}/${id}/restore`,
           {}
         );
-        return response.data;
+        return res.data;
       },
       "BrandsService",
       "restore",
@@ -99,3 +35,5 @@ export class BrandsService {
     );
   }
 }
+
+export const BrandsService = new BrandsServiceClass();

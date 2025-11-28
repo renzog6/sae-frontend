@@ -39,7 +39,7 @@ import {
   type CreatePersonFormData,
   createPersonDefaultValues,
 } from "@/lib/validations/person";
-import { PersonsService } from "@/lib/api/persons";
+import { PersonsService } from "@/lib/api/persons/persons.service";
 import { genderLabels, maritalLabels } from "@/lib/constants";
 
 export default function EmployeeNewPage() {
