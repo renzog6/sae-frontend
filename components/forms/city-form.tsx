@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { CitySchema, CityFormData } from "@/lib/validations/location";
 import { useProvinces } from "@/lib/hooks/useLocations";
+import type { Province } from "@/lib/types/shared/location";
 
 interface CityFormProps {
   accessToken: string;
@@ -43,11 +44,12 @@ export function CityForm({
   onCancel,
   error,
 }: CityFormProps) {
+  const provincesQuery = useProvinces().useGetAll();
   const {
     data: provinces,
     isLoading: provLoading,
     error: provError,
-  } = useProvinces();
+  } = provincesQuery;
 
   const form = useForm<CityFormData>({
     resolver: zodResolver(CitySchema),
@@ -112,7 +114,7 @@ export function CityForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {provinces?.map((p) => (
+                  {provinces?.map((p: Province) => (
                     <SelectItem key={p.id} value={String(p.id)}>
                       {p.name}
                     </SelectItem>

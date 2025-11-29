@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { City } from "@/lib/types/shared/location";
-import { useCities, useDeleteCity } from "@/lib/hooks/useLocations";
+import { useCities } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "@/components/data-table";
 import { getCityColumns } from "./columns";
@@ -36,8 +36,11 @@ export default function LocationsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const { data: cities = [], isLoading, error } = useCities();
-  const { mutate: deleteCity, isPending: deleting } = useDeleteCity();
+  const { useGetAll, useDelete } = useCities();
+  const citiesQuery = useGetAll();
+  const { data: citiesResponse, isLoading, error } = citiesQuery;
+  const cities = citiesResponse?.data || [];
+  const { mutate: deleteCity, isPending: deleting } = useDelete();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");

@@ -41,12 +41,8 @@ import {
 } from "@/lib/validations/employee";
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
-import {
-  useAddressesByPerson,
-  useCreateAddress,
-  useUpdateAddress,
-  useDeleteAddress,
-} from "@/lib/hooks/useLocations";
+import type { Address } from "@/lib/types/shared/location";
+import { useAddresses } from "@/lib/hooks/useLocations";
 import {
   useContactsByPerson,
   useCreateContact,
@@ -90,13 +86,16 @@ export default function EmployeeDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { useByPerson, useCreate, useUpdate, useDelete } = useAddresses();
+
   // Person-scoped lists and mutations
   const personId = employee?.personId;
-  const { data: personAddresses = [] } = useAddressesByPerson(personId ?? 0);
+  const personAddressesQuery = useByPerson(personId ?? 0);
+  const { data: personAddresses = [] } = personAddressesQuery;
   const { data: personContacts = [] } = useContactsByPerson(personId ?? 0);
-  const createAddressMut = useCreateAddress();
-  const updateAddressMut = useUpdateAddress();
-  const deleteAddressMut = useDeleteAddress();
+  const createAddressMut = useCreate();
+  const updateAddressMut = useUpdate();
+  const deleteAddressMut = useDelete();
   const createContactMut = useCreateContact();
   const updateContactMut = useUpdateContact();
   const deleteContactMut = useDeleteContact();
@@ -400,7 +399,7 @@ export default function EmployeeDetailPage() {
             </div>
             <div className="space-y-2">
               {personAddresses?.length ? (
-                personAddresses.map((addr) => (
+                personAddresses.map((addr: Address) => (
                   <div
                     key={
                       addr.id ?? `${addr.street}-${addr.number}-${addr.cityId}`
@@ -709,7 +708,7 @@ export default function EmployeeDetailPage() {
             onSave={(data) => {
               if (!personId) return;
               if (editingAddress?.id) {
-                updateAddressMut.mutate({ id: editingAddress.id, data });
+                updateAddressMut.mutate({ id: editingAddress.id, dto: data });
               } else {
                 createAddressMut.mutate({ ...data, personId });
               }

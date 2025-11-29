@@ -24,12 +24,7 @@ import type { Contact } from "@/lib/types/shared/contact";
 import { useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
-import {
-  useAddressesByCompany,
-  useCreateAddress,
-  useUpdateAddress,
-  useDeleteAddress,
-} from "@/lib/hooks/useLocations";
+import { useAddresses } from "@/lib/hooks/useLocations";
 import {
   useContactsByCompany,
   useCreateContact,
@@ -75,14 +70,17 @@ export default function CompanyDetailPage() {
     undefined
   );
 
+  const { useByCompany, useCreate, useUpdate, useDelete } = useAddresses();
+
   // Data via hooks
-  const { data: addresses = [] } = useAddressesByCompany(id ?? 0);
+  const addressesQuery = useByCompany(id ?? 0);
+  const { data: addresses = [] } = addressesQuery;
   const { data: companyContacts = [] } = useContactsByCompany(id ?? 0);
 
   // Mutations
-  const createAddressMut = useCreateAddress();
-  const updateAddressMut = useUpdateAddress();
-  const deleteAddressMut = useDeleteAddress();
+  const createAddressMut = useCreate();
+  const updateAddressMut = useUpdate();
+  const deleteAddressMut = useDelete();
   const createContactMut = useCreateContact();
   const updateContactMut = useUpdateContact();
   const deleteContactMut = useDeleteContact();
@@ -522,7 +520,7 @@ export default function CompanyDetailPage() {
         onSave={(data) => {
           if (!id) return;
           if (editingAddress?.id) {
-            updateAddressMut.mutate({ id: editingAddress.id, data });
+            updateAddressMut.mutate({ id: editingAddress.id, dto: data });
           } else {
             createAddressMut.mutate({ ...data, companyId: id });
           }

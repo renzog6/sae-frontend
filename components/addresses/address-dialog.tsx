@@ -25,6 +25,7 @@ import {
   type AddressFormData,
 } from "@/lib/validations/location";
 import { useProvinces, useCities } from "@/lib/hooks/useLocations";
+import type { Province, City } from "@/lib/types/shared/location";
 import { useMemo, useState, useEffect } from "react";
 import {
   Popover,
@@ -85,8 +86,12 @@ export function AddressDialog({
   }, [initial, form]);
 
   // Provincias y Ciudades
-  const { data: provinces = [], isLoading: provLoading } = useProvinces();
-  const { data: allCities = [], isLoading: citiesLoading } = useCities();
+  const provincesQuery = useProvinces().useGetAll();
+  const { data: provinces = [], isLoading: provLoading } = provincesQuery;
+
+  const citiesQuery = useCities().useGetAll();
+  const { data: citiesResponse, isLoading: citiesLoading } = citiesQuery;
+  const allCities = citiesResponse?.data || [];
 
   // Provincia seleccionada (no forma parte del AddressSchema)
   const [provinceOpen, setProvinceOpen] = useState(false);
@@ -98,7 +103,7 @@ export function AddressDialog({
   // Derivar provincia si tenemos una ciudad inicial
   useEffect(() => {
     if (initial?.cityId && allCities.length > 0) {
-      const city = allCities.find((c) => c.id === initial.cityId);
+      const city = allCities.find((c: City) => c.id === initial.cityId);
       if (city) setSelectedProvinceId(city.provinceId);
     }
   }, [initial?.cityId, allCities]);
@@ -219,8 +224,9 @@ export function AddressDialog({
                       className="justify-between w-full"
                     >
                       {selectedProvinceId
-                        ? provinces.find((p) => p.id === selectedProvinceId)
-                            ?.name
+                        ? provinces.find(
+                            (p: Province) => p.id === selectedProvinceId
+                          )?.name
                         : provLoading
                         ? "Cargando..."
                         : "Selecciona una provincia"}
@@ -234,7 +240,7 @@ export function AddressDialog({
                           No se encontraron provincias
                         </CommandEmpty>
                         <CommandGroup>
-                          {provinces.map((p) => (
+                          {provinces.map((p: Province) => (
                             <CommandItem
                               key={p.id}
                               onSelect={() => {
@@ -278,8 +284,9 @@ export function AddressDialog({
                           }
                         >
                           {field.value
-                            ? filteredCities.find((c) => c.id === field.value)
-                                ?.name
+                            ? filteredCities.find(
+                                (c: City) => c.id === field.value
+                              )?.name
                             : !selectedProvinceId
                             ? "Selecciona una provincia primero"
                             : citiesLoading
@@ -297,7 +304,7 @@ export function AddressDialog({
                                 : "Selecciona una provincia"}
                             </CommandEmpty>
                             <CommandGroup>
-                              {filteredCities.map((c) => (
+                              {filteredCities.map((c: City) => (
                                 <CommandItem
                                   key={c.id}
                                   onSelect={() => {

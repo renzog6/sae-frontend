@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/locations/city-drawer.tsx
+// filepath: sae-frontend/components/locations/city-dialog.tsx
 "use client";
 
 import { useMemo } from "react";
@@ -10,7 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { CityForm } from "@/components/forms/city-form";
-import { useCreateCity, useUpdateCity } from "@/lib/hooks/useLocations";
+import { useCities } from "@/lib/hooks/useLocations";
 import type { City } from "@/lib/types/shared/location";
 import type { CityFormData } from "@/lib/validations/location";
 import { motion, useReducedMotion } from "framer-motion";
@@ -31,16 +31,17 @@ export function CityDialog({
   mode,
   city,
 }: CityDrawerProps) {
+  const { useCreate, useUpdate } = useCities();
   const {
     mutate: createCity,
     isPending: creating,
     error: createError,
-  } = useCreateCity();
+  } = useCreate();
   const {
     mutate: updateCity,
     isPending: updating,
     error: updateError,
-  } = useUpdateCity();
+  } = useUpdate();
   const prefersReducedMotion = useReducedMotion();
   const { toast } = useToast();
 
@@ -79,7 +80,7 @@ export function CityDialog({
       });
     } else if (mode === "edit" && city) {
       updateCity(
-        { id: city.id, cityData: data },
+        { id: city.id, dto: data },
         {
           onSuccess: () => {
             toast({
