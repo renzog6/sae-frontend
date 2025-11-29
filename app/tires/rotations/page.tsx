@@ -38,11 +38,12 @@ export default function TireRotationsPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useTireRotations();
   const {
     data: rotationsData,
     isLoading,
     error,
-  } = useTireRotations({
+  } = useGetAll({
     page,
     limit,
     q: debouncedQuery || undefined,

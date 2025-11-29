@@ -30,7 +30,7 @@ import { AxleType, TireSide } from "@/lib/types/shared/enums";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { Equipment, EquipmentAxle } from "@/lib/types/domain/equipment";
 import { EquipmentAxlesService } from "@/lib/api/equipments";
-import { useTirePositionConfigsByEquipment } from "@/lib/hooks/useTires";
+import { useTirePositions } from "@/lib/hooks/useTires";
 
 interface Props {
   equipmentId?: number;
@@ -79,8 +79,9 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
   });
 
   // Fetch positions for selected equipment
+  const { useGetByEquipment } = useTirePositions();
   const { data: existingPositions, isLoading: positionsLoading } =
-    useTirePositionConfigsByEquipment(selectedEquipmentId || 0);
+    useGetByEquipment(selectedEquipmentId || 0);
 
   // Mutation for creating axle with positions
   const { useCreateAxleWithPositions } = useEquipmentAxles();

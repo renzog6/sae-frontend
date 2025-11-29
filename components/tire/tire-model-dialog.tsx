@@ -6,11 +6,7 @@ import type { TireModel } from "@/lib/types/domain/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { TireModelForm } from "@/components/forms/tire-model-form";
-import {
-  useCreateTireModel,
-  useUpdateTireModel,
-  useDeleteTireModel,
-} from "@/lib/hooks/useTires";
+import { useTireModels } from "@/lib/hooks/useTires";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,12 +35,10 @@ export function TireModelDialog({
   model,
 }: TireModelDialogProps) {
   const { toast } = useToast();
-  const { mutate: createModel, isPending: creating } =
-    useCreateTireModel(accessToken);
-  const { mutate: updateModel, isPending: updating } =
-    useUpdateTireModel(accessToken);
-  const { mutate: deleteModel, isPending: deleting } =
-    useDeleteTireModel(accessToken);
+  const { useCreate, useUpdate, useDelete } = useTireModels();
+  const { mutate: createModel, isPending: creating } = useCreate();
+  const { mutate: updateModel, isPending: updating } = useUpdate();
+  const { mutate: deleteModel, isPending: deleting } = useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -69,7 +63,7 @@ export function TireModelDialog({
       });
     } else if (mode === "edit" && model) {
       updateModel(
-        { id: model.id, data },
+        { id: model.id, dto: data },
         {
           onSuccess: () => {
             toast({

@@ -42,11 +42,12 @@ export default function TireSizesPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useTireSizes();
   const {
     data: sizesResponse,
     isLoading,
     error,
-  } = useTireSizes(accessToken, {
+  } = useGetAll({
     page,
     limit,
     query: debouncedQuery,

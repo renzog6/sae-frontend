@@ -1,55 +1,56 @@
-//filepath: sae-frontend/lib/api/tires/tire-events.service.ts
-
+// filepath: sae-frontend/lib/api/tires/tire-events.service.ts
+import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse } from "@/lib/types/core/api";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 import { TireEvent } from "@/lib/types/domain/tire";
 
-export class TireEventsService {
-  private static basePath = "/tires/events";
+// 🔹 Query params específicos de eventos
+interface TireEventsQueryParams extends BaseQueryParams {
+  eventType?: string;
+  fromDate?: string;
+  toDate?: string;
+}
 
-  static async getByTire(tireId: number) {
+class TireEventsServiceClass extends BaseApiService<TireEvent, any, any> {
+  protected basePath = "/tires/events";
+
+  async getByTire(tireId: number) {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const response = await ApiClient.get<TireEvent[]>(
-          `${this.basePath}/tire/${tireId}`
-        );
-        return response;
+        return ApiClient.get<TireEvent[]>(`${this.basePath}/tire/${tireId}`);
       },
-      "TireEventsService",
+      this.constructor.name,
       "getByTire",
       { tireId }
     );
   }
 
-  static async getAll(
-    params: {
-      page?: number;
-      limit?: number;
-      q?: string;
-      eventType?: string;
-      fromDate?: string;
-      toDate?: string;
-    } = {}
-  ) {
+  async getAll(
+    filter?: TireEventsQueryParams
+  ): Promise<PaginatedResponse<TireEvent>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const query = new URLSearchParams();
-        if (params.page) query.append("page", params.page.toString());
-        if (params.limit) query.append("limit", params.limit.toString());
-        if (params.q) query.append("q", params.q);
-        if (params.eventType) query.append("eventType", params.eventType);
-        if (params.fromDate) query.append("fromDate", params.fromDate);
-        if (params.toDate) query.append("toDate", params.toDate);
+        // Base (page, limit, q)
+        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-        const response = await ApiClient.get<PaginatedResponse<TireEvent>>(
-          `${this.basePath}?${query.toString()}`
-        );
-        return response;
+        // Específicos
+        const specificQuery = QueryBuilder.buildSpecific({
+          eventType: filter?.eventType,
+          fromDate: filter?.fromDate,
+          toDate: filter?.toDate,
+        });
+
+        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+
+        return ApiClient.get<PaginatedResponse<TireEvent>>(finalUrl);
       },
-      "TireEventsService",
+      this.constructor.name,
       "getAll",
-      { params }
+      { filter }
     );
   }
 }
+
+export const TireEventsService = new TireEventsServiceClass();

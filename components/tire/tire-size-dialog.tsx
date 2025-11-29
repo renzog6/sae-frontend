@@ -6,11 +6,7 @@ import type { TireSize } from "@/lib/types/domain/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { TireSizeForm } from "@/components/forms/tire-size-form";
-import {
-  useCreateTireSize,
-  useUpdateTireSize,
-  useDeleteTireSize,
-} from "@/lib/hooks/useTires";
+import { useTireSizes } from "@/lib/hooks/useTires";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,12 +35,10 @@ export function TireSizeDialog({
   size,
 }: TireSizeDialogProps) {
   const { toast } = useToast();
-  const { mutate: createSize, isPending: creating } =
-    useCreateTireSize(accessToken);
-  const { mutate: updateSize, isPending: updating } =
-    useUpdateTireSize(accessToken);
-  const { mutate: deleteSize, isPending: deleting } =
-    useDeleteTireSize(accessToken);
+  const { useCreate, useUpdate, useDelete } = useTireSizes();
+  const { mutate: createSize, isPending: creating } = useCreate();
+  const { mutate: updateSize, isPending: updating } = useUpdate();
+  const { mutate: deleteSize, isPending: deleting } = useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -69,7 +63,7 @@ export function TireSizeDialog({
       });
     } else if (mode === "edit" && size) {
       updateSize(
-        { id: size.id, data },
+        { id: size.id, dto: data },
         {
           onSuccess: () => {
             toast({

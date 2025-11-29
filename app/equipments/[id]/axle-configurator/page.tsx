@@ -10,7 +10,7 @@ import Link from "next/link";
 import { AxleDiagram } from "@/components/tire/tire-axle-diagram";
 import { EquipmentAxleConfigurator } from "@/components/equipment/equipment-axle-configurator";
 import { useEquipmentAxles } from "@/lib/hooks/useEquipments";
-import { useTirePositionConfigsByEquipment } from "@/lib/hooks/useTires";
+import { useTirePositions } from "@/lib/hooks/useTires";
 
 export default function AxleConfiguratorPage() {
   const params = useParams();
@@ -23,8 +23,9 @@ export default function AxleConfiguratorPage() {
     equipmentId: parseInt(equipmentId),
   });
 
+  const { useGetByEquipment } = useTirePositions();
   const { data: positions = [], isLoading: positionsLoading } =
-    useTirePositionConfigsByEquipment(parseInt(equipmentId));
+    useGetByEquipment(parseInt(equipmentId));
 
   const axles = Array.isArray(axlesData)
     ? axlesData

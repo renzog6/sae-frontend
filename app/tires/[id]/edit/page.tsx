@@ -28,7 +28,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { TiresService } from "@/lib/api/tires";
-import { useTireDetail } from "@/lib/hooks/useTires";
+import { useTires } from "@/lib/hooks/useTires";
 import { TireStatus } from "@/lib/types/shared/enums";
 import {
   updateTireSchema,
@@ -50,11 +50,8 @@ export default function TireEditPage() {
     return Number.isNaN(n) ? undefined : n;
   }, [params]);
 
-  const {
-    data: tire,
-    isLoading,
-    error: fetchError,
-  } = useTireDetail(id, accessToken);
+  const { useGetById } = useTires();
+  const { data: tire, isLoading, error: fetchError } = useGetById(id as number);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

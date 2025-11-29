@@ -68,21 +68,6 @@ class EquipmentTypesServiceClass extends BaseApiService<
       { categoryId }
     );
   }
-
-  /**
-   * DELETE estándar SAE (void)
-   * Override solo si querés comportamiento custom
-   */
-  async delete(id: number): Promise<void> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        await ApiClient.delete(`${this.basePath}/${id}`);
-      },
-      this.constructor.name,
-      "delete",
-      { id }
-    );
-  }
 }
 
 export const EquipmentTypesService = new EquipmentTypesServiceClass();

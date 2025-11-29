@@ -21,7 +21,8 @@ import { Loader2, Package2 } from "lucide-react";
 const ITEMS_PER_PAGE = 5;
 
 export default function TireStockPage() {
-  const { data: tiresData, isLoading } = useTires({
+  const { useGetAll } = useTires();
+  const { data: tiresData, isLoading } = useGetAll({
     status: "IN_STOCK",
     page: 1,
     limit: 100,

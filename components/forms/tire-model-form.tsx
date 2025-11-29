@@ -42,7 +42,8 @@ export function TireModelForm({
   accessToken,
 }: TireModelFormProps) {
   const { data: brands } = useBrands();
-  const { data: sizesResponse } = useTireSizes(accessToken, {
+  const { useGetAll } = useTireSizes();
+  const { data: sizesResponse } = useGetAll({
     page: 1,
     limit: 100,
   });

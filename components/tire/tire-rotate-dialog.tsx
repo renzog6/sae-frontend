@@ -25,10 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { RotateCcw, ArrowRight, Truck, MapPin } from "lucide-react";
 import { TireRotationsService } from "@/lib/api/tires";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  useTirePositionConfigsByEquipment,
-  useTireAssignments,
-} from "@/lib/hooks/useTires";
+import { useTirePositions, useTireAssignments } from "@/lib/hooks/useTires";
 import { useEquipments } from "@/lib/hooks/useEquipments";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { Equipment } from "@/lib/types/domain/equipment";
@@ -74,14 +71,14 @@ export const TireRotateDialog: React.FC<Props> = ({
   });
 
   // Fetch current assignments for the equipment to know which positions are occupied
+  const { useGetOpenByEquipment } = useTireAssignments();
   const { data: currentAssignments, isLoading: assignmentsLoading } =
-    useTireAssignments({
-      equipmentId: selectedEquipment?.id,
-    });
+    useGetOpenByEquipment(selectedEquipment?.id || 0);
 
   // Fetch available positions for the current equipment
+  const { useGetByEquipment } = useTirePositions();
   const { data: availablePositions, isLoading: positionsLoading } =
-    useTirePositionConfigsByEquipment(selectedEquipment?.id);
+    useGetByEquipment(selectedEquipment?.id || 0);
 
   // Filter positions that are available (not occupied by other tires)
   const availableTargetPositions = useMemo(() => {

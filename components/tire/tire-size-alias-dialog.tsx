@@ -6,11 +6,7 @@ import type { TireSize, TireSizeAlias } from "@/lib/types/domain/tire";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { TireSizeAliasForm } from "@/components/forms/tire-size-alias-form";
-import {
-  useCreateTireSizeAlias,
-  useUpdateTireSizeAlias,
-  useDeleteTireSizeAlias,
-} from "@/lib/hooks/useTires";
+import { useTireSizeAliases } from "@/lib/hooks/useTires";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,12 +37,10 @@ export function TireSizeAliasDialog({
   alias,
 }: TireSizeAliasDialogProps) {
   const { toast } = useToast();
-  const { mutate: createAlias, isPending: creating } =
-    useCreateTireSizeAlias(accessToken);
-  const { mutate: updateAlias, isPending: updating } =
-    useUpdateTireSizeAlias(accessToken);
-  const { mutate: deleteAlias, isPending: deleting } =
-    useDeleteTireSizeAlias(accessToken);
+  const { useCreate, useUpdate, useDelete } = useTireSizeAliases();
+  const { mutate: createAlias, isPending: creating } = useCreate();
+  const { mutate: updateAlias, isPending: updating } = useUpdate();
+  const { mutate: deleteAlias, isPending: deleting } = useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -71,7 +65,7 @@ export function TireSizeAliasDialog({
       });
     } else if (mode === "edit" && alias) {
       updateAlias(
-        { id: alias.id, data },
+        { id: alias.id, dto: data },
         {
           onSuccess: () => {
             toast({

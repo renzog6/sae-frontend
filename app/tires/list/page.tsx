@@ -53,11 +53,12 @@ export default function TiresPage() {
     setPage(1);
   }, [debouncedQuery, status, limit]);
 
+  const { useGetAll } = useTires();
   const {
     data: tiresData,
     isLoading,
     error,
-  } = useTires({
+  } = useGetAll({
     page,
     limit,
     status: status === "ALL" ? undefined : status,

@@ -54,11 +54,12 @@ export default function TireReportsEventsPage() {
     setPage(1);
   }, [debouncedQuery, eventType, fromDate, toDate, limit]);
 
+  const { useGetAll } = useTireEvents();
   const {
     data: eventsData,
     isLoading,
     error,
-  } = useTireEvents({
+  } = useGetAll({
     page,
     limit,
     q: debouncedQuery || undefined,

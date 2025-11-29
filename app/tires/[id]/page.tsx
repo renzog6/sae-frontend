@@ -1,14 +1,13 @@
 // filepath: sae-frontend/app/tires/[id]/page.tsx
-
 "use client";
 
 import { useParams } from "next/navigation";
-import { useTireDetail } from "@/lib/hooks/useTires";
+import { useTires } from "@/lib/hooks/useTires";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Wrench, Truck, Gauge, Ruler } from "lucide-react";
+import { Wrench, Truck, Gauge, Ruler } from "lucide-react";
 
 export default function TireDetailPage() {
   const params = useParams();
@@ -16,7 +15,7 @@ export default function TireDetailPage() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken || "";
 
-  const { data: tire, isLoading } = useTireDetail(id, accessToken);
+  const { data: tire, isLoading } = useTires().useGetById(id);
 
   if (isLoading) {
     return (

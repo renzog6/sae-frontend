@@ -37,17 +37,27 @@ export interface YearlyRecapReport {
   costByBrand: Record<string, number>;
 }
 
-export class TireReportsService {
-  private static basePath = "/tires/reports";
+class TireReportsServiceClass {
+  private basePath = "/tires/reports";
 
-  static async getAverageLife(filter?: TireReportFilter) {
+  // 🔧 Helper consistente con toda la estandarización SAE
+  private buildParams(obj?: Record<string, any>): string {
+    if (!obj) return "";
+    const params = new URLSearchParams();
+    Object.entries(obj).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value));
+      }
+    });
+    return params.toString();
+  }
+
+  async getAverageLife(filter?: TireReportFilter) {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const params = new URLSearchParams();
-        if (filter?.brand) params.append("brand", filter.brand);
-
+        const query = this.buildParams(filter);
         return ApiClient.get<AverageLifeReport>(
-          `${this.basePath}/average-life?${params.toString()}`
+          `${this.basePath}/average-life?${query}`
         );
       },
       "TireReportsService",
@@ -56,14 +66,12 @@ export class TireReportsService {
     );
   }
 
-  static async getCostPerKm(filter?: TireReportFilter) {
+  async getCostPerKm(filter?: TireReportFilter) {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const params = new URLSearchParams();
-        if (filter?.brand) params.append("brand", filter.brand);
-
+        const query = this.buildParams(filter);
         return ApiClient.get<CostPerKmReport[]>(
-          `${this.basePath}/cost-per-km?${params.toString()}`
+          `${this.basePath}/cost-per-km?${query}`
         );
       },
       "TireReportsService",
@@ -72,11 +80,12 @@ export class TireReportsService {
     );
   }
 
-  static async getOverRecapped(threshold = 2) {
+  async getOverRecapped(threshold = 2) {
     return ApiErrorHandler.handleApiCall(
       async () => {
+        const query = this.buildParams({ threshold });
         return ApiClient.get<OverRecappedReport[]>(
-          `${this.basePath}/over-recap?threshold=${threshold}`
+          `${this.basePath}/over-recap?${query}`
         );
       },
       "TireReportsService",
@@ -85,7 +94,7 @@ export class TireReportsService {
     );
   }
 
-  static async getBrandRanking() {
+  async getBrandRanking() {
     return ApiErrorHandler.handleApiCall(
       async () => {
         return ApiClient.get<BrandRankingReport[]>(
@@ -97,11 +106,12 @@ export class TireReportsService {
     );
   }
 
-  static async getYearlyRecap(year: number) {
+  async getYearlyRecap(year: number) {
     return ApiErrorHandler.handleApiCall(
       async () => {
+        const query = this.buildParams({ year });
         return ApiClient.get<YearlyRecapReport>(
-          `${this.basePath}/yearly-recaps?year=${year}`
+          `${this.basePath}/yearly-recaps?${query}`
         );
       },
       "TireReportsService",
@@ -110,3 +120,5 @@ export class TireReportsService {
     );
   }
 }
+
+export const TireReportsService = new TireReportsServiceClass();

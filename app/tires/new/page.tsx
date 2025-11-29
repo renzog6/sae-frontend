@@ -1,7 +1,6 @@
 // filepath: sae-frontend/app/tires/new/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import { useCreateTire, useTireModels } from "@/lib/hooks/useTires";
+import { useTires, useTireModels } from "@/lib/hooks/useTires";
 import { CreateTireForm } from "@/components/forms/create-tire-form";
 import { useToast } from "@/components/ui/toaster";
 
@@ -24,12 +23,14 @@ export default function TireNewPage() {
   const accessToken = session?.accessToken || "";
 
   // Fetch tire models for the form
-  const { data: modelsResponse, isLoading: modelsLoading } = useTireModels(
-    accessToken,
-    { page: 1, limit: 100 } // Get all models for selection
-  );
+  const { useGetAll: useGetModels } = useTireModels();
+  const { data: modelsResponse, isLoading: modelsLoading } = useGetModels({
+    page: 1,
+    limit: 100,
+  }); // Get all models for selection
 
-  const createTireMutation = useCreateTire(accessToken);
+  const { useCreate: useCreateTire } = useTires();
+  const createTireMutation = useCreateTire();
 
   const handleCreateTire = async (data: any) => {
     try {

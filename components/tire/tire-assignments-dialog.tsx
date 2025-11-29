@@ -66,7 +66,8 @@ export function TireAssignmentsDialog({
   const [searchTerm, setSearchTerm] = useState("");
 
   // Queries
-  const { data: tiresData, isLoading: tiresLoading } = useTires({
+  const { useGetAll } = useTires();
+  const { data: tiresData, isLoading: tiresLoading } = useGetAll({
     status: "IN_STOCK",
     page: 1,
     limit: 50,
@@ -135,7 +136,7 @@ export function TireAssignmentsDialog({
     }
   };
 
-  const availableTires = tiresData || [];
+  const availableTires = tiresData?.data || [];
   const availableEquipment = equipmentData?.data || [];
 
   // Filter tires based on search term

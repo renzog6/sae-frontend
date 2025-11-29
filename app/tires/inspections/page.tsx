@@ -39,11 +39,12 @@ export default function TireInspectionsPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useTireInspections();
   const {
     data: inspectionsData,
     isLoading,
     error,
-  } = useTireInspections({
+  } = useGetAll({
     page,
     limit,
     q: debouncedQuery || undefined,

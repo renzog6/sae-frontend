@@ -9,10 +9,7 @@ import type { TirePositionConfig } from "@/lib/types/domain/tire";
 import type { EquipmentAxle } from "@/lib/types/domain/equipment";
 
 import { useEquipments, useEquipmentAxles } from "@/lib/hooks/useEquipments";
-import {
-  useTirePositionConfigsByEquipment,
-  useTireAssignments,
-} from "@/lib/hooks/useTires";
+import { useTirePositions, useTireAssignments } from "@/lib/hooks/useTires";
 
 import { TireActionsPanel } from "@/components/tire/tire-actions-panel";
 import { AxleDiagram } from "@/components/tire/tire-axle-diagram";
@@ -65,8 +62,9 @@ export function TireAssignmentsContainer() {
     return Array.isArray(axlesData) ? axlesData : (axlesData as any).data ?? [];
   }, [axlesData]);
 
+  const { useGetByEquipment } = useTirePositions();
   const { data: positionsData, isLoading: isLoadingPositions } =
-    useTirePositionConfigsByEquipment(selectedEquipmentId || undefined);
+    useGetByEquipment(selectedEquipmentId || 0);
 
   const positions: TirePositionConfig[] = useMemo(() => {
     if (!positionsData) return [];
@@ -76,13 +74,12 @@ export function TireAssignmentsContainer() {
   }, [positionsData]);
 
   // Fetch current assignments for the selected equipment (only when equipment is selected)
+  const { useGetOpenByEquipment } = useTireAssignments();
   const {
     data: assignmentsData,
     isLoading: isLoadingAssignments,
     refetch: refetchAssignments,
-  } = useTireAssignments(
-    selectedEquipmentId ? { equipmentId: selectedEquipmentId } : undefined
-  );
+  } = useGetOpenByEquipment(selectedEquipmentId || 0);
 
   const assignments = useMemo(() => {
     if (!assignmentsData) return [];

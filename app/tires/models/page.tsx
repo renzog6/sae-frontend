@@ -41,11 +41,12 @@ export default function TireModelsPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useTireModels();
   const {
     data: modelsResponse,
     isLoading,
     error,
-  } = useTireModels(accessToken, {
+  } = useGetAll({
     page,
     limit,
   });

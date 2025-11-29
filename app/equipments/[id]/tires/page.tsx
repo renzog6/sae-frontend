@@ -16,11 +16,12 @@ export default function EquipmentTiresPage() {
   const accessToken = session?.accessToken || "";
   const equipmentId = params?.id as string;
 
+  const { useGetOpenByEquipment } = useTireAssignments();
   const {
     data: tireAssignments,
     isLoading,
     error,
-  } = useTireAssignments({ equipmentId: parseInt(equipmentId) });
+  } = useGetOpenByEquipment(parseInt(equipmentId));
 
   if (isLoading) {
     return (

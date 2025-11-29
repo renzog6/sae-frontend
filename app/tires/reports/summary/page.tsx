@@ -1,21 +1,20 @@
 // filepath: sae-frontend/app/tires/reports/summary/page.tsx
 "use client";
 
-import {
-  useTires,
-  useAverageLifeReport,
-  useCostPerKmReport,
-  useOverRecappedReport,
-} from "@/lib/hooks/useTires";
+import { useTires, useTireReports } from "@/lib/hooks/useTires";
 
 export default function TireReportsSummaryPage() {
-  const { data: tiresData } = useTires({ status: "IN_STOCK" });
-  const { data: averageLifeData } = useAverageLifeReport();
-  const { data: costPerKmData } = useCostPerKmReport();
-  const { data: overRecappedData } = useOverRecappedReport();
+  const { useGetAll } = useTires();
+  const { data: tiresData } = useGetAll({ status: "IN_STOCK" });
+
+  const { useAverageLife, useCostPerKm, useOverRecapped } = useTireReports();
+
+  const { data: averageLifeData } = useAverageLife();
+  const { data: costPerKmData } = useCostPerKm();
+  const { data: overRecappedData } = useOverRecapped();
 
   // Calcular KPIs dinámicos
-  const tiresInStock = tiresData?.length || 0;
+  const tiresInStock = tiresData?.data?.length || 0;
   const averageLifeKm = averageLifeData?.averageKm
     ? `${Math.round(averageLifeData.averageKm).toLocaleString()} km`
     : "N/A";
@@ -27,8 +26,10 @@ export default function TireReportsSummaryPage() {
         }`
       : "$0.00";
   const recapPercentage =
-    overRecappedData && tiresData
-      ? `${Math.round((overRecappedData.length / tiresData.length) * 100)}%`
+    overRecappedData && tiresData?.data
+      ? `${Math.round(
+          (overRecappedData.length / tiresData.data.length) * 100
+        )}%`
       : "0%";
 
   const kpis = [

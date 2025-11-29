@@ -1,107 +1,75 @@
-//filepath: sae-frontend/lib/api/tires/tire-inspections.service.ts
+// filepath: sae-frontend/lib/api/tires/tire-inspections.service.ts
 
+import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
-import { PaginatedResponse, ApiResponse } from "@/lib/types/core/api";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+
 import {
   TireInspection,
   CreateTireInspectionDto,
   UpdateTireInspectionDto,
 } from "@/lib/types/domain/tire";
 
-export class TireInspectionsService {
-  private static basePath = "/tires/inspections";
+import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
+import { QueryBuilder } from "@/lib/api/queryBuilder";
 
-  static async getAll(params?: { page?: number; limit?: number; q?: string }) {
+// ======================
+// Filtros específicos para inspecciones
+// ======================
+export interface TireInspectionsQueryParams extends BaseQueryParams {
+  tireId?: number; // opcional si quieras buscar por neumático
+}
+
+class TireInspectionsServiceClass extends BaseApiService<
+  TireInspection,
+  CreateTireInspectionDto,
+  UpdateTireInspectionDto
+> {
+  protected basePath = "/tires/inspections";
+
+  /**
+   * GET paginado + filtro por búsqueda (q)
+   */
+  async getAll(
+    filter?: TireInspectionsQueryParams
+  ): Promise<PaginatedResponse<TireInspection>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const queryParams = new URLSearchParams();
-        if (params?.page) queryParams.append("page", params.page.toString());
-        if (params?.limit) queryParams.append("limit", params.limit.toString());
-        if (params?.q) queryParams.append("q", params.q);
+        // 1) URL base (page, limit, search...)
+        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
 
-        const url = queryParams.toString()
-          ? `${this.basePath}?${queryParams.toString()}`
-          : this.basePath;
+        // 2) filtros custom
+        const specificParams = {
+          tireId: filter?.tireId,
+        };
+        const specificQuery = QueryBuilder.buildSpecific(specificParams);
 
-        const response = await ApiClient.get<PaginatedResponse<TireInspection>>(
-          url
-        );
-        return response;
+        // 3) URL final combinada
+        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
+
+        return ApiClient.get<PaginatedResponse<TireInspection>>(finalUrl);
       },
-      "TireInspectionsService",
+      this.constructor.name,
       "getAll",
-      { params }
+      { filter }
     );
   }
 
-  static async getById(id: number) {
+  /**
+   * GET todas las inspecciones de un neumático
+   */
+  async getByTire(tireId: number): Promise<TireInspection[]> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const response = await ApiClient.get<ApiResponse<TireInspection>>(
-          `${this.basePath}/${id}`
-        );
-        return response.data;
-      },
-      "TireInspectionsService",
-      "getById",
-      { id }
-    );
-  }
-
-  static async getByTire(tireId: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.get<TireInspection[]>(
+        return ApiClient.get<TireInspection[]>(
           `${this.basePath}/tire/${tireId}`
         );
-        return response;
       },
-      "TireInspectionsService",
+      this.constructor.name,
       "getByTire",
       { tireId }
     );
   }
-
-  static async create(dto: CreateTireInspectionDto) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.post<ApiResponse<TireInspection>>(
-          this.basePath,
-          dto
-        );
-        return response.data;
-      },
-      "TireInspectionsService",
-      "create",
-      { dto }
-    );
-  }
-
-  static async update(id: number, dto: UpdateTireInspectionDto) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const response = await ApiClient.put<ApiResponse<TireInspection>>(
-          `${this.basePath}/${id}`,
-          dto
-        );
-        return response.data;
-      },
-      "TireInspectionsService",
-      "update",
-      { id, dto }
-    );
-  }
-
-  static async delete(id: number) {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        await ApiClient.delete(`${this.basePath}/${id}`);
-        return "Tire inspection deleted";
-      },
-      "TireInspectionsService",
-      "delete",
-      { id }
-    );
-  }
 }
+
+export const TireInspectionsService = new TireInspectionsServiceClass();

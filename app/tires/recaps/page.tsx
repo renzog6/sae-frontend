@@ -11,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useTireRecaps } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
@@ -39,11 +38,12 @@ export default function TireRecapsPage() {
     setPage(1);
   }, [debouncedQuery, limit]);
 
+  const { useGetAll } = useTireRecaps();
   const {
     data: recapsData,
     isLoading,
     error,
-  } = useTireRecaps({
+  } = useGetAll({
     page,
     limit,
     q: debouncedQuery || undefined,
