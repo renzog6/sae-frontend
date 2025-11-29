@@ -9,7 +9,6 @@ import {
   useCreateEmployeeIncident,
   useUpdateEmployeeIncident,
 } from "@/lib/hooks/useHistory";
-import { Button } from "@/components/ui/button";
 import { EmployeeIncidentForm } from "@/components/forms/employee-incident-form";
 import type { EmployeeIncidentFormInput } from "@/lib/validations/employeeIncident";
 
@@ -68,7 +67,7 @@ export function EmployeeIncidentDialog({
       updateIncident(
         {
           id: incident.id,
-          data,
+          dto: data,
         },
         {
           onSuccess: () => {

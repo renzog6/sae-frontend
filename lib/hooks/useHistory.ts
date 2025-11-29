@@ -1,55 +1,31 @@
 // filepath: sae-frontend/lib/hooks/useHistory.ts
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
+import { useQuery } from "@tanstack/react-query";
+import { HistoryService, EmployeeIncidentsService } from "@/lib/api/history";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { HistoryService } from "@/lib/api/history/history.service";
-import {
-  EmployeeHistoryResponse,
-  CreateEmployeeIncidentDto,
-  UpdateEmployeeIncidentDto,
-} from "@/lib/types/domain/history";
-
-export function useEmployeeHistory(employeeId: number | undefined) {
-  return useQuery<EmployeeHistoryResponse, Error>({
-    queryKey: ["employee-history", employeeId],
-    queryFn: () => HistoryService.getEmployeeHistory(employeeId as number),
-    enabled: typeof employeeId === "number",
+// ===== EMPLOYEE HISTORY =====
+export const useEmployeeHistory = (employeeId: number) =>
+  useQuery({
+    queryKey: ["history", employeeId],
+    queryFn: () => HistoryService.getEmployeeHistory(employeeId),
+    enabled: !!employeeId,
   });
-}
 
-// Employee Incident CRUD hooks
-export function useCreateEmployeeIncident() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateEmployeeIncidentDto) =>
-      HistoryService.createEmployeeIncident(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["employee-history"] });
-    },
-  });
-}
+// ===== EMPLOYEE INCIDENTS =====
+export const useEmployeeIncidents = () =>
+  createApiHooks(EmployeeIncidentsService, "employeeIncidents");
 
-export function useUpdateEmployeeIncident() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: number;
-      data: UpdateEmployeeIncidentDto;
-    }) => HistoryService.updateEmployeeIncident(id, data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["employee-history"] });
-    },
-  });
-}
+export const useCreateEmployeeIncident = () => {
+  const { useCreate } = useEmployeeIncidents();
+  return useCreate();
+};
 
-export function useDeleteEmployeeIncident() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => HistoryService.deleteEmployeeIncident(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["employee-history"] });
-    },
-  });
-}
+export const useUpdateEmployeeIncident = () => {
+  const { useUpdate } = useEmployeeIncidents();
+  return useUpdate();
+};
+
+export const useDeleteEmployeeIncident = () => {
+  const { useDelete } = useEmployeeIncidents();
+  return useDelete();
+};
