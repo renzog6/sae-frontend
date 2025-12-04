@@ -20,52 +20,42 @@ export function useAuth(): UseAuthReturn {
   const { data: session, status } = useSession();
   const queryClient = useQueryClient();
 
-  // Query para obtener el perfil del usuario
   const profileQuery = useQuery({
     queryKey: ["auth-profile"],
     queryFn: async () => {
-      if (!session?.accessToken) throw new Error("No hay token de acceso");
+      if (!session?.accessToken) throw new Error("No access token available");
       return AuthService.getProfile();
     },
     enabled: !!session?.accessToken && status === "authenticated",
   });
 
-  // Mostrar error si ocurre en la query del perfil
   if (profileQuery.error) {
     toast.error(
-      (profileQuery.error as Error).message || "Error al obtener el perfil"
+      (profileQuery.error as Error).message || "Error fetching profile"
     );
   }
 
-  // Mutación para refrescar el token
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      if (!session?.refreshToken) throw new Error("No hay refresh token");
+      if (!session?.refreshToken) throw new Error("Missing refresh token");
       const response = await AuthService.refresh(session.refreshToken);
       queryClient.setQueryData(["auth-profile"], response.user);
       return response;
     },
     onError: (err) => {
-      toast.error(err.message || "Error al refrescar el token");
+      toast.error(err.message || "Error refreshing token");
       signOut({ callbackUrl: "/login" });
     },
-    onSuccess: () => {
-      toast.success("Token refrescado exitosamente");
-    },
+    onSuccess: () => toast.success("Token refreshed successfully"),
   });
 
-  // Mutación para cerrar sesión
   const logoutMutation = useMutation({
     mutationFn: async () => {
       await signOut({ callbackUrl: "/login" });
       queryClient.clear();
     },
-    onError: (err) => {
-      toast.error(err.message || "Error al cerrar sesión");
-    },
-    onSuccess: () => {
-      toast.success("Sesión cerrada exitosamente");
-    },
+    onError: (err) => toast.error(err.message || "Error logging out"),
+    onSuccess: () => toast.success("Logged out successfully"),
   });
 
   return {

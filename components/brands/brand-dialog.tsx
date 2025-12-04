@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { useCreateBrand, useUpdateBrand } from "@/lib/hooks/useCatalogs";
+import { useBrands } from "@/lib/hooks/useCatalogs";
 import type { Brand } from "@/lib/types/shared/catalogs";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
@@ -25,8 +25,8 @@ export function BrandDialog({
   brand,
 }: BrandDialogProps) {
   const { toast } = useToast();
-  const { mutate: createBrand, isPending: creating } = useCreateBrand();
-  const { mutate: updateBrand, isPending: updating } = useUpdateBrand();
+  const { mutate: createBrand, isPending: creating } = useBrands().useCreate();
+  const { mutate: updateBrand, isPending: updating } = useBrands().useUpdate();
 
   const onSubmit = (data: BrandFormData) => {
     if (mode === "create") {
@@ -58,7 +58,7 @@ export function BrandDialog({
       updateBrand(
         {
           id: brand.id,
-          data: {
+          dto: {
             name: data.name,
             code: data.code,
             information: data.information || undefined,

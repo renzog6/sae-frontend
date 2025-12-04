@@ -20,6 +20,7 @@ import {
 import { ChevronDown } from "lucide-react";
 
 import { useBrands } from "@/lib/hooks/useCatalogs";
+import { Brand } from "@/lib/types/shared/catalogs";
 import {
   useEquipmentModels,
   useEquipmentTypes,
@@ -40,7 +41,8 @@ export default function EquipmentModelsPage() {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedType, setSelectedType] = useState("");
 
-  const { data: brands = [] } = useBrands();
+  const { data: brandsResponse } = useBrands().useGetAll();
+  const brands = brandsResponse?.data || [];
   const { useGetAll: useGetTypes } = useEquipmentTypes();
   const { data: typesData } = useGetTypes();
   const types = Array.isArray(typesData) ? typesData : [];
@@ -149,8 +151,8 @@ export default function EquipmentModelsPage() {
                   </DropdownMenuItem>
 
                   {brands
-                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
-                    .map((brand: any) => (
+                    .sort((a: Brand, b: Brand) => a.name.localeCompare(b.name))
+                    .map((brand: Brand) => (
                       <DropdownMenuItem
                         key={brand.id}
                         onClick={() => setSelectedBrand(brand.name)}

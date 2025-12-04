@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
 import { Brand } from "@/lib/types/shared/catalogs";
-import { useBrands, useDeleteBrand } from "@/lib/hooks/useCatalogs";
+import { useBrands } from "@/lib/hooks/useCatalogs";
 import { DataTable } from "@/components/data-table";
 import { getBrandColumns } from "./columns";
 import {
@@ -61,9 +61,9 @@ export default function BrandsPage() {
     setPage(1);
   }, [debouncedQuery, selectedStatus, limit]);
 
-  const { data: brandsResponse, isLoading, error } = useBrands();
+  const { data: brandsResponse, isLoading, error } = useBrands().useGetAll();
 
-  const { mutate: deleteBrand, isPending: deleting } = useDeleteBrand();
+  const { mutate: deleteBrand, isPending: deleting } = useBrands().useDelete();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -71,13 +71,13 @@ export default function BrandsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const brands = useMemo(() => {
-    let filtered = brandsResponse || [];
+    let filtered = brandsResponse?.data || [];
 
     // Filter by search query (case-insensitive)
     if (debouncedQuery) {
       const query = debouncedQuery.toLowerCase();
       filtered = filtered.filter(
-        (item) =>
+        (item: Brand) =>
           item.name?.toLowerCase().includes(query) ||
           item.code?.toLowerCase().includes(query) ||
           item.information?.toLowerCase().includes(query)
@@ -87,11 +87,11 @@ export default function BrandsPage() {
     // Filter by status
     if (selectedStatus && selectedStatus !== "ALL") {
       const isActive = selectedStatus === "ACTIVE";
-      filtered = filtered.filter((item) => item.isActive === isActive);
+      filtered = filtered.filter((item: Brand) => item.isActive === isActive);
     }
 
     // Sort by name A-Z
-    return filtered.sort((a, b) => {
+    return filtered.sort((a: Brand, b: Brand) => {
       const nameA = a.name || "";
       const nameB = b.name || "";
       return nameA.localeCompare(nameB);

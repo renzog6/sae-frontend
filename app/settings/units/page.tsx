@@ -20,11 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
 
-import {
-  useUnits,
-  useDeleteUnit,
-  useRestoreUnit,
-} from "@/lib/hooks/useCatalogs";
+import { useUnits, useRestoreUnit } from "@/lib/hooks/useCatalogs";
 import { DataTable } from "@/components/data-table";
 import { getUnitColumns } from "./columns";
 import {
@@ -66,9 +62,9 @@ export default function UnitsPage() {
     setPage(1);
   }, [debouncedQuery, selectedStatus, limit]);
 
-  const { data: unitsResponse, isLoading, error } = useUnits();
+  const { data: unitsResponse, isLoading, error } = useUnits().useGetAll();
 
-  const { mutate: deleteUnit, isPending: deleting } = useDeleteUnit();
+  const { mutate: deleteUnit, isPending: deleting } = useUnits().useDelete();
   const { mutate: restoreUnit, isPending: restoring } = useRestoreUnit();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -78,7 +74,7 @@ export default function UnitsPage() {
   const [restoreOpen, setRestoreOpen] = useState(false);
 
   const units = useMemo(() => {
-    let filtered = unitsResponse || [];
+    let filtered = unitsResponse?.data || [];
 
     // Filter by search query (case-insensitive)
     if (debouncedQuery) {

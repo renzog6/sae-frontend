@@ -20,6 +20,7 @@ import {
   type CreateTireModelFormData,
 } from "@/lib/validations/tire";
 import { useBrands } from "@/lib/hooks/useCatalogs";
+import { Brand } from "@/lib/types/shared/catalogs";
 import { useTireSizes } from "@/lib/hooks/useTires";
 
 interface TireModelFormProps {
@@ -41,7 +42,8 @@ export function TireModelForm({
   error,
   accessToken,
 }: TireModelFormProps) {
-  const { data: brands } = useBrands();
+  const { data: brandsResponse } = useBrands().useGetAll();
+  const brands = brandsResponse?.data || [];
   const { useGetAll } = useTireSizes();
   const { data: sizesResponse } = useGetAll({
     page: 1,
@@ -90,7 +92,7 @@ export function TireModelForm({
                 <FormControl>
                   <Combobox
                     options={
-                      brands?.map((brand) => ({
+                      brands?.map((brand: Brand) => ({
                         value: brand.id.toString(),
                         label: brand.name,
                       })) || []

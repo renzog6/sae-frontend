@@ -27,6 +27,7 @@ import {
 } from "@/lib/validations/equipment";
 import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { useBrands } from "@/lib/hooks/useCatalogs";
+import { Brand } from "@/lib/types/shared/catalogs";
 import { Combobox } from "@/components/ui/combobox";
 
 interface EquipmentModelFormProps {
@@ -51,7 +52,8 @@ export function EquipmentModelForm({
   const types = Array.isArray(typesData)
     ? typesData
     : (typesData as any)?.data || [];
-  const { data: brands = [] } = useBrands();
+  const { data: brandsResponse } = useBrands().useGetAll();
+  const brands = brandsResponse?.data || [];
 
   const form = useForm<EquipmentModelFormData>({
     resolver: zodResolver(equipmentModelFormSchema),
@@ -178,9 +180,11 @@ export function EquipmentModelForm({
               <FormControl>
                 <Combobox
                   options={brands
-                    .filter((brand) => brand.name.toLowerCase().includes(""))
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((brand) => ({
+                    .filter((brand: Brand) =>
+                      brand.name.toLowerCase().includes("")
+                    )
+                    .sort((a: Brand, b: Brand) => a.name.localeCompare(b.name))
+                    .map((brand: Brand) => ({
                       value: brand.id.toString(),
                       label: brand.name,
                     }))}

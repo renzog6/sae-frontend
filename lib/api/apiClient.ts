@@ -3,11 +3,7 @@
 import { getSession, signOut } from "next-auth/react";
 import { AuthResponse, LoginCredentials } from "@/lib/types/core/auth";
 
-// Detecta entorno automáticamente
-const API_BASE_URL =
-  typeof window === "undefined"
-    ? process.env.API_URL // En SSR o servidor (Docker interno o localhost)
-    : process.env.NEXT_PUBLIC_API_URL; // En navegador (externa, visible al cliente)
+
 
 // Timeout predeterminado para solicitudes (10 segundos)
 const REQUEST_TIMEOUT = 10000;
@@ -34,10 +30,26 @@ export class ApiClient {
    * @param path - Ruta relativa del endpoint
    * @returns URL completa
    */
+  /**
+   * Obtiene la URL base dinámicamente para soportar Docker/Runtime env vars
+   */
+  private static getBaseUrl(): string {
+    if (typeof window === "undefined") {
+      // Server-side: Usar API_URL (interno Docker) o fallback a localhost
+      return process.env.API_URL || "http://localhost:3000/api";
+    }
+    // Client-side: Usar NEXT_PUBLIC_API_URL
+    return process.env.NEXT_PUBLIC_API_URL || "/api";
+  }
+
+  /**
+   * Construye la URL completa con el prefijo de la API
+   * @param path - Ruta relativa del endpoint
+   * @returns URL completa
+   */
   private static buildUrl(path: string): string {
-    const fullUrl = `${API_BASE_URL}${
-      path.startsWith("/") ? path : `/${path}`
-    }`;
+    const baseUrl = this.getBaseUrl();
+    const fullUrl = `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
     console.log(">>> ", fullUrl);
     return fullUrl;
   }
@@ -170,7 +182,7 @@ export class ApiClient {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message ||
-            `Error ${response.status}: ${response.statusText}`
+          `Error ${response.status}: ${response.statusText}`
         );
       }
 
@@ -284,7 +296,7 @@ export class ApiClient {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message ||
-            `Error ${response.status}: Credenciales inválidas`
+          `Error ${response.status}: Credenciales inválidas`
         );
       }
 

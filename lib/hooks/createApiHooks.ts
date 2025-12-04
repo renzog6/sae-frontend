@@ -49,11 +49,5 @@ export function createApiHooks<
     });
   };
 
-  return {
-    useGetAll,
-    useGetById,
-    useCreate,
-    useUpdate,
-    useDelete,
-  };
+  return { useGetAll, useGetById, useCreate, useUpdate, useDelete };
 }

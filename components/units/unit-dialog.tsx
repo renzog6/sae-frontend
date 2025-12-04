@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import type { UnitFormData } from "@/lib/validations/catalog";
-import { useCreateUnit, useUpdateUnit } from "@/lib/hooks/useCatalogs";
+import { useUnits } from "@/lib/hooks/useCatalogs";
 import type { Unit } from "@/lib/types/shared/catalogs";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
@@ -25,8 +25,8 @@ export function UnitDialog({
   unit,
 }: UnitDialogProps) {
   const { toast } = useToast();
-  const { mutate: createUnit, isPending: creating } = useCreateUnit();
-  const { mutate: updateUnit, isPending: updating } = useUpdateUnit();
+  const { mutate: createUnit, isPending: creating } = useUnits().useCreate();
+  const { mutate: updateUnit, isPending: updating } = useUnits().useUpdate();
 
   const onSubmit = (data: UnitFormData) => {
     if (mode === "create") {
@@ -54,7 +54,7 @@ export function UnitDialog({
       updateUnit(
         {
           id: unit.id,
-          data: { name: data.name, abbreviation: data.abbreviation },
+          dto: { name: data.name, abbreviation: data.abbreviation },
         },
         {
           onSuccess: () => {

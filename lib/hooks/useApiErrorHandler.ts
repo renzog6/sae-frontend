@@ -29,28 +29,28 @@ export function useApiErrorHandler() {
         toast({
           variant: "error",
           title: "Access Denied",
-          description: "You do not have permission to perform this action.",
+          description: "You do not have permission.",
         });
         break;
       case 404:
         toast({
           variant: "error",
           title: "Not Found",
-          description: "The requested resource could not be found.",
+          description: "The requested resource was not found.",
         });
         break;
       case 500:
         toast({
           variant: "error",
           title: "Server Error",
-          description: "An unexpected error occurred on the server.",
+          description: "Server encountered an error.",
         });
         break;
       default:
         toast({
           variant: "error",
           title: "Unexpected Error",
-          description: error?.message || "Unknown error occurred.",
+          description: error?.message || "Unknown error",
         });
         console.error("Unhandled API Error:", error);
     }
