@@ -1,127 +1,144 @@
-//filepath: sae-frontend/app/equipments/page.tsx
 "use client";
 
+import { motion } from "framer-motion";
+import {
+  Truck,
+  Tags,
+  Layers,
+  Ruler,
+  Wrench,
+  Settings,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
-import { motion, useReducedMotion } from "framer-motion";
-import { Truck, Tags, Layers, Ruler, Wrench, Settings } from "lucide-react";
 import { routes } from "@/lib/routes";
 
+const equipmentSections = [
+  {
+    title: "Equipos",
+    description: "Lista, crea y edita los equipos.",
+    icon: Truck,
+    href: "/equipments/list",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    hoverColor: "group-hover:text-blue-700",
+    hoverBg: "group-hover:bg-blue-600",
+  },
+  {
+    title: "Tipos de Equipos",
+    description: "Administra los tipos de equipos.",
+    icon: Tags,
+    href: "/equipments/types",
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-50",
+    hoverColor: "group-hover:text-indigo-700",
+    hoverBg: "group-hover:bg-indigo-600",
+  },
+  {
+    title: "Categorías",
+    description: "Gestiona las categorías de equipos.",
+    icon: Layers,
+    href: "/equipments/categories",
+    color: "text-purple-600",
+    bgColor: "bg-purple-50",
+    hoverColor: "group-hover:text-purple-700",
+    hoverBg: "group-hover:bg-purple-600",
+  },
+  {
+    title: "Modelos",
+    description: "Lista, crea y edita los modelos.",
+    icon: Ruler,
+    href: "/equipments/models",
+    color: "text-orange-600",
+    bgColor: "bg-orange-50",
+    hoverColor: "group-hover:text-orange-700",
+    hoverBg: "group-hover:bg-orange-600",
+  },
+  {
+    title: "Configurador de Ejes",
+    description: "Crea ejes completos con posiciones.",
+    icon: Settings,
+    href: routes.equipments?.list ?? "/equipments/list", // Fallback if route not defined
+    color: "text-slate-600",
+    bgColor: "bg-slate-50",
+    hoverColor: "group-hover:text-slate-700",
+    hoverBg: "group-hover:bg-slate-600",
+  },
+  {
+    title: "Neumáticos",
+    description: "Accede al módulo completo de neumáticos.",
+    icon: Wrench,
+    href: routes.tires?.root ?? "/tires", // Fallback
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50",
+    hoverColor: "group-hover:text-emerald-700",
+    hoverBg: "group-hover:bg-emerald-600",
+  },
+];
+
 export default function EquipmentsPage() {
-  const prefersReducedMotion = useReducedMotion();
-
-  const MotionWrapper = ({ children }: { children: React.ReactNode }) => (
-    <motion.div
-      whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
-      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-      transition={
-        prefersReducedMotion
-          ? { duration: 0 }
-          : { type: "spring", stiffness: 300, damping: 20 }
-      }
-      className="rounded-2xl"
-    >
-      {children}
-    </motion.div>
-  );
-
-  const cards = [
-    {
-      href: "/equipments/list",
-      title: "Equipos",
-      description: "Lista, crea y edita los equipos.",
-      icon: <Truck className="w-4 h-4" />,
-    },
-    {
-      href: "/equipments/types",
-      title: "Tipos de Equipos",
-      description: "Administra los tipos de equipos.",
-      icon: <Tags className="w-4 h-4" />,
-    },
-    {
-      href: "/equipments/categories",
-      title: "Categorías de Equipos",
-      description: "Gestiona las categorías de equipos.",
-      icon: <Layers className="w-4 h-4" />,
-    },
-    {
-      href: "/equipments/models",
-      title: "Modelos de Equipos",
-      description: "Lista, crea y edita los modelos de equipos.",
-      icon: <Ruler className="w-4 h-4" />,
-    },
-    {
-      href: routes.equipments.list,
-      title: "Configurador de Ejes",
-      description: "Crea ejes completos con posiciones automáticamente.",
-      icon: <Settings className="w-4 h-4" />,
-    },
-    {
-      href: routes.tires.root,
-      title: "Neumáticos",
-      description: "Accede al módulo completo de neumáticos.",
-      icon: <Wrench className="w-4 h-4" />,
-    },
-  ];
-
   return (
-    <div className="w-full max-w-5xl px-4 py-8 mx-auto">
-      {/* Header */}
-      <motion.header
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
-        animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: 0.4, ease: "easeOut" }
-        }
-        className="mb-10 text-center"
+    <div className="space-y-8">
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight text-emerald-900 dark:text-emerald-100">
-          Gestión de Equipos
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Administra todos los equipos, categorías y modelos de tu flota.
-        </p>
-      </motion.header>
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+            Gestión de Equipos
+          </h1>
+          <p className="text-zinc-500">
+            Administra todos los equipos, categorías y modelos de tu flota.
+          </p>
+        </div>
+      </motion.div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => (
-          <Link
-            key={card.title}
-            href={card.href}
-            className="block group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60"
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {equipmentSections.map((section, i) => (
+          <motion.div
+            key={section.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
           >
-            <MotionWrapper>
-              <Card className="transition-shadow border-t-4 shadow-md rounded-2xl hover:shadow-lg border-t-emerald-300 dark:border-t-emerald-400">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-200/20 dark:text-emerald-300">
-                      {card.icon}
-                    </span>
-                    <CardTitle className="text-lg font-semibold">
-                      {card.title}
+            <Link href={section.href} className="group block h-full">
+              <Card className="h-full transition-all duration-300 border border-zinc-200 shadow-sm hover:shadow-lg hover:border-indigo-200">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div
+                      className={`p-2 rounded-lg ${section.bgColor} ${section.color} ${section.hoverBg} group-hover:text-white transition-colors duration-300`}
+                    >
+                      <section.icon className="h-5 w-5" />
+                    </div>
+                    <CardTitle
+                      className={`text-xl font-semibold text-zinc-800 ${section.hoverColor} transition-colors`}
+                    >
+                      {section.title}
                     </CardTitle>
                   </div>
-                  <CardDescription className="text-sm">
-                    {card.description}
+                  <CardDescription className="text-zinc-500 group-hover:text-zinc-600 transition-colors">
+                    {section.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-2">
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700 group-hover:text-emerald-800">
-                    Abrir →
-                  </span>
+                <CardContent>
+                  <div className="flex items-center text-sm font-medium text-zinc-500 group-hover:text-indigo-600 transition-colors">
+                    Abrir sección
+                    <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
                 </CardContent>
               </Card>
-            </MotionWrapper>
-          </Link>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>
