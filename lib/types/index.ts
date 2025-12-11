@@ -7,7 +7,7 @@ export * from "./core/common";
 
 // Export domain types
 export * from "./domain/company";
-export * from "./domain/document";
+export * from "./domain/server-file";
 export * from "./domain/employee";
 export * from "./domain/equipment";
 export * from "./domain/history";

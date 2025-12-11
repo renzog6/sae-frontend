@@ -37,15 +37,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import { useDocuments } from "@/lib/hooks/useDocuments";
-import { Document } from "@/lib/types/domain/document";
+import { useServerFiles } from "@/lib/hooks/useServerFiles";
+import { ServerFile } from "@/lib/types/domain/server-file";
 import {
-  uploadDocumentSchema,
-  type UploadDocumentFormData,
+  uploadServerFileSchema,
+  type UploadServerFileFormData,
   validateFileSize,
   getFileSizeError,
   formatFileSize as formatFileSizeUtil,
-} from "@/lib/validations/document";
+} from "@/lib/validations/server-file";
 import { Upload, Download, Trash2, FileText, Image, File } from "lucide-react";
 import { formatDate } from "@/lib/utils/date";
 import { useForm } from "react-hook-form";
@@ -79,8 +79,8 @@ export default function EmployeeDocumentsPage() {
   const { data: session } = useSession();
 
   const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
-  const documentsHooks = useDocuments();
-  const { useGetAll, useUpload, useDelete, useDownload } = documentsHooks;
+  const serverFilesHooks = useServerFiles();
+  const { useGetAll, useUpload, useDelete, useDownload } = serverFilesHooks;
   const { data: documentsData, isLoading: documentsLoading } = useGetAll({
     employeeId: id,
   });
@@ -93,14 +93,14 @@ export default function EmployeeDocumentsPage() {
   const [fileSizeError, setFileSizeError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadForm = useForm<UploadDocumentFormData>({
-    resolver: zodResolver(uploadDocumentSchema),
+  const uploadForm = useForm<UploadServerFileFormData>({
+    resolver: zodResolver(uploadServerFileSchema),
     defaultValues: {
       description: "",
     },
   });
 
-  const documents: Document[] = documentsData?.data ?? [];
+  const documents: ServerFile[] = documentsData?.data ?? [];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -114,14 +114,15 @@ export default function EmployeeDocumentsPage() {
     }
   };
 
-  const handleUpload = async (data: UploadDocumentFormData) => {
+  const handleUpload = async (data: UploadServerFileFormData) => {
     if (!selectedFile) return;
 
     try {
       await uploadMutation.mutateAsync({
         file: selectedFile,
         description: data.description,
-        employeeId: id,
+        entityType: "EMPLOYEE",
+        entityId: id,
       });
 
       setSelectedFile(null);

@@ -12,6 +12,7 @@ export interface Company {
   // Relations
   businessCategoryId?: number | null;
   businessCategory?: BusinessCategory | null;
+  serverFiles?: import("./server-file").ServerFile[];
 }
 
 export interface BusinessCategory {
@@ -84,7 +85,7 @@ export interface CreateCompanyDto {
   };
 }
 
-export interface UpdateCompanyDto extends Partial<CreateCompanyDto> {}
+export interface UpdateCompanyDto extends Partial<CreateCompanyDto> { }
 
 export interface CreateBusinessCategoryDto {
   name: string;
@@ -95,7 +96,7 @@ export interface CreateBusinessCategoryDto {
 }
 
 export interface UpdateBusinessCategoryDto
-  extends Partial<CreateBusinessCategoryDto> {}
+  extends Partial<CreateBusinessCategoryDto> { }
 
 export interface CreateBusinessSubcategoryDto {
   name: string;
@@ -105,4 +106,4 @@ export interface CreateBusinessSubcategoryDto {
 }
 
 export interface UpdateBusinessSubcategoryDto
-  extends Partial<CreateBusinessSubcategoryDto> {}
+  extends Partial<CreateBusinessSubcategoryDto> { }

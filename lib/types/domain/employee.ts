@@ -8,7 +8,7 @@
 import { Company } from "./company";
 import { Address } from "../shared/location";
 import { ContactLink } from "../shared/contact";
-import { Document } from "./document";
+import { ServerFile } from "./server-file";
 import { Inspection } from "../shared/shared";
 import { EmployeeIncident } from "./history";
 
@@ -68,7 +68,7 @@ export interface CreateFamilyDto {
   relativeId: number;
 }
 
-export interface UpdateFamilyDto extends Partial<CreateFamilyDto> {}
+export interface UpdateFamilyDto extends Partial<CreateFamilyDto> { }
 
 // ===== Employee domain types (kept local to employees) =====
 export type EmployeeCategory = {
@@ -138,7 +138,7 @@ export type Employee = {
   person: Person;
 
   vacations?: EmployeeVacation[];
-  documents?: Document[];
+  serverFiles?: ServerFile[];
   inspections?: Inspection[];
   employeeIncidents?: EmployeeIncident[];
 };
@@ -156,7 +156,7 @@ export interface CreateEmployeeDto {
   personId: number;
 }
 
-export interface UpdateEmployeeDto extends Partial<CreateEmployeeDto> {}
+export interface UpdateEmployeeDto extends Partial<CreateEmployeeDto> { }
 
 export interface CreatePersonDto {
   firstName: string;
@@ -170,7 +170,7 @@ export interface CreatePersonDto {
   status?: PersonStatus;
 }
 
-export interface UpdatePersonDto extends Partial<CreatePersonDto> {}
+export interface UpdatePersonDto extends Partial<CreatePersonDto> { }
 
 export interface CreateEmployeeCategoryDto {
   name: string;
@@ -180,7 +180,7 @@ export interface CreateEmployeeCategoryDto {
 }
 
 export interface UpdateEmployeeCategoryDto
-  extends Partial<CreateEmployeeCategoryDto> {}
+  extends Partial<CreateEmployeeCategoryDto> { }
 
 export interface CreateEmployeePositionDto {
   name: string;
@@ -190,7 +190,7 @@ export interface CreateEmployeePositionDto {
 }
 
 export interface UpdateEmployeePositionDto
-  extends Partial<CreateEmployeePositionDto> {}
+  extends Partial<CreateEmployeePositionDto> { }
 
 export interface CreateEmployeeVacationDto {
   detail?: string;
@@ -204,4 +204,4 @@ export interface CreateEmployeeVacationDto {
 }
 
 export interface UpdateEmployeeVacationDto
-  extends Partial<CreateEmployeeVacationDto> {}
+  extends Partial<CreateEmployeeVacationDto> { }

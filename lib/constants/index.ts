@@ -1,3 +1,5 @@
+//filepath: sae-frontend/lib/constants/index.ts
+
 export * from "./person.constants";
 export * from "./employee.constants";
 export * from "./history.constants";

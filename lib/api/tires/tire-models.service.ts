@@ -27,7 +27,7 @@ class TireModelsServiceClass extends BaseApiService<
 
   /**
    * Override parcial: agrego filtros custom (brandId)
-   * pero con la misma estructura que EquipmentModels / DocumentFilters.
+   * pero con la misma estructura que EquipmentModels.
    */
   async getAll(
     filter?: TireModelsQueryParams

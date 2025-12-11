@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export const uploadDocumentSchema = z.object({
+export const uploadServerFileSchema = z.object({
   description: z
     .string()
     .min(3, "La descripción debe tener al menos 3 caracteres")
@@ -34,4 +34,4 @@ export const formatFileSize = (bytes: number): string => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 };
 
-export type UploadDocumentFormData = z.infer<typeof uploadDocumentSchema>;
+export type UploadServerFileFormData = z.infer<typeof uploadServerFileSchema>;
