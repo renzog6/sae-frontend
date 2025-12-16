@@ -1,9 +1,7 @@
-//filepath: /sae-frontend/lib/api/apiClient.ts
+//filepath: sae-frontend/lib/api/apiClient.ts
 
 import { getSession, signOut } from "next-auth/react";
 import { AuthResponse, LoginCredentials } from "@/lib/types/core/auth";
-
-
 
 // Timeout predeterminado para solicitudes (10 segundos)
 const REQUEST_TIMEOUT = 10000;
@@ -182,7 +180,7 @@ export class ApiClient {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message ||
-          `Error ${response.status}: ${response.statusText}`
+            `Error ${response.status}: ${response.statusText}`
         );
       }
 
@@ -296,7 +294,7 @@ export class ApiClient {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.message ||
-          `Error ${response.status}: Credenciales inválidas`
+            `Error ${response.status}: Credenciales inválidas`
         );
       }
 

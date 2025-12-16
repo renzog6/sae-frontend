@@ -23,6 +23,17 @@ RUN npm install --include=dev --loglevel=error
 # Stage de build
 FROM base AS builder
 WORKDIR /app
+
+# Argumentos de build-time para variables de entorno
+ARG NEXT_PUBLIC_API_URL
+ARG NEXTAUTH_URL
+ARG NEXTAUTH_SECRET
+
+# Establecer variables de entorno para el build
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+
 COPY --from=deps-dev /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
