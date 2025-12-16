@@ -30,6 +30,8 @@ export const useAddresses = () => {
       queryKey: ["addresses", "byPerson", personId],
       queryFn: () => AddressesService.getByPerson(personId),
       enabled: !!personId,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
     });
 
   return {
@@ -51,18 +53,7 @@ export const useCities = () => {
 
 // ===== Provinces (read-only) =====
 export const useProvinces = () => {
-  const useGetAll = () =>
-    useQuery({
-      queryKey: ["provinces", "all"],
-      queryFn: () => ProvincesService.getAll(),
-    });
-
-  const useGetById = (id: number) =>
-    useQuery({
-      queryKey: ["provinces", "byId", id],
-      queryFn: () => ProvincesService.getById(id),
-      enabled: !!id,
-    });
+  const base = createApiHooks(ProvincesService, "provinces");
 
   const useGetByCode = (code: string) =>
     useQuery({
@@ -79,8 +70,7 @@ export const useProvinces = () => {
     });
 
   return {
-    useGetAll,
-    useGetById,
+    ...base,
     useGetByCode,
     useGetByCountry,
   };

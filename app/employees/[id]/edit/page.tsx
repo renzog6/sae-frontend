@@ -92,6 +92,10 @@ export default function EmployeeDetailPage() {
   const personId = employee?.personId;
   const personAddressesQuery = useByPerson(personId ?? 0);
   const { data: personAddresses = [] } = personAddressesQuery;
+  // Use address from employee data if available, otherwise from query
+  const displayAddresses = employee?.person?.address
+    ? [employee.person.address]
+    : personAddresses;
   const { data: personContacts = [] } = useContactsByPerson(personId ?? 0);
   const createAddressMut = useCreate();
   const updateAddressMut = useUpdate();
@@ -398,8 +402,8 @@ export default function EmployeeDetailPage() {
               </Button>
             </div>
             <div className="space-y-2">
-              {personAddresses?.length ? (
-                personAddresses.map((addr: Address) => (
+              {displayAddresses?.length ? (
+                displayAddresses.map((addr: Address) => (
                   <div
                     key={
                       addr.id ?? `${addr.street}-${addr.number}-${addr.cityId}`
@@ -702,15 +706,40 @@ export default function EmployeeDetailPage() {
             accessToken=""
             onDelete={
               editingAddress?.id
-                ? () => deleteAddressMut.mutate(editingAddress.id!)
+                ? () =>
+                    deleteAddressMut.mutate(editingAddress.id!, {
+                      onSuccess: () => {
+                        queryClient.invalidateQueries({
+                          queryKey: ["addresses", "byPerson", personId],
+                        });
+                      },
+                    })
                 : undefined
             }
             onSave={(data) => {
               if (!personId) return;
               if (editingAddress?.id) {
-                updateAddressMut.mutate({ id: editingAddress.id, dto: data });
+                updateAddressMut.mutate(
+                  { id: editingAddress.id, dto: data },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["addresses", "byPerson", personId],
+                      });
+                    },
+                  }
+                );
               } else {
-                createAddressMut.mutate({ ...data, personId });
+                createAddressMut.mutate(
+                  { ...data, personId },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["addresses", "byPerson", personId],
+                      });
+                    },
+                  }
+                );
               }
             }}
           />
