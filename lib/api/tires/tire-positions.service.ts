@@ -54,7 +54,7 @@ class TirePositionsServiceClass extends BaseApiService<
     return ApiErrorHandler.handleApiCall(
       async () => {
         return ApiClient.get<TirePositionConfig[]>(
-          `/equipments/axles/positions/equipment/${equipmentId}`
+          `/equipment-axles/positions/equipment/${equipmentId}`
         );
       },
       this.constructor.name,

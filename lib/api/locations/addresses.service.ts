@@ -1,14 +1,13 @@
 // filepath: sae-frontend/lib/api/locations/addresses.service.ts
-
 import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { PaginatedResponse } from "@/lib/types/core/api";
 import {
   Address,
   CreateAddressDto,
   UpdateAddressDto,
 } from "@/lib/types/shared/location";
-import { PaginatedResponse } from "@/lib/types/core/api";
 
 class AddressesServiceClass extends BaseApiService<
   Address,

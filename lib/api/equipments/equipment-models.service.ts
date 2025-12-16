@@ -23,7 +23,7 @@ class EquipmentModelsServiceClass extends BaseApiService<
   CreateEquipmentModelDto,
   UpdateEquipmentModelDto
 > {
-  protected basePath = "/equipments/models";
+  protected basePath = "/equipment-models";
 
   /**
    * Override: getAll con filtros extendidos
@@ -60,7 +60,7 @@ class EquipmentModelsServiceClass extends BaseApiService<
   async getByType(typeId: number): Promise<EquipmentModel[]> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const url = `${this.basePath}/type/${typeId}`;
+        const url = `${this.basePath}/by-type/${typeId}`;
         return ApiClient.get<EquipmentModel[]>(url);
       },
       this.constructor.name,

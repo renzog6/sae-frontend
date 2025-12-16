@@ -15,7 +15,7 @@ class BusinessCategoriesServiceClass extends BaseApiService<
   CreateBusinessCategoryDto,
   UpdateBusinessCategoryDto
 > {
-  protected basePath = "/companies/categories";
+  protected basePath = "/business-categories";
 
   /**
    * Método adicional: RESTORE

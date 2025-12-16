@@ -23,7 +23,7 @@ class EquipmentAxlesServiceClass extends BaseApiService<
   CreateEquipmentAxleDto,
   UpdateEquipmentAxleDto
 > {
-  protected basePath = "/equipments/axles";
+  protected basePath = "/equipment-axles";
 
   // GET ALL (override con filtros específicos)
   async getAll(

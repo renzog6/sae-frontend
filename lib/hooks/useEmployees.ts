@@ -5,10 +5,6 @@ import {
   EmployeeCategoriesService,
   EmployeePositionsService,
 } from "@/lib/api/employees";
-import {
-  EmployeeCategory,
-  EmployeePosition,
-} from "@/lib/types/domain/employee";
 import { useApiErrorHandler } from "@/lib/hooks/useApiErrorHandler";
 
 import {
@@ -25,9 +21,8 @@ export function useEmployeesList(params?: {
   page?: number;
   limit?: number;
   q?: string;
-  status?: string;
-  sortBy?: string; // ✅ AGREGADO: Campo por el cual ordenar
-  sortOrder?: "asc" | "desc"; // ✅ AGREGADO: Dirección del orden
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   const { handleApiError } = useApiErrorHandler();
 
@@ -37,13 +32,12 @@ export function useEmployeesList(params?: {
       params?.page ?? 1,
       params?.limit ?? 10,
       params?.q ?? "",
-      params?.status ?? "",
-      params?.sortBy ?? "", // ✅ AGREGADO: Para el caché
-      params?.sortOrder ?? "", // ✅ AGREGADO: Para el caché
+      params?.sortBy ?? "",
+      params?.sortOrder ?? "",
     ],
     queryFn: async () => {
       try {
-        return await EmployeesService.getAll(params); // Return full paginated response
+        return await EmployeesService.getAll(params);
       } catch (error) {
         handleApiError(error);
         throw error;

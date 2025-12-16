@@ -67,7 +67,6 @@ export default function EmployeeVacationsPage() {
     page,
     limit,
     q: debouncedQuery || undefined,
-    status: status === "ALL" ? undefined : status,
     sortBy,
     sortOrder,
   });

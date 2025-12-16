@@ -15,7 +15,7 @@ class BusinessSubCategoriesServiceClass extends BaseApiService<
   CreateBusinessSubcategoryDto,
   UpdateBusinessSubcategoryDto
 > {
-  protected basePath = "/companies/subcategories";
+  protected basePath = "/business-subcategories";
 
   /**
    * Método adicional: RESTORE

@@ -11,7 +11,7 @@ class EquipmentCategoriesServiceClass extends BaseApiService<
   CreateEquipmentCategoryDto,
   UpdateEquipmentCategoryDto
 > {
-  protected basePath = "/equipments/categories";
+  protected basePath = "/equipment-categories";
 }
 
 export const EquipmentCategoriesService = new EquipmentCategoriesServiceClass();

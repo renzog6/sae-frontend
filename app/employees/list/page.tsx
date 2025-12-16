@@ -56,7 +56,6 @@ export default function EmployeesPage() {
     page,
     limit,
     q: debouncedQuery || undefined,
-    status: status === "ALL" ? undefined : status,
     sortBy,
     sortOrder,
   });

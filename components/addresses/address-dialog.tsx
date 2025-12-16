@@ -86,11 +86,16 @@ export function AddressDialog({
   }, [initial, form]);
 
   // Provincias y Ciudades
-  const provincesQuery = useProvinces().useGetAll();
-  const { data: provinces = [], isLoading: provLoading } = provincesQuery;
+  const { data: provincesResponse, isLoading: provLoading } =
+    useProvinces().useGetAll({
+      limit: "0",
+      sortBy: "name",
+      sortOrder: "asc",
+    });
+  const provinces = provincesResponse?.data || [];
 
-  const citiesQuery = useCities().useGetAll();
-  const { data: citiesResponse, isLoading: citiesLoading } = citiesQuery;
+  const { data: citiesResponse, isLoading: citiesLoading } =
+    useCities().useGetAll();
   const allCities = citiesResponse?.data || [];
 
   // Provincia seleccionada (no forma parte del AddressSchema)

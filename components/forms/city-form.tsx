@@ -44,12 +44,16 @@ export function CityForm({
   onCancel,
   error,
 }: CityFormProps) {
-  const provincesQuery = useProvinces().useGetAll();
   const {
-    data: provinces,
+    data: provincesResponse,
     isLoading: provLoading,
     error: provError,
-  } = provincesQuery;
+  } = useProvinces().useGetAll({
+    limit: "0",
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+  const provinces = provincesResponse?.data;
 
   const form = useForm<CityFormData>({
     resolver: zodResolver(CitySchema),

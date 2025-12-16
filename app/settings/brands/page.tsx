@@ -61,7 +61,18 @@ export default function BrandsPage() {
     setPage(1);
   }, [debouncedQuery, selectedStatus, limit]);
 
-  const { data: brandsResponse, isLoading, error } = useBrands().useGetAll();
+  const {
+    data: brandsResponse,
+    isLoading,
+    error,
+  } = useBrands().useGetAll({
+    page,
+    limit,
+    sortBy: "name",
+    sortOrder: "asc",
+    q: debouncedQuery,
+    deleted: selectedStatus,
+  });
 
   const { mutate: deleteBrand, isPending: deleting } = useBrands().useDelete();
 
@@ -70,40 +81,13 @@ export default function BrandsPage() {
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const brands = useMemo(() => {
-    let filtered = brandsResponse?.data || [];
-
-    // Filter by search query (case-insensitive)
-    if (debouncedQuery) {
-      const query = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(
-        (item: Brand) =>
-          item.name?.toLowerCase().includes(query) ||
-          item.code?.toLowerCase().includes(query) ||
-          item.information?.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by status
-    if (selectedStatus && selectedStatus !== "ALL") {
-      const isActive = selectedStatus === "ACTIVE";
-      filtered = filtered.filter((item: Brand) => item.isActive === isActive);
-    }
-
-    // Sort by name A-Z
-    return filtered.sort((a: Brand, b: Brand) => {
-      const nameA = a.name || "";
-      const nameB = b.name || "";
-      return nameA.localeCompare(nameB);
-    });
-  }, [brandsResponse, debouncedQuery, selectedStatus]);
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = brands.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = brands.slice((page - 1) * limit, page * limit);
+  const brands = brandsResponse?.data || [];
+  const {
+    page: metaPage,
+    total,
+    totalPages,
+    limit: metaLimit,
+  } = brandsResponse?.meta || {};
 
   const columns = useMemo(
     () =>
@@ -192,14 +176,14 @@ export default function BrandsPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<Brand, unknown> columns={columns} data={paginatedData} />
+            <DataTable<Brand, unknown> columns={columns} data={brands} />
           )}
 
           {/* Pagination controls */}
           <PaginationBar
             page={page}
-            totalPages={totalPages}
-            totalItems={totalFilteredItems}
+            totalPages={totalPages ?? 1}
+            totalItems={total ?? 0}
             limit={limit}
             onPageChange={setPage}
             onLimitChange={(newLimit) => {
