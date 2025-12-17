@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Menu, Bell, Search, User, Settings, LogOut } from "lucide-react";
+import { Menu, Bell, User, Settings, LogOut } from "lucide-react";
 
 import { GlobalSearch } from "@/components/ui/global-search";
 
@@ -31,8 +30,9 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const router = useRouter();
   const { data: session } = useSession();
+  const router = useRouter();
+
   const pathname = usePathname();
 
   const LABEL_MAP: Record<string, string> = {

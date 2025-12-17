@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -19,15 +18,13 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function NewCompanyPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
+
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(data: CompanyFormData) {
-    if (!accessToken) return;
     setSaving(true);
     setError(null);
     try {

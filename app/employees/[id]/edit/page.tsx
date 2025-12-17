@@ -3,7 +3,6 @@
 
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,7 +61,7 @@ import { Plus, SquarePen } from "lucide-react";
 export default function EmployeeDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
+
   const queryClient = useQueryClient();
 
   const id = useMemo(() => {
@@ -703,7 +702,6 @@ export default function EmployeeDetailPage() {
                 ? { cityId: 1, personId }
                 : undefined
             }
-            accessToken=""
             onDelete={
               editingAddress?.id
                 ? () =>

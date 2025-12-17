@@ -30,7 +30,6 @@ interface TireModelFormProps {
   isEdit?: boolean;
   onCancel?: () => void;
   error?: string | null;
-  accessToken: string;
 }
 
 export function TireModelForm({
@@ -40,7 +39,6 @@ export function TireModelForm({
   isEdit = false,
   onCancel,
   error,
-  accessToken,
 }: TireModelFormProps) {
   const { data: brandsResponse } = useBrands().useGetAll();
   const brands = brandsResponse?.data || [];

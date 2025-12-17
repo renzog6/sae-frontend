@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -27,12 +26,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTireEvents } from "@/lib/hooks/useTires";
-import { TireEventType } from "@/lib/types/shared/enums";
 
 export default function TireReportsEventsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,9 +38,6 @@ import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 
 export default function EquipmentListPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

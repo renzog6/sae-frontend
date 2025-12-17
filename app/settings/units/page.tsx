@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,8 +38,6 @@ import { Unit } from "@/lib/types/shared/catalogs";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function UnitsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
   // Pagination state
@@ -218,7 +215,6 @@ export default function UnitsPage() {
 
       {/* Unit dialog (component) */}
       <UnitDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -44,7 +43,7 @@ import { genderLabels, maritalLabels } from "@/lib/constants";
 
 export default function EmployeeNewPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);

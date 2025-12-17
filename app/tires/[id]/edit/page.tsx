@@ -4,7 +4,6 @@
 
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -39,8 +38,7 @@ import { UpdateTireDto } from "@/lib/types/domain/tire";
 export default function TireEditPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
+
   const queryClient = useQueryClient();
 
   const id = useMemo(() => {
@@ -51,7 +49,14 @@ export default function TireEditPage() {
   }, [params]);
 
   const { useGetById } = useTires();
-  const { data: tire, isLoading, error: fetchError } = useGetById(id as number);
+  // Only call the API if we have a valid ID
+  const {
+    data: tire,
+    isLoading,
+    error: fetchError,
+  } = id !== undefined
+    ? useGetById(id)
+    : { data: null, isLoading: false, error: new Error("ID inválido") };
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +78,14 @@ export default function TireEditPage() {
   });
 
   async function handleSubmit(data: UpdateTireFormData) {
-    if (!accessToken || !id) return;
+    // Guard clause: Check if we have a valid ID before proceeding
+    if (id === undefined) {
+      setError(
+        "ID de neumático inválido. No se puede proceder con la actualización."
+      );
+      return;
+    }
+
     setSaving(true);
     setError(null);
     try {
@@ -86,7 +98,9 @@ export default function TireEditPage() {
       await TiresService.update(id, cleanData as UpdateTireDto);
       // refresh caches
       queryClient.invalidateQueries({ queryKey: ["tires"] });
-      queryClient.invalidateQueries({ queryKey: ["tires", id] });
+      if (id !== undefined) {
+        queryClient.invalidateQueries({ queryKey: ["tires", id] });
+      }
       router.back();
     } catch (e: any) {
       setError(e?.message || "Error al guardar cambios del neumático");
@@ -107,6 +121,24 @@ export default function TireEditPage() {
             <div className="w-1/2 h-4 rounded bg-muted"></div>
             <div className="w-1/3 h-4 rounded bg-muted"></div>
             <div className="w-1/4 h-4 rounded bg-muted"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Early return if ID is invalid
+  if (id === undefined) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Editar Neumático</CardTitle>
+          <CardDescription>ID de neumático inválido</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            El ID proporcionado no es válido. Verifique la URL e intente
+            nuevamente.
           </div>
         </CardContent>
       </Card>

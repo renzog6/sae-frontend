@@ -46,7 +46,7 @@ export interface AddressDialogProps {
   onOpenChange: (v: boolean) => void;
   onSave: (data: AddressFormData) => void;
   initial?: Partial<AddressFormData>;
-  accessToken: string;
+
   onDelete?: () => void;
 }
 
@@ -55,7 +55,7 @@ export function AddressDialog({
   onOpenChange,
   initial,
   onSave,
-  accessToken,
+
   onDelete,
 }: AddressDialogProps) {
   const form = useForm<AddressFormData>({

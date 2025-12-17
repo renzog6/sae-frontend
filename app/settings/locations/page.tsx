@@ -2,7 +2,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,9 +28,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function LocationsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -61,7 +57,6 @@ export default function LocationsPage() {
   };
 
   const handleDelete = (city: City) => {
-    if (!accessToken) return;
     setCityToDelete(city);
     setConfirmOpen(true);
   };
@@ -138,7 +133,6 @@ export default function LocationsPage() {
       />
 
       <CityDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         mode={dialogMode}

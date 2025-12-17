@@ -1,7 +1,6 @@
 // filepath: sae-frontend/components/categories/business-category-dialog.tsx
 "use client";
 
-import * as React from "react";
 import {
   useCreateBusinessCategory,
   useUpdateBusinessCategory,
@@ -13,7 +12,6 @@ import { BusinessCategoryForm } from "@/components/forms/business-category-form"
 import type { BusinessCategoryFormData } from "@/lib/validations/company";
 
 export interface BusinessCategoryDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -21,7 +19,6 @@ export interface BusinessCategoryDialogProps {
 }
 
 export function BusinessCategoryDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

@@ -4,7 +4,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Truck, MapPin, Search, Calendar } from "lucide-react";
+import { Loader2, Truck, MapPin, Search } from "lucide-react";
 import { useToast } from "@/components/ui/toaster";
 import { useTires } from "@/lib/hooks/useTires";
 import { useEquipments } from "@/lib/hooks/useEquipments";
@@ -58,7 +57,6 @@ export function TireAssignmentsDialog({
   selectedPosition,
   selectedEquipment,
 }: TireAssignmentsDialogProps) {
-  const { data: session } = useSession();
   const { toast } = useToast();
 
   const [selectedTireId, setSelectedTireId] = useState<number | null>(null);

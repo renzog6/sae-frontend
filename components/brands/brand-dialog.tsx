@@ -1,7 +1,6 @@
 // filepath: sae-frontend/components/brands/brand-dialog.tsx
 "use client";
 
-import * as React from "react";
 import { useBrands } from "@/lib/hooks/useCatalogs";
 import type { Brand } from "@/lib/types/shared/catalogs";
 import { FormDialog } from "@/components/ui/form-dialog";
@@ -10,7 +9,6 @@ import { BrandForm } from "@/components/forms/brand-form";
 import type { BrandFormData } from "@/lib/validations/catalog";
 
 export interface BrandDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -18,7 +16,6 @@ export interface BrandDialogProps {
 }
 
 export function BrandDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

@@ -3,7 +3,6 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -34,8 +33,6 @@ import { ReportType } from "@/lib/types";
 export default function EmployeeVacationsDetailPage() {
   const sp = useSearchParams();
   const router = useRouter();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   const id = useMemo(() => {
     const asStr = sp.get("id");
@@ -328,7 +325,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignAnnual}
           onOpenChange={(o) => setOpenAssignAnnual(o)}
-          accessToken={accessToken}
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.ASSIGNED}
@@ -344,7 +340,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignDays}
           onOpenChange={(o) => setOpenAssignDays(o)}
-          accessToken={accessToken}
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.TAKEN}
@@ -360,7 +355,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openEdit}
           onOpenChange={(o) => setOpenEdit(o)}
-          accessToken={accessToken}
           employeeId={employee.id}
           mode="edit"
           fixedType={editVacation.type as VacationType}

@@ -2,7 +2,6 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useTireAssignments } from "@/lib/hooks/useTires";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +11,7 @@ import Link from "next/link";
 
 export default function EquipmentTiresPage() {
   const params = useParams();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
+
   const equipmentId = params?.id as string;
 
   const { useGetOpenByEquipment } = useTireAssignments();

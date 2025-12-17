@@ -1,10 +1,9 @@
 // filepath: sae-frontend/components/tire/tire-unmount-dialog.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Truck, MapPin, Minus, Calendar } from "lucide-react";
+import { Loader2, MapPin, Minus } from "lucide-react";
 import { tireStatusLabels } from "@/lib/constants";
 import { useToast } from "@/components/ui/toaster";
 import { TireAssignmentsService } from "@/lib/api/tires";
@@ -61,9 +60,7 @@ export function TireUnmountDialog({
   assignedTire,
   assignmentId,
 }: TireUnmountDialogProps) {
-  const { data: session } = useSession();
   const { toast } = useToast();
-  const accessToken = session?.accessToken || "";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,25 +76,11 @@ export function TireUnmountDialog({
   });
 
   const onSubmit = async (data: UnmountTireFormData) => {
-    console.log("onSubmit called with data:", data);
-    console.log("assignmentId:", assignmentId);
-    console.log("accessToken:", accessToken ? "present" : "missing");
-
     if (!assignmentId) {
       console.error("No assignmentId provided");
       toast({
         title: "Error",
         description: "No se encontró la asignación del neumático.",
-        variant: "error",
-      });
-      return;
-    }
-
-    if (!accessToken) {
-      console.error("No accessToken available");
-      toast({
-        title: "Error",
-        description: "Sesión expirada. Por favor, inicia sesión nuevamente.",
         variant: "error",
       });
       return;

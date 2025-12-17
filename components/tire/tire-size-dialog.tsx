@@ -20,7 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface TireSizeDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -28,7 +27,6 @@ export interface TireSizeDialogProps {
 }
 
 export function TireSizeDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

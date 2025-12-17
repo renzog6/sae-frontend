@@ -4,7 +4,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -51,7 +50,6 @@ export function TireInspectionDialog({
   selectedEquipment,
   assignedTire,
 }: TireInspectionDialogProps) {
-  const { data: session } = useSession();
   const { toast } = useToast();
 
   const [isSubmitting, setIsSubmitting] = useState(false);

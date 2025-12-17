@@ -4,12 +4,10 @@
 
 import { useParams } from "next/navigation";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Phone, Mail, User } from "lucide-react";
+import { Calendar, MapPin, Phone, User } from "lucide-react";
 import { Address } from "@/lib/types/shared/location";
-import { Contact } from "@/lib/types/shared/contact";
 import {
   genderLabels,
   maritalLabels,
@@ -19,7 +17,6 @@ import {
 export default function EmployeePage() {
   const params = useParams();
   const id = Number(params.id);
-  const { data: session } = useSession();
 
   const { data: employee, isLoading } = useEmployeeDetail(id);
 

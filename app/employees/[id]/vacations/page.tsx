@@ -3,7 +3,6 @@
 
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -27,13 +26,12 @@ import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
 import { vacationTypeLabels } from "@/lib/constants";
 import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
-import { formatDate, formatTenure, calcAge } from "@/lib/utils/date";
+import { formatDate } from "@/lib/utils/date";
 import { sumVacationDays } from "@/lib/utils/employee";
 
 export default function EmployeeVacationsDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
 
   const id = useMemo(() => {
     const p = params?.id;
@@ -245,7 +243,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignAnnual}
           onOpenChange={(o) => setOpenAssignAnnual(o)}
-          accessToken=""
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.ASSIGNED}
@@ -261,7 +258,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openAssignDays}
           onOpenChange={(o) => setOpenAssignDays(o)}
-          accessToken=""
           employeeId={employee.id}
           mode="create"
           fixedType={VacationType.TAKEN}
@@ -277,7 +273,6 @@ export default function EmployeeVacationsDetailPage() {
         <EmployeeVacationDialog
           open={openEdit}
           onOpenChange={(o) => setOpenEdit(o)}
-          accessToken=""
           employeeId={employee.id}
           mode="edit"
           fixedType={editVacation.type as VacationType}

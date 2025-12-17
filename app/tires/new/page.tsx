@@ -1,7 +1,6 @@
 // filepath: sae-frontend/app/tires/new/page.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +16,8 @@ import { CreateTireForm } from "@/components/forms/create-tire-form";
 import { useToast } from "@/components/ui/toaster";
 
 export default function TireNewPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-  const accessToken = session?.accessToken || "";
 
   // Fetch tire models for the form
   const { useGetAll: useGetModels } = useTireModels();

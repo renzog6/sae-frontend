@@ -19,7 +19,6 @@ import {
   type BusinessSubcategoryFormData,
 } from "@/lib/validations/company";
 import { useBusinessCategories } from "@/lib/hooks/useCompanies";
-import { useSession } from "next-auth/react";
 
 export interface BusinessSubcategoryFormProps {
   onSubmit: (data: BusinessSubcategoryFormData) => void;
@@ -38,8 +37,6 @@ export function BusinessSubcategoryForm({
   onCancel,
   error,
 }: BusinessSubcategoryFormProps) {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const { data: categoriesResponse } = useBusinessCategories();
   const categories = categoriesResponse || [];
 

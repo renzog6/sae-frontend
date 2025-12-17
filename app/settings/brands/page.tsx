@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,8 +37,6 @@ import { useToast } from "@/components/ui/toaster";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function BrandsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
   const { toast } = useToast();
 
   // Pagination state
@@ -196,7 +193,6 @@ export default function BrandsPage() {
 
       {/* Brand dialog (component) */}
       <BrandDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

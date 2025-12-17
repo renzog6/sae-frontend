@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { X, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
 import { mainMenu } from "@/lib/navigation";
+import { useSession } from "next-auth/react";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -27,7 +27,6 @@ interface NavigationItem {
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-
   const userRole = (session?.user?.role as UserRole) || "USER";
 
   // Adaptar mainMenu al formato esperado

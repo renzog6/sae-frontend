@@ -7,7 +7,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,8 +30,6 @@ const navItems = [
 export default function EmployeeLayout({ children }: { children: ReactNode }) {
   const params = useParams();
   const id = Number(params.id);
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
 
   const { data: employee, isLoading, error } = useEmployeeDetail(id);
 

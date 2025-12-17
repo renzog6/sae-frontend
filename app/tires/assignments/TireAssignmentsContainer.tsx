@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useSession } from "next-auth/react";
 
 import type { Equipment } from "@/lib/types/domain/equipment";
 import type { TirePositionConfig } from "@/lib/types/domain/tire";
@@ -20,9 +19,6 @@ import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function TireAssignmentsContainer() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // UI state
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<number | null>(
     null

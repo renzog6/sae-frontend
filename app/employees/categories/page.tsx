@@ -2,7 +2,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +18,6 @@ import { EmployeeCategoryDialog } from "@/components/employees/employee-category
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EmployeeCategoriesPage() {
-  const { data: session } = useSession();
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -98,7 +95,6 @@ export default function EmployeeCategoriesPage() {
       />
 
       <EmployeeCategoryDialog
-        accessToken=""
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);

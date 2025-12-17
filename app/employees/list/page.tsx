@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,8 +27,6 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 type StatusFilter = "ALL" | EmployeeStatus;
 
 export default function EmployeesPage() {
-  const { data: session } = useSession();
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

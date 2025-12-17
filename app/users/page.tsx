@@ -1,7 +1,6 @@
 // filepath: sae-frontend/app/users/page.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { User } from "@/lib/types/domain/user";
@@ -38,7 +37,6 @@ import {
 import { useToast } from "@/components/ui/toaster";
 
 export default function UsersPage() {
-  const { data: session } = useSession();
   const {
     data: usersResponse,
     isLoading: loading,

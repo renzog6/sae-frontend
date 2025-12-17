@@ -1,7 +1,6 @@
 // filepath: sae-frontend/components/units/unit-dialog.tsx
 "use client";
 
-import * as React from "react";
 import type { UnitFormData } from "@/lib/validations/catalog";
 import { useUnits } from "@/lib/hooks/useCatalogs";
 import type { Unit } from "@/lib/types/shared/catalogs";
@@ -10,7 +9,6 @@ import { useToast } from "@/components/ui/toaster";
 import { UnitForm } from "@/components/forms/unit-form";
 
 export interface UnitDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -18,7 +16,6 @@ export interface UnitDialogProps {
 }
 
 export function UnitDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

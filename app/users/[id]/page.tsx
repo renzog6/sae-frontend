@@ -1,8 +1,7 @@
 // filepath: sae-frontend/app/users/[id]/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   Card,
@@ -17,7 +16,6 @@ import { useUsers } from "@/lib/hooks/useUsers";
 import { UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function EditUserPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const params = useParams();
   const userId = Number(params.id);

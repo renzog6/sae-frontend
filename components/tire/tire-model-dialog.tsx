@@ -20,7 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface TireModelDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -28,7 +27,6 @@ export interface TireModelDialogProps {
 }
 
 export function TireModelDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,
@@ -118,7 +116,6 @@ export function TireModelDialog({
             isEdit={mode === "edit"}
             onCancel={() => onOpenChange(false)}
             error={null}
-            accessToken={accessToken}
           />
 
           {mode === "edit" && model && (

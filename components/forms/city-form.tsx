@@ -26,7 +26,6 @@ import { useProvinces } from "@/lib/hooks/useLocations";
 import type { Province } from "@/lib/types/shared/location";
 
 interface CityFormProps {
-  accessToken: string;
   onSubmit: (data: CityFormData) => void;
   isLoading?: boolean;
   defaultValues?: Partial<CityFormData>;
@@ -36,7 +35,6 @@ interface CityFormProps {
 }
 
 export function CityForm({
-  accessToken,
   onSubmit,
   isLoading = false,
   defaultValues,

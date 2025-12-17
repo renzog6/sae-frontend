@@ -4,7 +4,6 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -33,14 +32,8 @@ import {
 import {
   EmployeeIncident,
   HistoryLog,
-  EmployeeIncidentType,
-  HistoryType,
   SeverityLevel,
 } from "@/lib/types/domain/history";
-
-type HistoryItem =
-  | (EmployeeIncident & { itemType: "incident" })
-  | (HistoryLog & { itemType: "log" });
 import {
   employeeIncidentTypeLabels,
   historyTypeLabels,
@@ -57,6 +50,10 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
+
+type HistoryItem =
+  | (EmployeeIncident & { itemType: "incident" })
+  | (HistoryLog & { itemType: "log" });
 
 function getSeverityIcon(severity: SeverityLevel) {
   switch (severity) {
@@ -91,8 +88,7 @@ function getSeverityBadgeVariant(severity: SeverityLevel) {
 export default function EmployeeHistoryPage() {
   const params = useParams();
   const id = Number(params.id);
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
+
   const { toast } = useToast();
 
   const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
@@ -199,7 +195,6 @@ export default function EmployeeHistoryPage() {
 
         {/* Dialog para crear/editar incidentes */}
         <EmployeeIncidentDialog
-          accessToken={accessToken}
           open={incidentDialogOpen}
           onOpenChange={setIncidentDialogOpen}
           employeeId={id}
@@ -382,7 +377,6 @@ export default function EmployeeHistoryPage() {
 
       {/* Dialog para crear/editar incidentes */}
       <EmployeeIncidentDialog
-        accessToken={accessToken}
         open={incidentDialogOpen}
         onOpenChange={setIncidentDialogOpen}
         employeeId={id}

@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -17,9 +16,6 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireRecapColumns } from "./columns";
 
 export default function TireRecapsPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

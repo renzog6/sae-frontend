@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface EmployeeCategoryDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -32,7 +31,6 @@ export interface EmployeeCategoryDialogProps {
 }
 
 export function EmployeeCategoryDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

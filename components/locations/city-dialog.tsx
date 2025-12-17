@@ -17,7 +17,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useToast } from "@/components/ui/toaster";
 
 interface CityDrawerProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -25,7 +24,6 @@ interface CityDrawerProps {
 }
 
 export function CityDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,
@@ -126,7 +124,6 @@ export function CityDialog({
           }
         >
           <CityForm
-            accessToken={accessToken}
             onSubmit={onSubmit}
             isLoading={creating || updating}
             defaultValues={defaultValues}

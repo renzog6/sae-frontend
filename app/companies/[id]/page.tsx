@@ -3,7 +3,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -46,8 +45,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function CompanyDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
+
   const queryClient = useQueryClient();
 
   const id = useMemo(() => {
@@ -88,11 +86,10 @@ export default function CompanyDetailPage() {
   useEffect(() => {
     let ignore = false;
     async function load() {
-      if (!accessToken || !id) return;
       setLoading(true);
       setError(null);
       try {
-        const data = await CompaniesService.getById(id);
+        const data = await CompaniesService.getById(id || 0);
         if (!ignore) setCompany(data);
       } catch (e: any) {
         if (!ignore) setError(e?.message || "Error al cargar la empresa");
@@ -104,14 +101,13 @@ export default function CompanyDetailPage() {
     return () => {
       ignore = true;
     };
-  }, [accessToken, id]);
+  });
 
   async function handleSubmit(data: UpdateCompanyFormData) {
-    if (!accessToken || !id) return;
     setSaving(true);
     setError(null);
     try {
-      await CompaniesService.update(id, data);
+      await CompaniesService.update(id || 0, data);
       // Ensure companies list reflects latest data
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       router.push("/companies/list");
@@ -151,12 +147,12 @@ export default function CompanyDetailPage() {
   // ================= Subcomponents =================
   function CategoryList({
     companyId,
-    accessToken,
+
     currentCategoryId,
     onUpdated,
   }: {
     companyId: number;
-    accessToken: string;
+
     currentCategoryId?: number | null;
     onUpdated?: (newId: number | undefined) => void;
   }) {
@@ -171,7 +167,6 @@ export default function CompanyDetailPage() {
     const queryClient = useQueryClient();
 
     async function handleSave() {
-      if (!accessToken) return;
       setSavingCat(true);
       try {
         const payload: UpdateCompanyFormData = {
@@ -455,7 +450,6 @@ export default function CompanyDetailPage() {
           {!loading && company && id && (
             <CategoryList
               companyId={id}
-              accessToken={accessToken}
               currentCategoryId={company.businessCategoryId}
               onUpdated={(newId) =>
                 setCompany((prev) =>
@@ -511,7 +505,6 @@ export default function CompanyDetailPage() {
               }
             : undefined
         }
-        accessToken={accessToken}
         onDelete={
           editingAddress?.id
             ? () => deleteAddressMut.mutate(editingAddress.id!)

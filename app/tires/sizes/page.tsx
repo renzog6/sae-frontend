@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,9 +20,6 @@ import { TireSizeDialog } from "@/components/tire/tire-size-dialog";
 import { TireSizeAliasDialog } from "@/components/tire/tire-size-alias-dialog";
 
 export default function TireSizesPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -146,7 +142,6 @@ export default function TireSizesPage() {
       </Card>
 
       <TireSizeDialog
-        accessToken={accessToken}
         open={dialogOpen}
         onOpenChange={(o) => {
           setDialogOpen(o);
@@ -158,7 +153,6 @@ export default function TireSizesPage() {
 
       {selectedForAlias && (
         <TireSizeAliasDialog
-          accessToken={accessToken}
           open={aliasDialogOpen}
           onOpenChange={(o: boolean) => {
             setAliasDialogOpen(o);

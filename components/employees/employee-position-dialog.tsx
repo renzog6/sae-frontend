@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface EmployeePositionDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -32,7 +31,6 @@ export interface EmployeePositionDialogProps {
 }
 
 export function EmployeePositionDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

@@ -16,7 +16,6 @@ import { EmployeeVacationFormAssigned } from "@/components/forms/employee-vacati
 import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 
 export interface EmployeeVacationDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   employeeId: number;
@@ -28,7 +27,6 @@ export interface EmployeeVacationDialogProps {
 }
 
 export function EmployeeVacationDialog({
-  accessToken,
   open,
   onOpenChange,
   employeeId,

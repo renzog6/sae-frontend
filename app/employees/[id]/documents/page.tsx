@@ -4,7 +4,6 @@
 
 import { useState, useRef } from "react";
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -42,9 +41,7 @@ import { ServerFile } from "@/lib/types/domain/server-file";
 import {
   uploadServerFileSchema,
   type UploadServerFileFormData,
-  validateFileSize,
   getFileSizeError,
-  formatFileSize as formatFileSizeUtil,
 } from "@/lib/validations/server-file";
 import { Upload, Download, Trash2, FileText, Image, File } from "lucide-react";
 import { formatDate } from "@/lib/utils/date";
@@ -76,7 +73,6 @@ function formatFileSize(bytes: number): string {
 export default function EmployeeDocumentsPage() {
   const params = useParams();
   const id = Number(params.id);
-  const { data: session } = useSession();
 
   const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
   const serverFilesHooks = useServerFiles();

@@ -1,7 +1,6 @@
 // filepath: sae-frontend/components/categories/business-subcategory-dialog.tsx
 "use client";
 
-import * as React from "react";
 import {
   useCreateBusinessSubcategory,
   useUpdateBusinessSubcategory,
@@ -13,7 +12,6 @@ import { BusinessSubcategoryForm } from "@/components/forms/business-subcategory
 import type { BusinessSubcategoryFormData } from "@/lib/validations/company";
 
 export interface BusinessSubcategoryDialogProps {
-  accessToken: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
@@ -21,7 +19,6 @@ export interface BusinessSubcategoryDialogProps {
 }
 
 export function BusinessSubCategoryDialog({
-  accessToken,
   open,
   onOpenChange,
   mode,

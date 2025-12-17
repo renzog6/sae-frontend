@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -31,9 +30,6 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 type StatusFilter = "ALL" | TireStatus;
 
 export default function TiresPage() {
-  const { data: session } = useSession();
-  const accessToken = session?.accessToken || "";
-
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
