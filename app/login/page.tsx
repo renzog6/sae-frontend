@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { AlertCircle, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,34 +60,40 @@ export default function LoginPage() {
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
       {/* Left Side - Visual / Brand */}
-      <div className="hidden relative lg:flex h-full w-full flex-col bg-zinc-900 p-10 text-white dark:border-r">
+      <div className="relative flex-col hidden w-full h-full p-10 text-white lg:flex bg-zinc-900 dark:border-r">
         <div className="absolute inset-0 bg-zinc-900">
           {/* Abstract Background Image */}
-          <img
+          <Image
             src="/images/login-bg.jpg"
             alt="Background"
-            className="w-full h-full object-cover"
+            fill
+            priority
+            quality={75}
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-teal-900/40 to-zinc-900/60" />
         </div>
 
         <div className="relative z-20 flex items-center text-lg font-medium">
-          <ShieldCheck className="mr-2 h-6 w-6 text-teal-400" />
+          <ShieldCheck className="w-6 h-6 mr-2 text-teal-400" />
           Sistema SAE
         </div>
 
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "La eficiencia no es solo hacer las cosas bien, es hacer las cosas correctas de manera inteligente."
+              "La eficiencia no es solo hacer las cosas bien, es hacer las cosas
+              correctas de manera inteligente."
             </p>
-            <footer className="text-sm text-zinc-400">Equipo de Tecnología</footer>
+            <footer className="text-sm text-zinc-400">
+              Equipo de Tecnología
+            </footer>
           </blockquote>
         </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-zinc-50">
+      <div className="flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-zinc-50">
         <div className="mx-auto w-full max-w-[350px] space-y-6">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
@@ -99,7 +106,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="flex items-center p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md animate-in slide-in-from-top-2">
+              <div className="flex items-center p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50 animate-in slide-in-from-top-2">
                 <AlertCircle className="w-4 h-4 mr-2" />
                 <span>{error}</span>
               </div>
@@ -114,12 +121,14 @@ export default function LoginPage() {
                 autoComplete="email"
                 disabled={isLoading}
                 {...register("email")}
-                className={`h-11 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                className={`h-11 ${
+                  errors.email
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }`}
               />
               {errors.email && (
-                <p className="text-xs text-red-600">
-                  {errors.email.message}
-                </p>
+                <p className="text-xs text-red-600">{errors.email.message}</p>
               )}
             </div>
 
@@ -128,7 +137,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">Contraseña</Label>
                 <Link
                   href="#"
-                  className="text-xs text-teal-600 hover:text-teal-700 font-medium"
+                  className="text-xs font-medium text-teal-600 hover:text-teal-700"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -141,7 +150,11 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   disabled={isLoading}
                   {...register("password")}
-                  className={`h-11 pr-10 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`h-11 pr-10 ${
+                    errors.password
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }`}
                 />
                 <button
                   type="button"
@@ -165,12 +178,12 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-medium transition-all"
+              className="w-full font-medium text-white transition-all bg-teal-600 h-11 hover:bg-teal-700"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Iniciando sesión...
                 </>
               ) : (
@@ -179,7 +192,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="px-8 text-center text-sm text-zinc-500">
+          <p className="px-8 text-sm text-center text-zinc-500">
             Al continuar, aceptas nuestros{" "}
             <Link
               href="#"
