@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/settings/brands/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +19,8 @@ import {
 import { ChevronDown, Plus } from "lucide-react";
 import { Brand } from "@/lib/types/shared/catalogs";
 import { useBrands } from "@/lib/hooks/useCatalogs";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getBrandColumns } from "./columns";
 import {
   AlertDialog,
@@ -43,20 +43,7 @@ export default function BrandsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const [query, setQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, selectedStatus, limit]);
 
   const {
     data: brandsResponse,
@@ -67,7 +54,6 @@ export default function BrandsPage() {
     limit,
     sortBy: "name",
     sortOrder: "asc",
-    q: debouncedQuery,
     deleted: selectedStatus,
   });
 
@@ -102,6 +88,13 @@ export default function BrandsPage() {
     [deleteBrand]
   );
 
+  // Set up data table with search (server-side pagination maintained)
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: brands,
+    columns,
+    searchableColumns: ["name"],
+  });
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -125,15 +118,7 @@ export default function BrandsPage() {
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search Input */}
             <div className="flex gap-2">
-              <Input
-                placeholder="Buscar marcas..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="min-w-[200px]"
-              />
-
               {/* Status filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -173,7 +158,11 @@ export default function BrandsPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<Brand, unknown> columns={columns} data={brands} />
+            <DataTable<Brand>
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
           )}
 
           {/* Pagination controls */}

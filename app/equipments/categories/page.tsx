@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/equipments/categories/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,57 +10,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import type { EquipmentCategory } from "@/lib/types/domain/equipment";
 import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getEquipmentCategoryColumns } from "./columns";
 import { EquipmentCategoryDialog } from "@/components/equipment/equipment-category-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EquipmentCategoriesPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useEquipmentCategories();
-  const {
-    data: categoriesResponse,
-    isLoading,
-    error,
-  } = useGetAll({ page, limit });
+  const { data: categoriesResponse, isLoading, error } = useGetAll();
   console.log("Categories response:", categoriesResponse);
   console.log("Categories error:", error);
 
   const categories = categoriesResponse?.data || [];
-  const meta = categoriesResponse?.meta || {
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-  };
-  const totalPages = meta.totalPages || Math.ceil(meta.total / meta.limit);
-  const totalItems = meta.total || 0;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -78,6 +42,14 @@ export default function EquipmentCategoriesPage() {
     []
   );
 
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: categories,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -94,12 +66,10 @@ export default function EquipmentCategoriesPage() {
               Nueva categoría
             </Button>
           </div>
-          <CardDescription>Gestión de categorías de equipos</CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex gap-2"></div>
-          </div>
+          <CardDescription>
+            {filteredCount} categor{filteredCount !== 1 ? "ías" : "ía"} de
+            equipo{filteredCount !== 1 ? "s" : ""}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -107,23 +77,20 @@ export default function EquipmentCategoriesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<EquipmentCategory, unknown>
-              columns={columns}
-              data={categories}
-              searchableColumns={["name", "code"]}
-              searchPlaceholder="Buscar por nombre o código..."
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar categorías..."
             />
           )}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

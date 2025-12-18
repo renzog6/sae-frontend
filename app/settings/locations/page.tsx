@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/settings/locations/page.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +13,8 @@ import {
 import { City } from "@/lib/types/shared/location";
 import { useCities } from "@/lib/hooks/useLocations";
 import { CityDialog } from "@/components/locations/city-dialog";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getCityColumns } from "./columns";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import {
@@ -28,10 +29,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function LocationsPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   const { useGetAll, useDelete } = useCities();
   const citiesQuery = useGetAll();
   const { data: citiesResponse, isLoading, error } = citiesQuery;
@@ -61,19 +58,18 @@ export default function LocationsPage() {
     setConfirmOpen(true);
   };
 
-  const cityCount = useMemo(() => cities.length, [cities]);
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = cities.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = cities.slice((page - 1) * limit, page * limit);
-
   const columns = getCityColumns({
     onEdit: handleEdit,
     onDelete: handleDelete,
   });
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: cities,
+    columns,
+    searchableColumns: ["name"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-4 space-y-6">
@@ -103,7 +99,7 @@ export default function LocationsPage() {
         <CardHeader>
           <CardTitle>Lista de ciudades</CardTitle>
           <CardDescription>
-            {totalFilteredItems} ciudad{totalFilteredItems !== 1 ? "es" : ""}
+            {filteredCount} ciudad{filteredCount !== 1 ? "es" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -111,9 +107,9 @@ export default function LocationsPage() {
             <p>Cargando...</p>
           ) : (
             <DataTable
-              columns={columns}
-              data={paginatedData}
-              searchableColumn="name"
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
               searchPlaceholder="Buscar ciudad..."
             />
           )}
@@ -121,15 +117,12 @@ export default function LocationsPage() {
       </Card>
 
       <PaginationBar
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalFilteredItems}
-        limit={limit}
-        onPageChange={setPage}
-        onLimitChange={(newLimit) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
+        page={table.getState().pagination.pageIndex + 1}
+        totalPages={table.getPageCount()}
+        totalItems={filteredCount}
+        limit={table.getState().pagination.pageSize}
+        onPageChange={(page) => table.setPageIndex(page - 1)}
+        onLimitChange={(limit) => table.setPageSize(limit)}
       />
 
       <CityDialog

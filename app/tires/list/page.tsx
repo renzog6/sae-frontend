@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/tires/list/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -9,64 +9,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import type { Tire } from "@/lib/types/domain/tire";
-import { TireStatus } from "@/lib/types/shared/enums";
 import { useTires } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getTireColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
-type StatusFilter = "ALL" | TireStatus;
-
 export default function TiresPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("ALL");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, status, limit]);
-
   const { useGetAll } = useTires();
-  const {
-    data: tiresData,
-    isLoading,
-    error,
-  } = useGetAll({
-    page,
-    limit,
-    status: status === "ALL" ? undefined : status,
-  });
+  const { data: tiresData, isLoading, error } = useGetAll();
 
   const tires: Tire[] = Array.isArray(tiresData)
     ? tiresData
     : (tiresData as any)?.data ?? [];
-  const totalPages = (tiresData as any)?.meta?.totalPages ?? 1;
-  const totalItems = (tiresData as any)?.meta?.total ?? 0;
 
   const columns = useMemo(() => getTireColumns(), []);
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: tires,
+    columns,
+    searchableColumns: ["serialNumber", "brand", "model"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -78,69 +47,16 @@ export default function TiresPage() {
               <a href="/tires/new">Nuevo neumático</a>
             </Button>
           </div>
-          <CardDescription>Gestión de neumáticos</CardDescription>
+          <CardDescription>
+            {filteredCount} neumático{filteredCount !== 1 ? "s" : ""}
+          </CardDescription>
 
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por número de serie, marca o modelo..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Status filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">🏷️</span>
-                    {status === "ALL" ? "Todos" : status.replace("_", " ")}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem onClick={() => setStatus("ALL")}>
-                    <span className="mr-2">👥</span> Todos
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setStatus(TireStatus.IN_STOCK)}
-                  >
-                    <span className="mr-2">📦</span> En Stock
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setStatus(TireStatus.IN_USE)}
-                  >
-                    <span className="mr-2">🚛</span> En Uso
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setStatus(TireStatus.UNDER_REPAIR)}
-                  >
-                    <span className="mr-2">🔧</span> En Reparación
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatus(TireStatus.RECAP)}>
-                    <span className="mr-2">🔄</span> Recapado
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setStatus(TireStatus.DISCARDED)}
-                  >
-                    <span className="mr-2">🗑️</span> Descartado
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Report generation dropdown */}
-              <ReportExportMenu
-                reportType={ReportType.TIRE_LIST}
-                filter={{ status: "active" }}
-                title="Neumaticos"
-              />
-            </div>
-          </div>
+          {/* Report generation dropdown */}
+          <ReportExportMenu
+            reportType={ReportType.TIRE_LIST}
+            filter={{ status: "active" }}
+            title="Neumaticos"
+          />
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -148,18 +64,20 @@ export default function TiresPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable columns={columns} data={tires} />
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar neumáticos..."
+            />
           )}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

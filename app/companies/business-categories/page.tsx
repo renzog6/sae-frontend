@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/companies/business-categories/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +23,8 @@ import {
   useDeleteBusinessCategory,
   useRestoreBusinessCategory,
 } from "@/lib/hooks/useCompanies";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getBusinessCategoryColumns } from "./columns";
 import {
   AlertDialog,
@@ -43,24 +43,7 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 export default function BusinessCategoriesPage() {
   const { toast } = useToast();
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, selectedStatus, limit]);
 
   const {
     data: categoriesResponse,
@@ -81,43 +64,6 @@ export default function BusinessCategoriesPage() {
   const [confirmType, setConfirmType] = useState<"delete" | "restore">(
     "delete"
   );
-
-  const categories = useMemo(() => {
-    let filtered = categoriesResponse || [];
-
-    // Filter by search query (case-insensitive)
-    if (debouncedQuery) {
-      const query = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(
-        (item: BusinessCategory) =>
-          item.name?.toLowerCase().includes(query) ||
-          item.code?.toLowerCase().includes(query) ||
-          item.information?.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by status
-    if (selectedStatus && selectedStatus !== "ALL") {
-      const isActive = selectedStatus === "ACTIVE";
-      filtered = filtered.filter(
-        (item: BusinessCategory) => item.isActive === isActive
-      );
-    }
-
-    // Sort by name A-Z
-    return filtered.sort((a: BusinessCategory, b: BusinessCategory) => {
-      const nameA = a.name || "";
-      const nameB = b.name || "";
-      return nameA.localeCompare(nameB);
-    });
-  }, [categoriesResponse, debouncedQuery, selectedStatus]);
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = categories.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = categories.slice((page - 1) * limit, page * limit);
 
   const columns = useMemo(
     () =>
@@ -142,6 +88,37 @@ export default function BusinessCategoriesPage() {
     [deleteCategory]
   );
 
+  // Filter categories by status (client-side filtering)
+  const filteredCategories = useMemo(() => {
+    let filtered = categoriesResponse || [];
+
+    // Filter by status
+    if (selectedStatus && selectedStatus !== "ALL") {
+      const isActive = selectedStatus === "ACTIVE";
+      filtered = filtered.filter(
+        (item: BusinessCategory) => item.isActive === isActive
+      );
+    }
+
+    // Sort by name A-Z
+    return filtered.sort((a: BusinessCategory, b: BusinessCategory) => {
+      const nameA = a.name || "";
+      const nameB = b.name || "";
+      return nameA.localeCompare(nameB);
+    });
+  }, [categoriesResponse, selectedStatus]);
+
+  // Set up data table with search and pagination
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: filteredCategories,
+    columns,
+    searchableColumns: ["name", "code", "information"],
+  });
+
+  // Calculate pagination from table state
+  const totalFilteredItems = table.getFilteredRowModel().rows.length;
+  const totalPages = table.getPageCount();
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -165,15 +142,7 @@ export default function BusinessCategoriesPage() {
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search Input */}
             <div className="flex gap-2">
-              <Input
-                placeholder="Buscar categorías..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="min-w-[200px]"
-              />
-
               {/* Status filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -213,21 +182,26 @@ export default function BusinessCategoriesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<BusinessCategory, unknown>
-              columns={columns}
-              data={paginatedData}
+            <DataTable<BusinessCategory>
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
             />
           )}
 
           <PaginationBar
-            page={page}
+            page={table.getState().pagination.pageIndex + 1}
             totalPages={totalPages}
             totalItems={totalFilteredItems}
-            limit={limit}
-            onPageChange={setPage}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(newPage) => {
+              table.setPagination({
+                pageIndex: newPage - 1,
+                pageSize: table.getState().pagination.pageSize,
+              });
+            }}
             onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
+              table.setPagination({ pageIndex: 0, pageSize: newLimit });
             }}
           />
         </CardContent>

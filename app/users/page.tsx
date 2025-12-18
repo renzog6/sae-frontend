@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { User } from "@/lib/types/domain/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import { useUsers } from "@/lib/hooks/useUsers";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
+import { getUserColumns } from "./columns";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,25 +41,33 @@ export default function UsersPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   // Extract data from standardized response
   const users = usersResponse?.data || [];
-  const meta = usersResponse?.meta;
-
-  // Calculate pagination based on data
-  const totalFilteredItems = users.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedUsers = useMemo(() => {
-    return users.slice((page - 1) * limit, page * limit);
-  }, [users, page, limit]);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+
+  const handleEdit = (user: User) => {
+    router.push(`/users/${user.id}`);
+  };
+
+  const handleDelete = (user: User) => {
+    setUserToDelete(user);
+    setConfirmOpen(true);
+  };
+
+  const columns = getUserColumns({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+  });
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: users,
+    columns,
+    searchableColumns: ["name", "email"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <>
@@ -100,97 +103,30 @@ export default function UsersPage() {
               <CardTitle className="text-2xl">Lista de Usuarios</CardTitle>
             </div>
             <CardDescription className="text-laurel-600">
-              Mostrando {Math.min((page - 1) * limit + 1, totalFilteredItems)} a{" "}
-              {Math.min(page * limit, totalFilteredItems)} de{" "}
-              {totalFilteredItems} usuario{totalFilteredItems !== 1 ? "s" : ""}
+              {filteredCount} usuario{filteredCount !== 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <p>Cargando...</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Rol</TableHead>
-                    <TableHead>Empresa</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Último Login</TableHead>
-                    <TableHead>Fecha de Creación</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        {user.role === "ADMIN" ? "Administrador" : "Usuario"}
-                      </TableCell>
-                      <TableCell>{user.companyId}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            user.isActive
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {user.isActive ? "Activo" : "Inactivo"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {user.lastLoginAt
-                          ? new Date(user.lastLoginAt).toLocaleDateString(
-                              "es-ES"
-                            )
-                          : "Nunca"}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString("es-ES")}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.push(`/users/${user.id}`)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                              setUserToDelete(user);
-                              setConfirmOpen(true);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                table={table}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                searchPlaceholder="Buscar usuarios..."
+              />
             )}
           </CardContent>
         </Card>
 
         <PaginationBar
-          page={page}
-          totalPages={totalPages}
-          totalItems={totalFilteredItems}
-          limit={limit}
-          onPageChange={setPage}
-          onLimitChange={(newLimit) => {
-            setLimit(newLimit);
-            setPage(1);
-          }}
+          page={table.getState().pagination.pageIndex + 1}
+          totalPages={table.getPageCount()}
+          totalItems={filteredCount}
+          limit={table.getState().pagination.pageSize}
+          onPageChange={(page) => table.setPageIndex(page - 1)}
+          onLimitChange={(limit) => table.setPageSize(limit)}
         />
       </div>
 

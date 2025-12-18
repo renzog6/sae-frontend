@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/tires/rotations/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -9,49 +9,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useTireRotations } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireRotationColumns } from "./columns";
 
 export default function TireRotationsPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useTireRotations();
-  const {
-    data: rotationsData,
-    isLoading,
-    error,
-  } = useGetAll({
-    page,
-    limit,
-    q: debouncedQuery || undefined,
-  });
+  const { data: rotationsData, isLoading, error } = useGetAll();
 
   const rotations = Array.isArray(rotationsData)
     ? rotationsData
     : (rotationsData as any)?.data ?? [];
-  const totalPages = (rotationsData as any)?.meta?.totalPages ?? 1;
-  const totalItems = (rotationsData as any)?.meta?.total ?? 0;
 
   const columns = useMemo(() => getTireRotationColumns(), []);
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: rotations,
+    columns,
+    searchableColumns: ["serialNumber", "size"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -61,23 +41,9 @@ export default function TireRotationsPage() {
             <CardTitle className="text-2xl">Rotaciones de Neumáticos</CardTitle>
           </div>
           <CardDescription>
-            Historial completo de rotaciones realizadas a los neumáticos
+            {filteredCount} rotacion{filteredCount !== 1 ? "es" : ""} de
+            neumáticos
           </CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por número de serie o medida..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Page size selector is now in PaginationBar */}
-            </div>
-          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -85,19 +51,20 @@ export default function TireRotationsPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable columns={columns} data={rotations} />
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar rotaciones..."
+            />
           )}
-          {/* Pagination controls */}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setPage(1);
-              setLimit(newLimit);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

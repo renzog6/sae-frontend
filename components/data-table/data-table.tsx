@@ -1,4 +1,4 @@
-// filepath: /sae-frontend/components/data-table/data-table.tsx
+// filepath: sae-frontend/components/data-table/data-table.tsx
 "use client";
 
 import { flexRender, Table as TableType } from "@tanstack/react-table";

@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/tires/sizes/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import type { TireSize } from "@/lib/types/domain/tire";
 import { useTireSizes } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireSizeColumns } from "./columns";
 import { TireSizeDialog } from "@/components/tire/tire-size-dialog";
@@ -24,20 +24,6 @@ export default function TireSizesPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useTireSizes();
   const {
     data: sizesResponse,
@@ -46,7 +32,7 @@ export default function TireSizesPage() {
   } = useGetAll({
     page,
     limit,
-    query: debouncedQuery,
+    query: "",
   });
 
   // Invalidate queries when alias is created/updated/deleted
@@ -85,6 +71,13 @@ export default function TireSizesPage() {
     []
   );
 
+  // TanStack Table
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: sizes,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -102,21 +95,6 @@ export default function TireSizesPage() {
             </Button>
           </div>
           <CardDescription>Gestión de tamaños de neumáticos</CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por medida..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Page size selector is now in PaginationBar */}
-            </div>
-          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -124,7 +102,12 @@ export default function TireSizesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<TireSize, unknown> columns={columns} data={sizes} />
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="🔍 Buscar por medida..."
+            />
           )}
           {/* Pagination controls */}
           <PaginationBar

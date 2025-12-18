@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/tires/models/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,48 +10,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import type { TireModel } from "@/lib/types/domain/tire";
 import { useTireModels } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireModelColumns } from "./columns";
 import { TireModelDialog } from "@/components/tire/tire-model-dialog";
 
 export default function TireModelsPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useTireModels();
-  const {
-    data: modelsResponse,
-    isLoading,
-    error,
-  } = useGetAll({
-    page,
-    limit,
-  });
+  const { data: modelsResponse, isLoading, error } = useGetAll();
 
   const models: TireModel[] = Array.isArray(modelsResponse)
     ? modelsResponse
     : (modelsResponse as any)?.data ?? [];
-  const totalPages = (modelsResponse as any)?.meta?.totalPages ?? 1;
-  const totalItems = (modelsResponse as any)?.meta?.total ?? 0;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -69,6 +42,14 @@ export default function TireModelsPage() {
     []
   );
 
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: models,
+    columns,
+    searchableColumns: ["name"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -85,22 +66,10 @@ export default function TireModelsPage() {
               Nuevo modelo
             </Button>
           </div>
-          <CardDescription>Gestión de modelos de neumáticos</CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por nombre..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Page size selector is now in PaginationBar */}
-            </div>
-          </div>
+          <CardDescription>
+            {filteredCount} modelo{filteredCount !== 1 ? "s" : ""} de neumático
+            {filteredCount !== 1 ? "s" : ""}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -108,19 +77,20 @@ export default function TireModelsPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<TireModel, unknown> columns={columns} data={models} />
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar modelos..."
+            />
           )}
-          {/* Pagination controls */}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setPage(1);
-              setLimit(newLimit);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/equipments/types/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,40 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getEquipmentTypeColumns } from "./columns";
 import { EquipmentTypeDialog } from "@/components/equipment/equipment-type-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EquipmentTypesPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useEquipmentTypes();
   const { data: typesData, isLoading, error } = useGetAll();
   const types = Array.isArray(typesData)
@@ -55,13 +30,6 @@ export default function EquipmentTypesPage() {
       a.name.localeCompare(b.name)
     );
   }, [types]);
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = sortedTypes.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = sortedTypes.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -79,6 +47,14 @@ export default function EquipmentTypesPage() {
     []
   );
 
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: sortedTypes,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
+
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
       <Card>
@@ -95,59 +71,10 @@ export default function EquipmentTypesPage() {
               Nuevo tipo
             </Button>
           </div>
-          <CardDescription>Gestión de tipos de equipos</CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por nombre o código..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Page size selector */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[120px] justify-between"
-                  >
-                    <span className="mr-2">📊</span> {limit}/pág
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(10);
-                    }}
-                  >
-                    10
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(50);
-                    }}
-                  >
-                    50
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPage(1);
-                      setLimit(100);
-                    }}
-                  >
-                    100
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+          <CardDescription>
+            {filteredCount} tipo{filteredCount !== 1 ? "s" : ""} de equipo
+            {filteredCount !== 1 ? "s" : ""}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -155,21 +82,20 @@ export default function EquipmentTypesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<EquipmentType, unknown>
-              columns={columns}
-              data={paginatedData}
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar tipos de equipo..."
             />
           )}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalFilteredItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

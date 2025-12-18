@@ -1,9 +1,8 @@
 // filepath: sae-frontend/app/employees/list/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +15,8 @@ import type { Employee } from "@/lib/types/domain/employee";
 import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeesList } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { useGenerateReport } from "@/lib/hooks/useReports";
 import { ReportType } from "@/lib/types/domain/report";
 
@@ -27,42 +27,44 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 type StatusFilter = "ALL" | EmployeeStatus;
 
 export default function EmployeesPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>(EmployeeStatus.ACTIVE);
-  // ✅ MODIFICADO: Estado para ordenamiento con nuevos valores por defecto
-  const [sortBy, setSortBy] = useState("person.lastName"); // ✅ CAMBIADO: Apellido por defecto
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // ✅ CAMBIADO: Ascendente por defecto
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, status, limit, sortBy, sortOrder]);
+  const [sortBy, setSortBy] = useState("person.lastName");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const { data: employeesResponse } = useEmployeesList({
-    page,
-    limit,
-    q: debouncedQuery || undefined,
+    page: 1,
+    limit: 100, // Get all data for client-side filtering and pagination
     sortBy,
     sortOrder,
   });
 
   const generateReportMutation = useGenerateReport();
 
-  const employees: Employee[] = employeesResponse?.data ?? [];
-  const totalPages = employeesResponse?.meta?.totalPages ?? 1;
+  const allEmployees: Employee[] = employeesResponse?.data ?? [];
 
   const columns = useMemo(() => getEmployeeColumns(), []);
+
+  // Filter employees by status (client-side filtering)
+  const filteredEmployees = useMemo(() => {
+    if (status === "ALL") return allEmployees;
+    return allEmployees.filter((emp) => emp.status === status);
+  }, [allEmployees, status]);
+
+  // Set up data table with search and pagination
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: filteredEmployees,
+    columns,
+    searchableColumns: [
+      "employeeCode",
+      "person.lastName",
+      "person.firstName",
+      "person.cuil",
+    ],
+  });
+
+  // Calculate pagination from table state
+  const totalFilteredItems = table.getFilteredRowModel().rows.length;
+  const totalPages = table.getPageCount();
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -81,14 +83,6 @@ export default function EmployeesPage() {
           </div>
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por legajo, apellido y nombre o CUIL..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
             <div className="flex gap-2">
               {/* Status filter */}
               <DropdownMenu>
@@ -185,16 +179,24 @@ export default function EmployeesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={employees} />
+          <DataTable<Employee>
+            table={table}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+          />
           <PaginationBar
-            page={page}
+            page={table.getState().pagination.pageIndex + 1}
             totalPages={totalPages}
-            totalItems={employeesResponse?.meta?.total ?? 0}
-            limit={limit}
-            onPageChange={setPage}
+            totalItems={totalFilteredItems}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(newPage) => {
+              table.setPagination({
+                pageIndex: newPage - 1,
+                pageSize: table.getState().pagination.pageSize,
+              });
+            }}
             onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
+              table.setPagination({ pageIndex: 0, pageSize: newLimit });
             }}
           />
         </CardContent>

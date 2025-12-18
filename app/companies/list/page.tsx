@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/companies/list/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,30 +20,14 @@ import {
 import { ChevronDown, Plus } from "lucide-react";
 import type { Company, BusinessCategory } from "@/lib/types/domain/company";
 import { useCompanies, useBusinessCategories } from "@/lib/hooks/useCompanies";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getCompanyColumns } from "./columns";
 import Link from "next/link";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function CompaniesPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, selectedCategory, limit]);
 
   const {
     data: companiesResponse,
@@ -58,19 +42,11 @@ export default function CompaniesPage() {
 
   const categories: BusinessCategory[] = categoriesResponse || [];
 
-  const companies = useMemo(() => {
-    let filtered: Company[] = companiesResponse || [];
+  const columns = useMemo(() => getCompanyColumns(), []);
 
-    // Filter by search query (case-insensitive)
-    if (debouncedQuery) {
-      const searchQuery = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(
-        (item: Company) =>
-          item.name?.toLowerCase().includes(searchQuery) ||
-          item.businessName?.toLowerCase().includes(searchQuery) ||
-          item.cuit?.toLowerCase().includes(searchQuery)
-      );
-    }
+  // Filter companies by category (client-side filtering)
+  const filteredCompanies = useMemo(() => {
+    let filtered: Company[] = companiesResponse || [];
 
     // Filter by category
     if (selectedCategory) {
@@ -85,16 +61,18 @@ export default function CompaniesPage() {
       const nameB = b.name || "";
       return nameA.localeCompare(nameB);
     });
-  }, [companiesResponse, debouncedQuery, selectedCategory]);
+  }, [companiesResponse, selectedCategory]);
 
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = companies.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
+  // Set up data table with search and pagination
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: filteredCompanies,
+    columns,
+    searchableColumns: ["name", "businessName", "cuit"],
+  });
 
-  // Get paginated data
-  const paginatedData = companies.slice((page - 1) * limit, page * limit);
-
-  const columns = useMemo(() => getCompanyColumns(), []);
+  // Calculate pagination from table state
+  const totalFilteredItems = table.getFilteredRowModel().rows.length;
+  const totalPages = table.getPageCount();
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -115,15 +93,7 @@ export default function CompaniesPage() {
 
           {/* Filters Row */}
           <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search Input */}
             <div className="flex gap-2">
-              <Input
-                placeholder="Buscar por nombre, razón social o CUIT..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="min-w-[300px]"
-              />
-
               {/* Category filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -176,20 +146,25 @@ export default function CompaniesPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<Company, unknown>
-              columns={columns}
-              data={paginatedData}
+            <DataTable<Company>
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
             />
           )}
           <PaginationBar
-            page={page}
+            page={table.getState().pagination.pageIndex + 1}
             totalPages={totalPages}
             totalItems={totalFilteredItems}
-            limit={limit}
-            onPageChange={setPage}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(newPage) => {
+              table.setPagination({
+                pageIndex: newPage - 1,
+                pageSize: table.getState().pagination.pageSize,
+              });
+            }}
             onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
+              table.setPagination({ pageIndex: 0, pageSize: newLimit });
             }}
           />
         </CardContent>

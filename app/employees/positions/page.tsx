@@ -12,25 +12,15 @@ import {
 } from "@/components/ui/card";
 import type { EmployeePosition } from "@/lib/types/domain/employee";
 import { useEmployeePositions } from "@/lib/hooks/useEmployees";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getEmployeePositionColumns } from "./columns";
 import { EmployeePositionDialog } from "@/components/employees/employee-position-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EmployeePositionsPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   const { data: positionsData, isLoading, error } = useEmployeePositions();
   const positions = positionsData?.data ?? [];
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = positions.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = positions.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -47,6 +37,14 @@ export default function EmployeePositionsPage() {
       }),
     []
   );
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: positions,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-4 space-y-4">
@@ -66,32 +64,31 @@ export default function EmployeePositionsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Listado</CardTitle>
-          <CardDescription>Gestiona los puestos</CardDescription>
+          <CardDescription>
+            {filteredCount} puesto{filteredCount !== 1 ? "s" : ""}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <p>Cargando...</p>
           ) : (
-            <DataTable<EmployeePosition, unknown>
-              columns={columns}
-              data={paginatedData}
-              searchableColumns={["name", "code"]}
-              searchPlaceholder="Buscar por nombre o código..."
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar puestos..."
             />
           )}
         </CardContent>
       </Card>
 
       <PaginationBar
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalFilteredItems}
-        limit={limit}
-        onPageChange={setPage}
-        onLimitChange={(newLimit) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
+        page={table.getState().pagination.pageIndex + 1}
+        totalPages={table.getPageCount()}
+        totalItems={filteredCount}
+        limit={table.getState().pagination.pageSize}
+        onPageChange={(page) => table.setPageIndex(page - 1)}
+        onLimitChange={(limit) => table.setPageSize(limit)}
       />
 
       <EmployeePositionDialog

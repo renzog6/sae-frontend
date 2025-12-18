@@ -1,7 +1,7 @@
 // filepath: sae-frontend/app/tires/inspections/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -9,49 +9,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useTireInspections } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireInspectionColumns } from "./columns";
 
 export default function TireInspectionsPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const [query, setQuery] = useState("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, limit]);
-
   const { useGetAll } = useTireInspections();
-  const {
-    data: inspectionsData,
-    isLoading,
-    error,
-  } = useGetAll({
-    page,
-    limit,
-    q: debouncedQuery || undefined,
-  });
+  const { data: inspectionsData, isLoading, error } = useGetAll();
 
   const inspections = Array.isArray(inspectionsData)
     ? inspectionsData
     : (inspectionsData as any)?.data ?? [];
-  const totalPages = (inspectionsData as any)?.meta?.totalPages ?? 1;
-  const totalItems = (inspectionsData as any)?.meta?.total ?? 0;
 
   const columns = useMemo(() => getTireInspectionColumns(), []);
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: inspections,
+    columns,
+    searchableColumns: ["serialNumber", "size"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -63,24 +43,9 @@ export default function TireInspectionsPage() {
             </CardTitle>
           </div>
           <CardDescription>
-            Historial completo de inspecciones técnicas realizadas a los
+            {filteredCount} inspeccion{filteredCount !== 1 ? "es" : ""} de
             neumáticos
           </CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="🔍 Buscar por número de serie o medida..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2">
-              {/* Page size selector is now in PaginationBar */}
-            </div>
-          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -88,19 +53,20 @@ export default function TireInspectionsPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable columns={columns} data={inspections} />
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar inspecciones..."
+            />
           )}
-          {/* Pagination controls */}
           <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setPage(1);
-              setLimit(newLimit);
-            }}
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
           />
         </CardContent>
       </Card>

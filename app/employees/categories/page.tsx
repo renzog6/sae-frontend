@@ -12,25 +12,15 @@ import {
 } from "@/components/ui/card";
 import type { EmployeeCategory } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getEmployeeCategoryColumns } from "./columns";
 import { EmployeeCategoryDialog } from "@/components/employees/employee-category-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 
 export default function EmployeeCategoriesPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   const { data: categoriesData, isLoading, error } = useEmployeeCategories();
   const categories = categoriesData?.data ?? [];
-
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = categories.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
-
-  // Get paginated data
-  const paginatedData = categories.slice((page - 1) * limit, page * limit);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -47,6 +37,14 @@ export default function EmployeeCategoriesPage() {
       }),
     []
   );
+
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: categories,
+    columns,
+    searchableColumns: ["name", "code"],
+  });
+
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="p-4 space-y-4">
@@ -66,32 +64,31 @@ export default function EmployeeCategoriesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Listado</CardTitle>
-          <CardDescription>Gestiona las categorías</CardDescription>
+          <CardDescription>
+            {filteredCount} categor{filteredCount !== 1 ? "ías" : "ía"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <p>Cargando...</p>
           ) : (
-            <DataTable<EmployeeCategory, unknown>
-              columns={columns}
-              data={paginatedData}
-              searchableColumns={["name", "code"]}
-              searchPlaceholder="Buscar por nombre o código..."
+            <DataTable
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              searchPlaceholder="Buscar categorías..."
             />
           )}
         </CardContent>
       </Card>
 
       <PaginationBar
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalFilteredItems}
-        limit={limit}
-        onPageChange={setPage}
-        onLimitChange={(newLimit) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
+        page={table.getState().pagination.pageIndex + 1}
+        totalPages={table.getPageCount()}
+        totalItems={filteredCount}
+        limit={table.getState().pagination.pageSize}
+        onPageChange={(page) => table.setPageIndex(page - 1)}
+        onLimitChange={(limit) => table.setPageSize(limit)}
       />
 
       <EmployeeCategoryDialog

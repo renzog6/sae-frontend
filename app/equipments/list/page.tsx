@@ -28,7 +28,8 @@ import {
   useEquipmentCategories,
   useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { useDataTable } from "@/components/data-table/use-data-table";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -38,10 +39,6 @@ import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 
 export default function EquipmentListPage() {
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   const [query, setQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(
     EquipmentStatus.ACTIVE
@@ -55,11 +52,6 @@ export default function EquipmentListPage() {
     const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
     return () => clearTimeout(t);
   }, [query]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQuery, selectedStatus, selectedCategory, selectedType, limit]);
 
   const { useGetAll: useEquipmentList } = useEquipments();
   const {
@@ -85,19 +77,19 @@ export default function EquipmentListPage() {
 
   const categories = categoriesResponse.data;
 
+  const columns = useMemo(
+    () =>
+      getEquipmentColumns({
+        onView: (item) => {
+          // Navigate to detail page
+          window.location.href = `/equipments/${item.id}`;
+        },
+      }),
+    []
+  );
+
   const equipment = useMemo(() => {
     let filtered = equipmentResponse?.data || [];
-
-    // Filter by search query (case-insensitive)
-    if (debouncedQuery) {
-      const query = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(
-        (item: Equipment) =>
-          item.name?.toLowerCase().includes(query) ||
-          item.internalCode?.toLowerCase().includes(query) ||
-          item.licensePlate?.toLowerCase().includes(query)
-      );
-    }
 
     // Filter by status
     if (selectedStatus && selectedStatus !== "ALL") {
@@ -126,31 +118,23 @@ export default function EquipmentListPage() {
       const typeB = b.type?.name || "";
       return typeA.localeCompare(typeB);
     });
-  }, [
-    equipmentResponse?.data,
-    debouncedQuery,
-    selectedStatus,
-    selectedCategory,
-    selectedType,
-  ]);
+  }, [equipmentResponse?.data, selectedStatus, selectedCategory, selectedType]);
 
-  // Calculate pagination based on filtered data
-  const totalFilteredItems = equipment.length;
-  const totalPages = Math.ceil(totalFilteredItems / limit);
+  // Set the search query as global filter
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data: equipment,
+    columns,
+    searchableColumns: ["name", "internalCode", "licensePlate"],
+  });
 
-  // Get paginated data
-  const paginatedData = equipment.slice((page - 1) * limit, page * limit);
+  // Update global filter when debounced query changes
+  useEffect(() => {
+    setGlobalFilter(debouncedQuery);
+  }, [debouncedQuery, setGlobalFilter]);
 
-  const columns = useMemo(
-    () =>
-      getEquipmentColumns({
-        onView: (item) => {
-          // Navigate to detail page
-          window.location.href = `/equipments/${item.id}`;
-        },
-      }),
-    []
-  );
+  // Calculate pagination from table state
+  const totalFilteredItems = table.getFilteredRowModel().rows.length;
+  const totalPages = table.getPageCount();
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
@@ -333,20 +317,25 @@ export default function EquipmentListPage() {
           ) : error ? (
             <p className="text-red-600">Error: {error.message}</p>
           ) : (
-            <DataTable<Equipment, unknown>
-              columns={columns}
-              data={paginatedData}
+            <DataTable<Equipment>
+              table={table}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
             />
           )}
           <PaginationBar
-            page={page}
+            page={table.getState().pagination.pageIndex + 1}
             totalPages={totalPages}
             totalItems={totalFilteredItems}
-            limit={limit}
-            onPageChange={setPage}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(newPage) => {
+              table.setPagination({
+                pageIndex: newPage - 1,
+                pageSize: table.getState().pagination.pageSize,
+              });
+            }}
             onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
+              table.setPagination({ pageIndex: 0, pageSize: newLimit });
             }}
           />
         </CardContent>
