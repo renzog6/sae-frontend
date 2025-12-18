@@ -84,7 +84,7 @@ export function TireAssignmentsDialog({
     resolver: zodResolver(mountTireSchema),
     defaultValues: {
       tireId: 0,
-      equipmentId: selectedEquipment?.id || 0,
+      equipmentId: selectedEquipment?.id,
       position: selectedPosition?.positionKey || "",
       kmAtStart: 0,
       mountDate: new Date().toISOString().split("T")[0], // Today's date

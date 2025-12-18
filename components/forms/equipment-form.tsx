@@ -129,7 +129,7 @@ export function EquipmentForm({
     if (isEdit) {
       // Update existing equipment
       updateEquipment(
-        { id: (defaultValues as any)?.id || 0, dto: submitData },
+        { id: (defaultValues as any)?.id, dto: submitData },
         {
           onSuccess: () => {
             toast({

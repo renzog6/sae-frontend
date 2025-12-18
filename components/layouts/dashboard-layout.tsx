@@ -11,7 +11,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -21,7 +21,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   }, [status, router]);
 
-  if (!isMounted || status === "loading") return null;
+  // Early returns for better performance and clarity
+  if (!isMounted) return null;
+  if (status === "loading") return null;
+  if (status === "unauthenticated") return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">

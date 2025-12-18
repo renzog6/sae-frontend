@@ -1,3 +1,4 @@
+// filepath: sae-frontend/components/ui/sidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,7 +16,6 @@ interface NavItem {
   href: string;
   label: string;
   icon?: React.ReactNode;
-  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -47,7 +47,6 @@ const navItems: NavItem[] = [
   {
     href: "/users",
     label: "Usuarios",
-    adminOnly: true,
     icon: (
       <svg
         className="w-5 h-5"
@@ -70,7 +69,6 @@ export function Sidebar({ className }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
 
   const handleSignOut = async () => {
     await signOut({
@@ -78,17 +76,13 @@ export function Sidebar({ className }: SidebarProps) {
     });
   };
 
-  const filteredNavItems = navItems.filter(
-    (item) => !item.adminOnly || (item.adminOnly && isAdmin)
-  );
-
   return (
     <>
       {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="sm"
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-md border border-laurel-200 hover:bg-laurel-50"
+        className="fixed z-50 bg-white border shadow-md top-4 left-4 md:hidden border-laurel-200 hover:bg-laurel-50"
         onClick={() => setIsOpen(!isOpen)}
       >
         <svg
@@ -109,7 +103,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -132,7 +126,7 @@ export function Sidebar({ className }: SidebarProps) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
-            {filteredNavItems.map((item) => {
+            {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
@@ -157,7 +151,7 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="p-4 border-t border-laurel-200">
             {session?.user && (
               <div className="mb-4">
-                <p className="text-sm font-medium text-laurel-900 truncate">
+                <p className="text-sm font-medium truncate text-laurel-900">
                   {session.user.name || session.user.email}
                 </p>
                 <p className="text-xs text-laurel-600">

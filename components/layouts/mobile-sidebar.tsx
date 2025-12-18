@@ -7,40 +7,14 @@ import { cn } from "@/lib/utils";
 import { X, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mainMenu } from "@/lib/navigation";
-import { useSession } from "next-auth/react";
 
 interface MobileSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Definir tipos de roles
-type UserRole = "ADMIN" | "USER";
-
-interface NavigationItem {
-  title: string;
-  href: string;
-  icon: React.ComponentType<any>;
-  requiredRole?: UserRole;
-}
-
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const userRole = (session?.user?.role as UserRole) || "USER";
-
-  // Adaptar mainMenu al formato esperado
-  const navigation: NavigationItem[] = mainMenu.map((item) => ({
-    title: item.title,
-    href: item.href,
-    icon: item.icon,
-    requiredRole: item.title === "Usuarios" ? "ADMIN" : undefined,
-  }));
-
-  const filteredNavigation = navigation.filter((item) => {
-    if (!item.requiredRole) return true;
-    return item.requiredRole === userRole;
-  });
 
   return (
     <>
@@ -74,7 +48,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           </Button>
         </div>
         <nav className="space-y-2">
-          {filteredNavigation.map((item) => {
+          {mainMenu.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link

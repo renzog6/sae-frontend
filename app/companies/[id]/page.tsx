@@ -68,17 +68,15 @@ export default function CompanyDetailPage() {
     undefined
   );
 
-  const { useByCompany, useCreate, useUpdate, useDelete } = useAddresses();
-
   // Data via hooks
-  const addressesQuery = useByCompany(id ?? 0);
+  const addressesQuery = useAddresses().useByCompany(id ?? 1);
   const { data: addresses = [] } = addressesQuery;
   const { data: companyContacts = [] } = useContactsByCompany(id ?? 0);
 
   // Mutations
-  const createAddressMut = useCreate();
-  const updateAddressMut = useUpdate();
-  const deleteAddressMut = useDelete();
+  const createAddressMut = useAddresses().useCreate();
+  const updateAddressMut = useAddresses().useUpdate();
+  const deleteAddressMut = useAddresses().useDelete();
   const createContactMut = useCreateContact();
   const updateContactMut = useUpdateContact();
   const deleteContactMut = useDeleteContact();
@@ -89,7 +87,7 @@ export default function CompanyDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await CompaniesService.getById(id || 0);
+        const data = await CompaniesService.getById(id ?? 0);
         if (!ignore) setCompany(data);
       } catch (e: any) {
         if (!ignore) setError(e?.message || "Error al cargar la empresa");
@@ -101,13 +99,13 @@ export default function CompanyDetailPage() {
     return () => {
       ignore = true;
     };
-  });
+  }, [id]);
 
   async function handleSubmit(data: UpdateCompanyFormData) {
     setSaving(true);
     setError(null);
     try {
-      await CompaniesService.update(id || 0, data);
+      await CompaniesService.update(id ?? 0, data);
       // Ensure companies list reflects latest data
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       router.push("/companies/list");
@@ -515,7 +513,7 @@ export default function CompanyDetailPage() {
           if (editingAddress?.id) {
             updateAddressMut.mutate({ id: editingAddress.id, dto: data });
           } else {
-            createAddressMut.mutate({ ...data, companyId: id });
+            createAddressMut.mutate({ ...data, companyId: id ?? 0 });
           }
         }}
       />
@@ -545,7 +543,7 @@ export default function CompanyDetailPage() {
           if (editingContact?.id) {
             updateContactMut.mutate({ id: editingContact.id, data });
           } else if (id) {
-            createContactMut.mutate({ ...data, companyId: id });
+            createContactMut.mutate({ ...data, companyId: id ?? 0 });
           }
         }}
       />

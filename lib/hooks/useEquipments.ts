@@ -9,7 +9,6 @@ import {
   EquipmentAxlesService,
 } from "@/lib/api/equipments";
 import { CreateAxleWithPositionsDto } from "@/lib/types/domain/equipment";
-import { BaseQueryParams } from "@/lib/types/core/api";
 
 // ===== EQUIPMENT AXLES =====
 export const useEquipmentAxles = () => {
@@ -57,9 +56,6 @@ export const useEquipmentAxles = () => {
 };
 
 //==== EQUIPMENT CATEGORIES =====
-// Si en el futuro querés agregar filtros, esto se puede extender.
-export interface EquipmentCategoriesQueryParams extends BaseQueryParams {}
-
 export const useEquipmentCategories = () => {
   const base = createApiHooks(
     EquipmentCategoriesService,
@@ -110,9 +106,6 @@ export const useEquipmentModels = () => {
 };
 
 //==== EQUIPMENT =====
-// Si en el futuro querés agregar filtros, esto se puede extender.
-export interface EquipmentsQueryParams extends BaseQueryParams {}
-
 export const useEquipments = () => {
   const base = createApiHooks(EquipmentsService, "equipments");
 
