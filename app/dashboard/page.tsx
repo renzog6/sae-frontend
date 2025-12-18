@@ -1,3 +1,4 @@
+//filepath: sae-frontend/app/dashboard/page.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -7,7 +8,6 @@ import {
   Users,
   Truck,
   Disc,
-  Activity,
   AlertTriangle,
   TrendingUp,
 } from "lucide-react";
@@ -134,18 +134,32 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
             >
-              <Card className="border-zinc-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <Card className="transition-shadow shadow-sm border-zinc-200 hover:shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                   <CardTitle className="text-sm font-medium text-zinc-600">
                     {stat.title}
                   </CardTitle>
-                  <stat.icon className={`h-4 w-4 ${stat.alert ? "text-amber-500" : "text-teal-600"}`} />
+                  <stat.icon
+                    className={`h-4 w-4 ${
+                      stat.alert ? "text-amber-500" : "text-teal-600"
+                    }`}
+                  />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-zinc-900">{stat.value}</div>
-                  <div className="flex items-center text-xs text-zinc-500 mt-1">
-                    {stat.trend === "up" && <TrendingUp className="mr-1 h-3 w-3 text-emerald-500" />}
-                    <span className={stat.trend === "up" ? "text-emerald-500 font-medium" : ""}>
+                  <div className="text-2xl font-bold text-zinc-900">
+                    {stat.value}
+                  </div>
+                  <div className="flex items-center mt-1 text-xs text-zinc-500">
+                    {stat.trend === "up" && (
+                      <TrendingUp className="w-3 h-3 mr-1 text-emerald-500" />
+                    )}
+                    <span
+                      className={
+                        stat.trend === "up"
+                          ? "text-emerald-500 font-medium"
+                          : ""
+                      }
+                    >
                       {stat.change}
                     </span>
                     <span className="ml-1">desde el mes pasado</span>
@@ -158,22 +172,24 @@ export default function DashboardPage() {
 
         {/* Quick Access Sections */}
         <div>
-          <h2 className="text-xl font-semibold text-zinc-900 mb-4">Accesos Directos</h2>
+          <h2 className="mb-4 text-xl font-semibold text-zinc-900">
+            Accesos Directos
+          </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sections.map((section, i) => (
               <motion.div
                 key={section.title}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 + (i * 0.1) }}
+                transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
               >
-                <Card className="h-full transition-all duration-300 border border-zinc-200 shadow-sm hover:shadow-lg hover:border-teal-200 group">
+                <Card className="h-full transition-all duration-300 border shadow-sm border-zinc-200 hover:shadow-lg hover:border-teal-200 group">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300">
-                        <section.icon className="h-5 w-5" />
+                      <div className="p-2 text-teal-600 transition-colors duration-300 rounded-lg bg-teal-50 group-hover:bg-teal-600 group-hover:text-white">
+                        <section.icon className="w-5 h-5" />
                       </div>
-                      <CardTitle className="text-xl font-semibold text-zinc-800 group-hover:text-teal-700 transition-colors">
+                      <CardTitle className="text-xl font-semibold transition-colors text-zinc-800 group-hover:text-teal-700">
                         {section.title}
                       </CardTitle>
                     </div>
@@ -188,7 +204,7 @@ export default function DashboardPage() {
                         icon={ChevronRight}
                         href={link.href}
                         title={link.title}
-                        className="w-full justify-start hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                        className="justify-start w-full transition-colors hover:bg-teal-50 hover:text-teal-700"
                         variant="outline"
                       />
                     ))}
