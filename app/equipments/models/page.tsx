@@ -1,7 +1,7 @@
 // filepath: /sae-frontend/app/equipments/models/page.tsx
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,7 +31,7 @@ import { EquipmentModelDialog } from "@/components/equipment/equipment-model-dia
 
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { EquipmentModel, EquipmentType } from "@/lib/types/domain/equipment";
 
 export default function EquipmentModelsPage() {

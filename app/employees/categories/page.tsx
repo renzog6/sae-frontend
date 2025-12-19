@@ -3,20 +3,16 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { EmployeeCategory } from "@/lib/types/domain/employee";
-import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
+import { useEmployeeCategories } from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getEmployeeCategoryColumns } from "./columns";
 import { EmployeeCategoryDialog } from "@/components/employees/employee-category-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function EmployeeCategoriesPage() {
   const { data: categoriesData, isLoading, error } = useEmployeeCategories();
@@ -47,40 +43,37 @@ export default function EmployeeCategoriesPage() {
   const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Categorías de empleados</h1>
-        <Button
-          onClick={() => {
-            setDialogMode("create");
-            setSelected(null);
-            setDialogOpen(true);
-          }}
-        >
-          Nueva categoría
-        </Button>
-      </div>
+    <>
+      <EntityListLayout
+        title="Categorías de empleados"
+        description={`Gestión de categorías de empleados - ${filteredCount} categoría${
+          filteredCount !== 1 ? "s" : ""
+        }`}
+        actions={
+          <Button
+            onClick={() => {
+              setDialogMode("create");
+              setSelected(null);
+              setDialogOpen(true);
+            }}
+          >
+            Nueva categoría
+          </Button>
+        }
+      >
+        <EntityErrorState error={null} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado</CardTitle>
-          <CardDescription>
-            {filteredCount} categor{filteredCount !== 1 ? "ías" : "ía"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : (
-            <DataTable
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-              searchPlaceholder="Buscar categorías..."
-            />
-          )}
-        </CardContent>
-      </Card>
+        {isLoading ? (
+          <EntityLoadingState />
+        ) : (
+          <DataTable
+            table={table}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            searchPlaceholder="Buscar categorías..."
+          />
+        )}
+      </EntityListLayout>
 
       <PaginationBar
         page={table.getState().pagination.pageIndex + 1}
@@ -100,6 +93,6 @@ export default function EmployeeCategoriesPage() {
         mode={dialogMode}
         category={selected}
       />
-    </div>
+    </>
   );
 }

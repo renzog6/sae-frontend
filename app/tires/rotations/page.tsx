@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { useTireRotations } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireRotationColumns } from "./columns";
 

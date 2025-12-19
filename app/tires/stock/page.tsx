@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { useTires } from "@/lib/hooks/useTires";
+import { useTires } from "@/lib/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Accordion,
@@ -16,7 +16,10 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Package2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -126,118 +129,128 @@ export default function TireStockPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl font-semibold">
-            <Package2 className="w-6 h-6 text-primary" />
-            Stock de Neumáticos
-          </CardTitle>
-          <div className="relative mt-4">
-            <Input
-              placeholder="Buscar por medida, marca o modelo..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="max-w-md"
-            />
-          </div>
-        </CardHeader>
+    <EntityListLayout
+      title="Stock de Neumáticos"
+      description="Visualiza el stock de neumáticos organizado por medida, marca y modelo"
+      filters={
+        <div className="relative">
+          <Input
+            placeholder="Buscar por medida, marca o modelo..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="max-w-md"
+          />
+        </div>
+      }
+    >
+      <EntityErrorState error={null} />
 
-        <CardContent>
-          {filteredData.length === 0 ? (
-            <p className="py-6 text-center text-muted-foreground">
-              No se encontraron resultados.
-            </p>
-          ) : (
-            <Accordion type="single" collapsible>
-              {paginatedData.map((size: any, i: number) => (
-                <AccordionItem key={i} value={`size-${i}`}>
-                  <AccordionTrigger className="text-lg font-medium">
-                    {size.size}
-                    <Badge variant="outline" className="ml-2">
-                      {size.total} unidades
-                    </Badge>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="pl-4 space-y-4">
-                      {size.brands.map((brand: any, j: number) => (
-                        <motion.div
-                          key={j}
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: j * 0.05 }}
-                          className="p-3 border rounded-lg bg-muted/40"
-                        >
-                          <Accordion type="single" collapsible>
-                            <AccordionItem value={`brand-${i}-${j}`}>
-                              <AccordionTrigger className="text-base">
-                                {brand.name}
-                                <Badge className="ml-2">{brand.total}</Badge>
-                              </AccordionTrigger>
-                              <AccordionContent>
-                                <div className="pl-4 space-y-2">
-                                  {brand.models.map((m: any, k: number) => (
-                                    <motion.div
-                                      key={k}
-                                      className="flex items-center justify-between pb-1 border-b last:border-0"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ delay: k * 0.05 }}
-                                    >
-                                      <span className="text-sm text-muted-foreground">
-                                        {m.model}
-                                      </span>
-                                      <div className="flex items-center gap-2">
-                                        <Progress
-                                          value={(m.count / brand.total) * 100}
-                                          className="w-24 h-2"
-                                        />
-                                        <Badge variant="secondary">
-                                          {m.count}
-                                        </Badge>
-                                      </div>
-                                    </motion.div>
-                                  ))}
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          )}
+      {isLoading ? (
+        <EntityLoadingState />
+      ) : (
+        <>
+          <Card className="shadow-lg">
+            <CardContent>
+              {filteredData.length === 0 ? (
+                <p className="py-6 text-center text-muted-foreground">
+                  No se encontraron resultados.
+                </p>
+              ) : (
+                <Accordion type="single" collapsible>
+                  {paginatedData.map((size: any, i: number) => (
+                    <AccordionItem key={i} value={`size-${i}`}>
+                      <AccordionTrigger className="text-lg font-medium">
+                        {size.size}
+                        <Badge variant="outline" className="ml-2">
+                          {size.total} unidades
+                        </Badge>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="pl-4 space-y-4">
+                          {size.brands.map((brand: any, j: number) => (
+                            <motion.div
+                              key={j}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: j * 0.05 }}
+                              className="p-3 border rounded-lg bg-muted/40"
+                            >
+                              <Accordion type="single" collapsible>
+                                <AccordionItem value={`brand-${i}-${j}`}>
+                                  <AccordionTrigger className="text-base">
+                                    {brand.name}
+                                    <Badge className="ml-2">
+                                      {brand.total}
+                                    </Badge>
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    <div className="pl-4 space-y-2">
+                                      {brand.models.map((m: any, k: number) => (
+                                        <motion.div
+                                          key={k}
+                                          className="flex items-center justify-between pb-1 border-b last:border-0"
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ delay: k * 0.05 }}
+                                        >
+                                          <span className="text-sm text-muted-foreground">
+                                            {m.model}
+                                          </span>
+                                          <div className="flex items-center gap-2">
+                                            <Progress
+                                              value={
+                                                (m.count / brand.total) * 100
+                                              }
+                                              className="w-24 h-2"
+                                            />
+                                            <Badge variant="secondary">
+                                              {m.count}
+                                            </Badge>
+                                          </div>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              </Accordion>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
 
-          {/* 📑 Paginación */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <Button
-                variant="outline"
-                disabled={page === 1}
-                onClick={handlePrev}
-              >
-                Anterior
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Página {page} de {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                disabled={page === totalPages}
-                onClick={handleNext}
-              >
-                Siguiente
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+              {/* 📑 Paginación */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <Button
+                    variant="outline"
+                    disabled={page === 1}
+                    onClick={handlePrev}
+                  >
+                    Anterior
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Página {page} de {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    disabled={page === totalPages}
+                    onClick={handleNext}
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </EntityListLayout>
   );
 }

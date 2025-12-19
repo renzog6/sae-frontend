@@ -29,7 +29,7 @@ import {
   useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";

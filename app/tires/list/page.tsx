@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import type { Tire } from "@/lib/types/domain/tire";
 import { useTires } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getTireColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";

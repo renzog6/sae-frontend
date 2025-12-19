@@ -3,20 +3,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Plus } from "lucide-react";
 import { City } from "@/lib/types/shared/location";
-import { useCities } from "@/lib/hooks/useLocations";
+import { useCities } from "@/lib/hooks";
 import { CityDialog } from "@/components/locations/city-dialog";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getCityColumns } from "./columns";
-import { PaginationBar } from "@/components/data-table/pagination-bar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +20,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function LocationsPage() {
   const { useGetAll, useDelete } = useCities();
@@ -72,58 +69,38 @@ export default function LocationsPage() {
   const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-            Ciudades
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Administra las ciudades y provincias
-          </p>
-        </div>
-        <Button onClick={handleAdd}>Nueva ciudad</Button>
-      </div>
+    <EntityListLayout
+      title="Localidades"
+      description="Gestiona todas las localidades del sistema"
+      actions={
+        <Button onClick={handleAdd}>
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva localidad
+        </Button>
+      }
+    >
+      <EntityErrorState error={error} />
 
-      {error && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="pt-6 text-red-600">
-            {error instanceof Error
-              ? error.message
-              : "Error al cargar ciudades"}
-          </CardContent>
-        </Card>
+      {isLoading ? (
+        <EntityLoadingState />
+      ) : (
+        <>
+          <DataTable<City>
+            table={table}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+          />
+
+          <PaginationBar
+            page={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount()}
+            totalItems={filteredCount}
+            limit={table.getState().pagination.pageSize}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
+            onLimitChange={(limit) => table.setPageSize(limit)}
+          />
+        </>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista de ciudades</CardTitle>
-          <CardDescription>
-            {filteredCount} ciudad{filteredCount !== 1 ? "es" : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : (
-            <DataTable
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-              searchPlaceholder="Buscar ciudad..."
-            />
-          )}
-        </CardContent>
-      </Card>
-
-      <PaginationBar
-        page={table.getState().pagination.pageIndex + 1}
-        totalPages={table.getPageCount()}
-        totalItems={filteredCount}
-        limit={table.getState().pagination.pageSize}
-        onPageChange={(page) => table.setPageIndex(page - 1)}
-        onLimitChange={(limit) => table.setPageSize(limit)}
-      />
 
       <CityDialog
         open={dialogOpen}
@@ -158,6 +135,6 @@ export default function LocationsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </EntityListLayout>
   );
 }

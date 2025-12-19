@@ -3,13 +3,6 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -19,12 +12,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
 import type { Company, BusinessCategory } from "@/lib/types/domain/company";
-import { useCompanies, useBusinessCategories } from "@/lib/hooks/useCompanies";
+import { useCompanies, useBusinessCategories } from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getCompanyColumns } from "./columns";
 import Link from "next/link";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function CompaniesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -75,83 +71,77 @@ export default function CompaniesPage() {
   const totalPages = table.getPageCount();
 
   return (
-    <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Empresas</CardTitle>
-            <Link href="/companies/new">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva empresa
+    <EntityListLayout
+      title="Empresas"
+      description="Gestiona todas las empresas del sistema"
+      actions={
+        <Link href="/companies/new">
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva empresa
+          </Button>
+        </Link>
+      }
+      filters={
+        <div className="flex gap-2">
+          {/* Category filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="min-w-[140px] justify-between"
+              >
+                <span className="mr-2">🏷️</span>{" "}
+                {selectedCategory || "Categoría"}
+                <ChevronDown className="w-4 h-4" />
               </Button>
-            </Link>
-          </div>
-          <CardDescription>
-            Gestiona todas las empresas del sistema
-          </CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex gap-2">
-              {/* Category filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-48 overflow-y-auto max-h-60"
+            >
+              <div className="p-2">
+                <Input
+                  placeholder="Buscar categoría..."
+                  className="mb-2"
+                  onChange={(e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    // Filter is handled by the dropdown rendering below
+                  }}
+                />
+              </div>
+              <DropdownMenuItem onClick={() => setSelectedCategory("")}>
+                Todas las categorías
+              </DropdownMenuItem>
+              {categories
+                ?.sort((a: BusinessCategory, b: BusinessCategory) =>
+                  a.name.localeCompare(b.name)
+                )
+                .map((category: BusinessCategory) => (
+                  <DropdownMenuItem
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.name)}
                   >
-                    <span className="mr-2">🏷️</span>{" "}
-                    {selectedCategory || "Categoría"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 overflow-y-auto max-h-60"
-                >
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar categoría..."
-                      className="mb-2"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        // Filter is handled by the dropdown rendering below
-                      }}
-                    />
-                  </div>
-                  <DropdownMenuItem onClick={() => setSelectedCategory("")}>
-                    Todas las categorías
+                    {category.name}
                   </DropdownMenuItem>
-                  {categories
-                    ?.sort((a: BusinessCategory, b: BusinessCategory) =>
-                      a.name.localeCompare(b.name)
-                    )
-                    .map((category: BusinessCategory) => (
-                      <DropdownMenuItem
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.name)}
-                      >
-                        {category.name}
-                      </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
-          ) : (
-            <DataTable<Company>
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-            />
-          )}
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      }
+    >
+      <EntityErrorState error={error} />
+
+      {isLoading ? (
+        <EntityLoadingState />
+      ) : (
+        <>
+          <DataTable<Company>
+            table={table}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+          />
+
           <PaginationBar
             page={table.getState().pagination.pageIndex + 1}
             totalPages={totalPages}
@@ -167,8 +157,8 @@ export default function CompaniesPage() {
               table.setPagination({ pageIndex: 0, pageSize: newLimit });
             }}
           />
-        </CardContent>
-      </Card>
-    </div>
+        </>
+      )}
+    </EntityListLayout>
   );
 }

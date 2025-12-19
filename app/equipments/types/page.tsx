@@ -13,7 +13,7 @@ import {
 import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getEquipmentTypeColumns } from "./columns";
 import { EquipmentTypeDialog } from "@/components/equipment/equipment-type-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";

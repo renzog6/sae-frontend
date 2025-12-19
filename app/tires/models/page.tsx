@@ -13,7 +13,7 @@ import {
 import type { TireModel } from "@/lib/types/domain/tire";
 import { useTireModels } from "@/lib/hooks/useTires";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { getTireModelColumns } from "./columns";
 import { TireModelDialog } from "@/components/tire/tire-model-dialog";

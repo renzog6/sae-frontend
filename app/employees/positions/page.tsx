@@ -3,20 +3,16 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { EmployeePosition } from "@/lib/types/domain/employee";
-import { useEmployeePositions } from "@/lib/hooks/useEmployees";
+import { useEmployeePositions } from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getEmployeePositionColumns } from "./columns";
 import { EmployeePositionDialog } from "@/components/employees/employee-position-dialog";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function EmployeePositionsPage() {
   const { data: positionsData, isLoading, error } = useEmployeePositions();
@@ -47,40 +43,37 @@ export default function EmployeePositionsPage() {
   const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Puestos de empleados</h1>
-        <Button
-          onClick={() => {
-            setDialogMode("create");
-            setSelected(null);
-            setDialogOpen(true);
-          }}
-        >
-          Nuevo puesto
-        </Button>
-      </div>
+    <>
+      <EntityListLayout
+        title="Puestos de empleados"
+        description={`Gestión de puestos de empleados - ${filteredCount} puesto${
+          filteredCount !== 1 ? "s" : ""
+        }`}
+        actions={
+          <Button
+            onClick={() => {
+              setDialogMode("create");
+              setSelected(null);
+              setDialogOpen(true);
+            }}
+          >
+            Nuevo puesto
+          </Button>
+        }
+      >
+        <EntityErrorState error={null} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado</CardTitle>
-          <CardDescription>
-            {filteredCount} puesto{filteredCount !== 1 ? "s" : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : (
-            <DataTable
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-              searchPlaceholder="Buscar puestos..."
-            />
-          )}
-        </CardContent>
-      </Card>
+        {isLoading ? (
+          <EntityLoadingState />
+        ) : (
+          <DataTable
+            table={table}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            searchPlaceholder="Buscar puestos..."
+          />
+        )}
+      </EntityListLayout>
 
       <PaginationBar
         page={table.getState().pagination.pageIndex + 1}
@@ -100,6 +93,6 @@ export default function EmployeePositionsPage() {
         mode={dialogMode}
         position={selected}
       />
-    </div>
+    </>
   );
 }

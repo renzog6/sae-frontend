@@ -4,13 +4,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -18,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
 import { Brand } from "@/lib/types/shared/catalogs";
-import { useBrands } from "@/lib/hooks/useCatalogs";
+import { useBrands } from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getBrandColumns } from "./columns";
 import {
   AlertDialog,
@@ -35,6 +28,9 @@ import {
 import { BrandDialog } from "@/components/brands/brand-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function BrandsPage() {
   const { toast } = useToast();
@@ -97,88 +93,81 @@ export default function BrandsPage() {
 
   return (
     <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Marcas</CardTitle>
-            <Button
-              onClick={() => {
-                setDialogMode("create");
-                setSelectedBrand(null);
-                setDialogOpen(true);
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nueva marca
-            </Button>
+      <EntityListLayout
+        title="Marcas"
+        description="Gestiona todas las marcas del sistema"
+        actions={
+          <Button
+            onClick={() => {
+              setDialogMode("create");
+              setSelectedBrand(null);
+              setDialogOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva marca
+          </Button>
+        }
+        filters={
+          <div className="flex gap-2">
+            {/* Status filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="min-w-[140px] justify-between"
+                >
+                  <span className="mr-2">📊</span>{" "}
+                  {selectedStatus === "ALL"
+                    ? "Todos"
+                    : selectedStatus === "ACTIVE"
+                    ? "Activo"
+                    : "Inactivo"}
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
+                  Todos los estados
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedStatus("ACTIVE")}>
+                  Activo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedStatus("INACTIVE")}>
+                  Inactivo
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <CardDescription>
-            Gestiona todas las marcas del sistema
-          </CardDescription>
+        }
+      >
+        <EntityErrorState error={error} />
 
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex gap-2">
-              {/* Status filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">📊</span>{" "}
-                    {selectedStatus === "ALL"
-                      ? "Todos"
-                      : selectedStatus === "ACTIVE"
-                      ? "Activo"
-                      : "Inactivo"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
-                    Todos los estados
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedStatus("ACTIVE")}>
-                    Activo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedStatus("INACTIVE")}
-                  >
-                    Inactivo
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
-          ) : (
+        {isLoading ? (
+          <EntityLoadingState />
+        ) : (
+          <>
             <DataTable<Brand>
               table={table}
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
             />
-          )}
 
-          {/* Pagination controls */}
-          <PaginationBar
-            page={page}
-            totalPages={totalPages ?? 1}
-            totalItems={total ?? 0}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={(newLimit) => {
-              setLimit(newLimit);
-              setPage(1);
-            }}
-          />
-        </CardContent>
-      </Card>
+            {/* Pagination controls */}
+            <PaginationBar
+              page={page}
+              totalPages={totalPages ?? 1}
+              totalItems={total ?? 0}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(newLimit) => {
+                setLimit(newLimit);
+                setPage(1);
+              }}
+            />
+          </>
+        )}
+      </EntityListLayout>
 
       {/* Brand dialog (component) */}
       <BrandDialog

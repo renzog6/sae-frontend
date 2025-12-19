@@ -4,13 +4,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -22,9 +15,9 @@ import {
   useBusinessCategories,
   useDeleteBusinessCategory,
   useRestoreBusinessCategory,
-} from "@/lib/hooks/useCompanies";
+} from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/data-table/use-data-table";
+import { useDataTable } from "@/components/hooks/useDataTable";
 import { getBusinessCategoryColumns } from "./columns";
 import {
   AlertDialog,
@@ -39,6 +32,9 @@ import {
 import { BusinessCategoryDialog } from "@/components/categories/business-category-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function BusinessCategoriesPage() {
   const { toast } = useToast();
@@ -120,92 +116,85 @@ export default function BusinessCategoriesPage() {
   const totalPages = table.getPageCount();
 
   return (
-    <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Categorías</CardTitle>
-            <Button
-              onClick={() => {
-                setDialogMode("create");
-                setSelectedCategory(null);
-                setDialogOpen(true);
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nueva categoría
-            </Button>
+    <>
+      <EntityListLayout
+        title="Categorías"
+        description="Gestiona todas las categorías del sistema"
+        actions={
+          <Button
+            onClick={() => {
+              setDialogMode("create");
+              setSelectedCategory(null);
+              setDialogOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva categoría
+          </Button>
+        }
+        filters={
+          <div className="flex gap-2">
+            {/* Status filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="min-w-[140px] justify-between"
+                >
+                  <span className="mr-2">📊</span>{" "}
+                  {selectedStatus === "ALL"
+                    ? "Todos"
+                    : selectedStatus === "ACTIVE"
+                    ? "Activo"
+                    : "Inactivo"}
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
+                  Todos los estados
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedStatus("ACTIVE")}>
+                  Activo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedStatus("INACTIVE")}>
+                  Inactivo
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <CardDescription>
-            Gestiona todas las categorías del sistema
-          </CardDescription>
+        }
+      >
+        <EntityErrorState error={error} />
 
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            <div className="flex gap-2">
-              {/* Status filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">📊</span>{" "}
-                    {selectedStatus === "ALL"
-                      ? "Todos"
-                      : selectedStatus === "ACTIVE"
-                      ? "Activo"
-                      : "Inactivo"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
-                    Todos los estados
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedStatus("ACTIVE")}>
-                    Activo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedStatus("INACTIVE")}
-                  >
-                    Inactivo
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
-          ) : (
+        {isLoading ? (
+          <EntityLoadingState />
+        ) : (
+          <>
             <DataTable<BusinessCategory>
               table={table}
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
             />
-          )}
 
-          <PaginationBar
-            page={table.getState().pagination.pageIndex + 1}
-            totalPages={totalPages}
-            totalItems={totalFilteredItems}
-            limit={table.getState().pagination.pageSize}
-            onPageChange={(newPage) => {
-              table.setPagination({
-                pageIndex: newPage - 1,
-                pageSize: table.getState().pagination.pageSize,
-              });
-            }}
-            onLimitChange={(newLimit) => {
-              table.setPagination({ pageIndex: 0, pageSize: newLimit });
-            }}
-          />
-        </CardContent>
-      </Card>
+            <PaginationBar
+              page={table.getState().pagination.pageIndex + 1}
+              totalPages={totalPages}
+              totalItems={totalFilteredItems}
+              limit={table.getState().pagination.pageSize}
+              onPageChange={(newPage) => {
+                table.setPagination({
+                  pageIndex: newPage - 1,
+                  pageSize: table.getState().pagination.pageSize,
+                });
+              }}
+              onLimitChange={(newLimit) => {
+                table.setPagination({ pageIndex: 0, pageSize: newLimit });
+              }}
+            />
+          </>
+        )}
+      </EntityListLayout>
 
       {/* Category dialog (component) */}
       <BusinessCategoryDialog
@@ -291,6 +280,6 @@ export default function BusinessCategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
