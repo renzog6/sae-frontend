@@ -100,8 +100,12 @@ export const createEquipmentFormInputSchema = z.object({
   engine: z.string().max(50, "Máximo 50 caracteres").optional(),
   color: z.string().max(25, "Máximo 25 caracteres").optional(),
   // information: z.string().optional(),
-  diesel: z.boolean().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED"]).optional(),
+  fuelType: z
+    .enum(["DIESEL", "GASOLINE", "ELECTRIC", "HYBRID", "LPG", "CNG", "NONE"])
+    .optional(),
+  status: z
+    .enum(["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED", "SOLD"])
+    .optional(),
   companyId: z.number().int().positive("Empresa requerida").optional(),
   categoryId: z.number().int().positive("Categoría requerida").optional(),
   typeId: z.number().int().positive("Tipo requerido").optional(),
@@ -124,8 +128,12 @@ export const equipmentFormSchema = z.object({
   engine: z.string().max(50, "Máximo 50 caracteres").optional(),
   color: z.string().max(25, "Máximo 25 caracteres").optional(),
   information: z.string().optional(),
-  diesel: z.boolean().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED"]).optional(),
+  fuelType: z
+    .enum(["DIESEL", "GASOLINE", "ELECTRIC", "HYBRID", "LPG", "CNG", "NONE"])
+    .optional(),
+  status: z
+    .enum(["ACTIVE", "INACTIVE", "MAINTENANCE", "RETIRED", "SOLD"])
+    .optional(),
   companyId: z.number().int().positive("Empresa requerida").optional(),
   categoryId: z.number().int().positive("Categoría requerida").optional(),
   typeId: z.number().int().positive("Tipo requerido").optional(),

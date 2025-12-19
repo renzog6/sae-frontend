@@ -5,4 +5,5 @@ export const equipmentStatusLabels: Record<EquipmentStatus, string> = {
   [EquipmentStatus.INACTIVE]: "Inactivo",
   [EquipmentStatus.MAINTENANCE]: "En mantenimiento",
   [EquipmentStatus.RETIRED]: "Retirado",
+  [EquipmentStatus.SOLD]: "Vendido",
 } as const;

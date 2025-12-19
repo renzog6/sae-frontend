@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toaster";
 import { Card, CardContent } from "@/components/ui/card";
+import { FuelType } from "@/lib/types/shared/enums";
 
 export default function EquipmentEditPage() {
   const params = useParams();
@@ -92,7 +93,7 @@ export default function EquipmentEditPage() {
     chassis: equipment.chassis || "",
     engine: equipment.engine || "",
     color: equipment.color || "",
-    diesel: equipment.diesel || false,
+    fuelType: equipment.fuelType || FuelType.NONE,
     status: equipment.status,
     companyId: (equipment.company as any)?.id || 1,
     categoryId: equipment.category?.id,

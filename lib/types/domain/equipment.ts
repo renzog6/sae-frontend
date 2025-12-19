@@ -3,7 +3,7 @@
 // Import shared types and enums
 import { Inspection, EquipmentMaintenance } from "../shared/shared";
 import { Brand } from "../shared/catalogs";
-import { AxleType, EquipmentStatus } from "../shared/enums";
+import { AxleType, EquipmentStatus, FuelType } from "../shared/enums";
 import { Company } from "./company";
 import { TirePositionConfig } from "./tire";
 
@@ -104,7 +104,7 @@ export type Equipment = {
   chassis?: string | null;
   engine?: string | null;
   color?: string | null;
-  diesel?: boolean | null;
+  fuelType?: FuelType | null;
   status: EquipmentStatus;
   createdAt: string; // ISO
   updatedAt: string; // ISO
@@ -166,7 +166,7 @@ export type CreateEquipmentDto = {
   chassis?: string;
   engine?: string;
   color?: string;
-  diesel?: boolean;
+  fuelType?: FuelType;
   status?: EquipmentStatus;
   companyId?: number;
   categoryId?: number;

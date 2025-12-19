@@ -23,8 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
-import { Checkbox } from "@/components/ui/checkbox";
-import { EquipmentStatus } from "@/lib/types/shared/enums";
+import { EquipmentStatus, FuelType } from "@/lib/types/shared/enums";
 import {
   equipmentFormSchema,
   type EquipmentFormData,
@@ -76,8 +75,8 @@ export function EquipmentForm({
       engine: "",
       color: "",
       // information: "",
-      diesel: false,
-      status: "ACTIVE",
+      fuelType: FuelType.NONE,
+      status: EquipmentStatus.ACTIVE,
       companyId: 1, // Default company ID for now
       categoryId: undefined,
       typeId: undefined,
@@ -124,6 +123,7 @@ export function EquipmentForm({
     const submitData = {
       ...data,
       status: data.status as EquipmentStatus,
+      fuelType: data.fuelType as FuelType,
     };
 
     if (isEdit) {
@@ -437,12 +437,21 @@ export function EquipmentForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="ACTIVE">Activo</SelectItem>
-                    <SelectItem value="INACTIVE">Inactivo</SelectItem>
-                    <SelectItem value="MAINTENANCE">
+                    <SelectItem value={EquipmentStatus.ACTIVE}>
+                      Activo
+                    </SelectItem>
+                    <SelectItem value={EquipmentStatus.INACTIVE}>
+                      Inactivo
+                    </SelectItem>
+                    <SelectItem value={EquipmentStatus.MAINTENANCE}>
                       En mantenimiento
                     </SelectItem>
-                    <SelectItem value="RETIRED">Retirado</SelectItem>
+                    <SelectItem value={EquipmentStatus.RETIRED}>
+                      Retirado
+                    </SelectItem>
+                    <SelectItem value={EquipmentStatus.SOLD}>
+                      Vendido
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -483,22 +492,34 @@ export function EquipmentForm({
           />
         </div>
 
-        {/* Combustible */}
+        {/* Tipo de Combustible */}
         <FormField
           control={form.control}
-          name="diesel"
+          name="fuelType"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Combustible diésel</FormLabel>
-              </div>
+            <FormItem>
+              <FormLabel>Tipo de Combustible</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={isPending}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona tipo de combustible" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="DIESEL">Diésel</SelectItem>
+                  <SelectItem value="GASOLINE">Nafta/Gasolina</SelectItem>
+                  <SelectItem value="ELECTRIC">Eléctrico</SelectItem>
+                  <SelectItem value="HYBRID">Híbrido</SelectItem>
+                  <SelectItem value="LPG">GNC</SelectItem>
+                  <SelectItem value="CNG">GNC</SelectItem>
+                  <SelectItem value="NONE">Ninguno</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
             </FormItem>
           )}
         />

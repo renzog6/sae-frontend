@@ -48,6 +48,18 @@ export enum EquipmentStatus {
   INACTIVE = "INACTIVE",
   MAINTENANCE = "MAINTENANCE",
   RETIRED = "RETIRED",
+  SOLD = "SOLD",
+}
+
+// Fuel types
+export enum FuelType {
+  DIESEL = "DIESEL",
+  GASOLINE = "GASOLINE",
+  ELECTRIC = "ELECTRIC",
+  HYBRID = "HYBRID",
+  LPG = "LPG",
+  CNG = "CNG",
+  NONE = "NONE",
 }
 
 // History types

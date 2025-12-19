@@ -60,7 +60,7 @@ export default function EquipmentListPage() {
     error,
   } = useEquipmentList({
     page: 1,
-    limit: 100, // Get all equipment to enable client-side filtering
+    limit: 0, // Get all equipment to enable client-side filtering
   });
 
   const { useGetAll: useGetCategories } = useEquipmentCategories();

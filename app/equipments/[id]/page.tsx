@@ -6,7 +6,7 @@ import { useEquipments } from "@/lib/hooks/useEquipments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { EquipmentStatus } from "@/lib/types/shared/enums";
 import { equipmentStatusLabels } from "@/lib/constants";
@@ -16,6 +16,7 @@ const statusColors: Record<EquipmentStatus, string> = {
   INACTIVE: "bg-gray-100 text-gray-800",
   MAINTENANCE: "bg-yellow-100 text-yellow-800",
   RETIRED: "bg-red-100 text-red-800",
+  SOLD: "bg-purple-100 text-purple-800",
 };
 
 export default function EquipmentDetailPage() {
@@ -110,13 +111,24 @@ export default function EquipmentDetailPage() {
               </div>
             )}
 
-            {equipment.diesel !== undefined && (
+            {equipment.fuelType && (
               <div>
                 <label className="text-sm font-medium text-gray-500">
                   Tipo de Combustible
                 </label>
                 <p className="mt-1">
-                  {equipment.diesel ? "Diésel" : "Nafta/Gas"}
+                  {equipment.fuelType === "DIESEL"
+                    ? "Diésel"
+                    : equipment.fuelType === "GASOLINE"
+                    ? "Nafta/Gasolina"
+                    : equipment.fuelType === "ELECTRIC"
+                    ? "Eléctrico"
+                    : equipment.fuelType === "HYBRID"
+                    ? "Híbrido"
+                    : equipment.fuelType === "LPG" ||
+                      equipment.fuelType === "CNG"
+                    ? "GNC"
+                    : "Ninguno"}
                 </p>
               </div>
             )}
