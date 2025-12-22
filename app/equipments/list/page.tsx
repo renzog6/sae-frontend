@@ -1,16 +1,9 @@
 // filepath: sae-frontend/app/equipments/list/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,12 +14,10 @@ import { ChevronDown } from "lucide-react";
 import type {
   Equipment,
   EquipmentCategory,
-  EquipmentType,
 } from "@/lib/types/domain/equipment";
 import {
   useEquipments,
   useEquipmentCategories,
-  useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table";
 import { useDataTable } from "@/components/hooks/useDataTable";
@@ -37,21 +28,16 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { EquipmentStatus } from "@/lib/types/shared/enums";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { equipmentStatusLabels } from "@/lib/constants/equipment.constants";
 
 export default function EquipmentListPage() {
-  const [query, setQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(
     EquipmentStatus.ACTIVE
   );
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedType, setSelectedType] = useState<string>("");
-
-  // Debounce query
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
-    return () => clearTimeout(t);
-  }, [query]);
+  const router = useRouter();
 
   const { useGetAll: useEquipmentList } = useEquipments();
   const {
@@ -64,25 +50,21 @@ export default function EquipmentListPage() {
   });
 
   const { useGetAll: useGetCategories } = useEquipmentCategories();
-  const {
-    data: categoriesResponse = {
-      data: [],
-      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
-    },
-  } = useGetCategories();
+  const { data: categoriesResponse } = useGetCategories();
 
-  const { useGetAll: useGetTypes } = useEquipmentTypes();
-  const { data: typesData } = useGetTypes();
-  const types = Array.isArray(typesData) ? typesData : [];
-
-  const categories = categoriesResponse.data;
+  const categories = useMemo(() => {
+    return (categoriesResponse?.data || []).sort(
+      (a: EquipmentCategory, b: EquipmentCategory) =>
+        a.name.localeCompare(b.name)
+    );
+  }, [categoriesResponse?.data]);
 
   const columns = useMemo(
     () =>
       getEquipmentColumns({
         onView: (item) => {
           // Navigate to detail page
-          window.location.href = `/equipments/${item.id}`;
+          router.push(`/equipments/${item.id}`);
         },
       }),
     []
@@ -105,20 +87,13 @@ export default function EquipmentListPage() {
       );
     }
 
-    // Filter by type
-    if (selectedType) {
-      filtered = filtered.filter(
-        (item: Equipment) => item.type?.name === selectedType
-      );
-    }
-
     // Sort by type name A-Z
     return filtered.sort((a: Equipment, b: Equipment) => {
       const typeA = a.type?.name || "";
       const typeB = b.type?.name || "";
       return typeA.localeCompare(typeB);
     });
-  }, [equipmentResponse?.data, selectedStatus, selectedCategory, selectedType]);
+  }, [equipmentResponse?.data, selectedStatus, selectedCategory]);
 
   // Set the search query as global filter
   const { table, globalFilter, setGlobalFilter } = useDataTable({
@@ -127,219 +102,128 @@ export default function EquipmentListPage() {
     searchableColumns: ["name", "internalCode", "licensePlate"],
   });
 
-  // Update global filter when debounced query changes
-  useEffect(() => {
-    setGlobalFilter(debouncedQuery);
-  }, [debouncedQuery, setGlobalFilter]);
-
   // Calculate pagination from table state
   const totalFilteredItems = table.getFilteredRowModel().rows.length;
   const totalPages = table.getPageCount();
 
   return (
-    <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Equipos</CardTitle>
-            <Link href="/equipments/new">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo equipo
-              </Button>
-            </Link>
-          </div>
-          <CardDescription>
-            Gestiona todos los equipos del sistema
-          </CardDescription>
-
-          {/* Filters Row */}
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row">
-            {/* Search Input */}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Buscar equipos..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="min-w-[200px]"
-              />
-              {/* Status filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">📊</span>{" "}
-                    {selectedStatus === "ALL"
-                      ? "Todos"
-                      : selectedStatus === EquipmentStatus.ACTIVE
-                      ? "Activo"
-                      : selectedStatus === EquipmentStatus.INACTIVE
-                      ? "Inactivo"
-                      : selectedStatus === EquipmentStatus.MAINTENANCE
-                      ? "Mantenimiento"
-                      : "Retirado"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 overflow-y-auto max-h-60"
-                >
-                  <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
-                    Todos los estados
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedStatus(EquipmentStatus.ACTIVE)}
-                  >
-                    Activo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedStatus(EquipmentStatus.INACTIVE)}
-                  >
-                    Inactivo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      setSelectedStatus(EquipmentStatus.MAINTENANCE)
-                    }
-                  >
-                    En mantenimiento
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSelectedStatus(EquipmentStatus.RETIRED)}
-                  >
-                    Retirado
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Category filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">🏷️</span>{" "}
-                    {selectedCategory || "Categoría"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 overflow-y-auto max-h-60"
-                >
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar categoría..."
-                      className="mb-2"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        // Filter is handled by the dropdown rendering below
-                      }}
-                    />
-                  </div>
-                  <DropdownMenuItem onClick={() => setSelectedCategory("")}>
-                    Todas las categorías
-                  </DropdownMenuItem>
-                  {categories
-                    ?.sort((a: EquipmentCategory, b: EquipmentCategory) =>
-                      a.name.localeCompare(b.name)
-                    )
-                    .map((category: EquipmentCategory) => (
-                      <DropdownMenuItem
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.name)}
-                      >
-                        {category.name}
-                      </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Type filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[140px] justify-between"
-                  >
-                    <span className="mr-2">🔧</span> {selectedType || "Tipo"}
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 overflow-y-auto max-h-60"
-                >
-                  <div className="p-2">
-                    <Input
-                      placeholder="Buscar tipo..."
-                      className="mb-2"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        // Filter is handled by the dropdown rendering below
-                      }}
-                    />
-                  </div>
-                  <DropdownMenuItem onClick={() => setSelectedType("")}>
-                    Todos los tipos
-                  </DropdownMenuItem>
-                  {types
-                    ?.sort((a: EquipmentType, b: EquipmentType) =>
-                      a.name.localeCompare(b.name)
-                    )
-                    .map((type: EquipmentType) => (
-                      <DropdownMenuItem
-                        key={type.id}
-                        onClick={() => setSelectedType(type.name)}
-                      >
-                        {type.name}
-                      </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Report generation dropdown */}
-              <ReportExportMenu
-                reportType={ReportType.EQUIPMENT_LIST}
-                filter={{ status: "active" }}
-                title="Equipos"
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
-          ) : (
-            <DataTable<Equipment>
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-            />
-          )}
-          <PaginationBar
-            page={table.getState().pagination.pageIndex + 1}
-            totalPages={totalPages}
-            totalItems={totalFilteredItems}
-            limit={table.getState().pagination.pageSize}
-            onPageChange={(newPage) => {
-              table.setPagination({
-                pageIndex: newPage - 1,
-                pageSize: table.getState().pagination.pageSize,
-              });
+    <EntityListLayout
+      title="Equipos"
+      description="Gestiona todos los equipos del sistema"
+      actions={
+        <div className="flex items-center gap-2">
+          <ReportExportMenu
+            reportType={ReportType.EQUIPMENT_LIST}
+            filter={{
+              status:
+                selectedStatus === "ALL"
+                  ? undefined
+                  : selectedStatus.toLowerCase(),
+              category: selectedCategory || undefined,
             }}
-            onLimitChange={(newLimit) => {
-              table.setPagination({ pageIndex: 0, pageSize: newLimit });
-            }}
+            title="Equipos"
           />
-        </CardContent>
-      </Card>
-    </div>
+          <Link href="/equipments/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo equipo
+            </Button>
+          </Link>
+        </div>
+      }
+      filters={
+        <div className="flex flex-wrap gap-2">
+          {/* Status filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="min-w-[140px] justify-between"
+              >
+                <span className="mr-2">📊</span>
+                {selectedStatus === "ALL"
+                  ? "Todos los estados"
+                  : equipmentStatusLabels[selectedStatus as EquipmentStatus]}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
+                Todos los estados
+              </DropdownMenuItem>
+              {Object.entries(equipmentStatusLabels).map(([value, label]) => (
+                <DropdownMenuItem
+                  key={value}
+                  onClick={() => setSelectedStatus(value)}
+                >
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Category filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="min-w-[140px] justify-between"
+              >
+                <span className="mr-2">🏷️</span>
+                {selectedCategory || "Todas las categorías"}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-48 overflow-y-auto max-h-60"
+            >
+              <DropdownMenuItem onClick={() => setSelectedCategory("")}>
+                Todas las categorías
+              </DropdownMenuItem>
+              {categories.map((category: EquipmentCategory) => (
+                <DropdownMenuItem
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.name)}
+                >
+                  {category.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      }
+    >
+      <EntityErrorState error={error} />
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Cargando equipos...</p>
+        </div>
+      ) : (
+        <DataTable<Equipment>
+          table={table}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          searchPlaceholder="Buscar por nombre, código o patente..."
+        />
+      )}
+
+      <PaginationBar
+        page={table.getState().pagination.pageIndex + 1}
+        totalPages={totalPages}
+        totalItems={totalFilteredItems}
+        limit={table.getState().pagination.pageSize}
+        onPageChange={(newPage) => {
+          table.setPagination({
+            pageIndex: newPage - 1,
+            pageSize: table.getState().pagination.pageSize,
+          });
+        }}
+        onLimitChange={(newLimit) => {
+          table.setPagination({ pageIndex: 0, pageSize: newLimit });
+        }}
+      />
+    </EntityListLayout>
   );
 }

@@ -16,7 +16,11 @@ import { EntityErrorState } from "@/components/entities/entity-error-state";
 export default function EmployeeVacationsPage() {
   const columns = useMemo(() => getVacationColumns(), []);
 
-  const { data: employeesData } = useEmployeesList();
+  const { data: employeesData } = useEmployeesList({
+    limit: 0,
+    sortBy: "lastName",
+    sortOrder: "asc",
+  });
 
   const employees: Employee[] = Array.isArray(employeesData)
     ? employeesData

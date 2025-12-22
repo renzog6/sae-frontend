@@ -34,7 +34,7 @@ export default function EmployeesPage() {
 
   const { data: employeesResponse } = useEmployeesList({
     page: 1,
-    limit: 100, // Get all data for client-side filtering and pagination
+    limit: 100,
     sortBy,
     sortOrder,
   });
