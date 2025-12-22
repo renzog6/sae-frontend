@@ -21,9 +21,6 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 export default function EquipmentCategoriesPage() {
   const { useGetAll } = useEquipmentCategories();
   const { data: categoriesResponse, isLoading, error } = useGetAll();
-  console.log("Categories response:", categoriesResponse);
-  console.log("Categories error:", error);
-
   const categories = categoriesResponse?.data || [];
 
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -21,3 +21,4 @@ export * from "./shared/contact";
 export * from "./shared/enums";
 export * from "./shared/location";
 export * from "./shared/shared";
+export * from "./shared/validators";

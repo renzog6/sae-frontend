@@ -36,6 +36,7 @@ import {
 import { useEquipments } from "@/lib/hooks/useEquipments";
 import { useCompanies } from "@/lib/hooks/useCompanies";
 import { useToast } from "@/components/ui/toaster";
+import { useUniqueValidator } from "@/lib/hooks/useUniqueValidator";
 
 interface EquipmentFormProps {
   onSuccess?: (data: EquipmentFormData) => void;
@@ -51,16 +52,15 @@ export function EquipmentForm({
   isEdit = false,
 }: EquipmentFormProps) {
   const { toast } = useToast();
-  const { useGetAll: useGetCategories } = useEquipmentCategories();
-  const {
-    data: categoriesResponse = {
-      data: [],
-      meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
-    },
-  } = useGetCategories();
-  const { data: companies = [] } = useCompanies();
 
-  const categories = categoriesResponse.data;
+  const {
+    data: categoriesResponse,
+    isLoading,
+    error,
+  } = useEquipmentCategories().useGetAll();
+  const categories = categoriesResponse?.data || [];
+
+  const { data: companies = [] } = useCompanies();
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentFormSchema),
@@ -119,6 +119,14 @@ export function EquipmentForm({
 
   const { mutate: updateEquipment, isPending: updating } = useUpdate();
 
+  const engine = form.watch("engine");
+  const { exists: engineExists, checking } = useUniqueValidator({
+    model: "Equipment",
+    field: "engine",
+    value: engine || "",
+    excludeId: isEdit ? String((defaultValues as any)?.id) : undefined,
+  });
+
   const handleSubmit = (data: EquipmentFormData) => {
     const submitData = {
       ...data,
@@ -140,11 +148,24 @@ export function EquipmentForm({
             onSuccess?.(data);
           },
           onError: (error: any) => {
-            toast({
-              title: "Error al actualizar equipo",
-              description: error?.message || "Intenta nuevamente.",
-              variant: "error",
-            });
+            // Handle specific error types
+            if (error?.response?.status === 409) {
+              const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                "Ya existe un equipo con este número de motor, patente o código interno.";
+              toast({
+                title: "Error de duplicado",
+                description: errorMessage,
+                variant: "error",
+              });
+            } else {
+              toast({
+                title: "Error al actualizar equipo",
+                description: error?.message || "Intenta nuevamente.",
+                variant: "error",
+              });
+            }
           },
         }
       );
@@ -160,11 +181,24 @@ export function EquipmentForm({
           onSuccess?.(data);
         },
         onError: (error: any) => {
-          toast({
-            title: "Error al crear equipo",
-            description: error?.message || "Intenta nuevamente.",
-            variant: "error",
-          });
+          // Handle specific error types
+          if (error?.response?.status === 409) {
+            const errorMessage =
+              error?.response?.data?.message ||
+              error?.message ||
+              "Ya existe un equipo con este número de motor, patente o código interno.";
+            toast({
+              title: "Error de duplicado",
+              description: errorMessage,
+              variant: "error",
+            });
+          } else {
+            toast({
+              title: "Error al crear equipo",
+              description: error?.message || "Intenta nuevamente.",
+              variant: "error",
+            });
+          }
         },
       });
     }
@@ -370,6 +404,10 @@ export function EquipmentForm({
                     disabled={isPending}
                   />
                 </FormControl>
+
+                {engineExists && (
+                  <FormMessage>Este número de motor ya existe</FormMessage>
+                )}
                 <FormMessage />
               </FormItem>
             )}
