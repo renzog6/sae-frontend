@@ -18,7 +18,7 @@ import {
   createVacationFormInputAssignedSchema,
   type EmployeeVacationFormData,
   type EmployeeVacationFormAssignedInput,
-} from "@/lib/validations/employeeVacation";
+} from "@/lib/validations/employee-vacation";
 import { Label } from "@/components/ui/label";
 import type { AvailableYear } from "@/lib/types/domain/employee";
 

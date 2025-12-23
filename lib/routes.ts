@@ -29,6 +29,7 @@ export const routes = {
     categories: "/equipments/categories",
     types: "/equipments/types",
     models: "/equipments/models",
+    transactions: { root: "/equipments/transactions", new: "/equipments/transactions/new" },
     detail: (id: number | string) => `/equipments/${id}`,
   },
 

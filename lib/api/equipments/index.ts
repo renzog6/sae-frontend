@@ -5,3 +5,4 @@ export * from "./equipment-models.service";
 export * from "./equipment-types.service";
 export * from "./equipment-categories.service";
 export * from "./equipment-axles.service";
+export * from "./equipment-transactions.service";

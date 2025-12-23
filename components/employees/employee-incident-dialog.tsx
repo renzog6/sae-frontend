@@ -9,7 +9,7 @@ import {
   useUpdateEmployeeIncident,
 } from "@/lib/hooks/useHistory";
 import { EmployeeIncidentForm } from "@/components/forms/employee-incident-form";
-import type { EmployeeIncidentFormInput } from "@/lib/validations/employeeIncident";
+import type { EmployeeIncidentFormInput } from "@/lib/validations/employee-incident";
 
 export interface EmployeeIncidentDialogProps {
   open: boolean;

@@ -10,6 +10,7 @@ export * from "./domain/company";
 export * from "./domain/server-file";
 export * from "./domain/employee";
 export * from "./domain/equipment";
+export * from "./domain/equipment-transaction";
 export * from "./domain/history";
 export * from "./domain/report";
 export * from "./domain/tire";

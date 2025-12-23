@@ -23,9 +23,8 @@ import {
 } from "@/components/ui/select";
 import {
   createEmployeeIncidentFormInputSchema,
-  type EmployeeIncidentFormData,
   type EmployeeIncidentFormInput,
-} from "@/lib/validations/employeeIncident";
+} from "@/lib/validations/employee-incident";
 import { EmployeeIncidentType } from "@/lib/types/domain/history";
 import { employeeIncidentTypeLabels } from "@/lib/constants";
 

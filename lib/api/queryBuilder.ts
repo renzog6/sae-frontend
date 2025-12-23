@@ -8,23 +8,9 @@ export class QueryBuilder {
 
     const params = new URLSearchParams();
 
-    const commonParams = {
-      page: "page",
-      limit: "limit",
-      q: "q",
-      sortBy: "sortBy",
-      sortOrder: "sortOrder",
-      isActive: "isActive",
-      status: "status",
-      companyId: "companyId",
-      fromDate: "fromDate",
-      toDate: "toDate",
-    } as const;
-
-    Object.entries(commonParams).forEach(([key, paramName]) => {
-      const value = query[key as keyof BaseQueryParams];
+    Object.entries(query).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
-        params.append(paramName, value.toString());
+        params.append(key, value.toString());
       }
     });
 

@@ -23,7 +23,7 @@ A comprehensive enterprise web application built with **Next.js 15 (App Router)*
 
 ## 🚀 Overview
 
-SAE Frontend is a high-quality, scalable enterprise web application built with Next.js 15 (App Router), TypeScript 5.1+ (strict mode), and Tailwind CSS 4.0, providing a complete and professional interface for the SAE business management system. It integrates secure authentication with NextAuth.js 4.24+, form validation with Zod 4.1+, efficient state management with TanStack Query 5.89+, and a modern, fully accessible UI based on shadcn/ui and Radix UI. Designed for medium and large companies with vehicle fleets and specialized tire management.
+SAE Frontend is a high-quality, scalable enterprise web application built with Next.js 15 (App Router), TypeScript 5.1+ (strict mode), and Tailwind CSS 4.0, providing a complete and professional interface for the SAE business management system. It integrates secure authentication with NextAuth.js 4.24+, form validation with Zod 4.1+, efficient state management with TanStack Query 5.90+, and a modern, fully accessible UI based on shadcn/ui and Radix UI. Designed for medium and large companies with vehicle fleets and specialized tire management.
 
 ### 📊 Project Statistics
 
@@ -127,33 +127,33 @@ The project implements a **modular and scalable hexagonal architecture** followi
 ### 🚀 Core Enterprise Framework
 
 - **Next.js** 15.5.3 - React framework with App Router and Turbopack
-- **React** 19.1.0 - React with concurrent features
+- **React** 19.2.1 - React with concurrent features
 - **TypeScript** 5.1.3 - Strict static typing across the entire project
 
 ### 🎨 Professional UI & Styling
 
-- **Tailwind CSS** 4.0.0-alpha.66 - Cutting-edge utility-first CSS framework
+- **Tailwind CSS** 4.1.17 - Cutting-edge utility-first CSS framework
 - **shadcn/ui** - Customizable and accessible UI components (200+ components)
 - **Radix UI** - Headless primitives for maximum accessibility
-- **Lucide React** 0.544.0 - Consistent and modern iconography
-- **Framer Motion** 12.23.19 - Fluid and professional animations
+- **Lucide React** 0.560.0 - Consistent and modern iconography
+- **Framer Motion** 12.23.26 - Fluid and professional animations
 - **next-themes** 0.4.6 - Theme management with automatic persistence
 
 ### 📊 Advanced State & Data Management
 
-- **TanStack Query** 5.89.0 - Intelligent server/client state management
-- **Axios** 1.6.0 - HTTP client with interceptors and error handling
+- **TanStack Query** 5.90.12 - Intelligent server/client state management
+- **Axios** 1.13.2 - HTTP client with interceptors and error handling
 - **@tanstack/react-table** 8.21.3 - Data tables with virtualization and filters
 
 ### 📝 Forms & Validation
 
-- **React Hook Form** 7.62.0 - Performant form management
+- **React Hook Form** 7.68.0 - Performant form management
 - **@hookform/resolvers** 5.2.1 - Zod integration with RHF
-- **Zod** 4.1.9 - Schema validation with type inference
+- **Zod** 4.1.13 - Schema validation with type inference
 
 ### 🔐 Enterprise Authentication
 
-- **NextAuth.js** 4.24.11 - Complete authentication with multiple providers
+- **NextAuth.js** 4.24.13 - Complete authentication with multiple providers
 - **JWT Management**: Access/refresh tokens with automatic renewal
 - **Session Handling**: Session persistence and management
 
@@ -161,7 +161,7 @@ The project implements a **modular and scalable hexagonal architecture** followi
 
 - **class-variance-authority** 0.7.1 - Dynamic CSS variant system
 - **clsx** 2.1.1 - Optimized conditional class utilities
-- **tailwind-merge** 3.3.1 - Intelligent Tailwind class merging
+- **tailwind-merge** 3.4.0 - Intelligent Tailwind class merging
 - **cmdk** 1.1.1 - Command palette for global search
 
 ### 💻 Enterprise Development & Quality
@@ -234,9 +234,9 @@ npm run dev
 
 ```bash
 npm run dev          # Development with Turbopack (port 3003)
-npm run build        # Production build
-npm run start        # Production server
-npm run lint         # Code linting
+npm run build        # Production build with Turbopack
+npm run start        # Production server (port 3003)
+npm run lint         # Code linting with ESLint
 ```
 
 ## 🏗️ Production Build
@@ -435,11 +435,13 @@ sae-frontend/
 ### Code Standards
 
 - **TypeScript**: Strict mode enabled, no `any` types
-- **ESLint**: Follow all linting rules
-- **Prettier**: Automatic code formatting
+- **ESLint**: Follow all linting rules (configured for enterprise standards)
+- **Prettier**: Automatic code formatting with team configuration
 - **Components**: PascalCase, `.tsx` extension
 - **Hooks**: camelCase, `use` prefix
 - **Utilities**: camelCase, `.ts` extension
+- **Types**: All components and functions must be fully typed
+- **Naming**: Use descriptive names, avoid abbreviations
 
 ### Commit Convention
 
@@ -456,7 +458,26 @@ Types:
 - refactor: Code refactoring
 - test: Testing
 - chore: Maintenance
+- perf: Performance improvements
+- deps: Dependency updates
+
+Scopes:
+- api: API services and clients
+- components: UI components
+- hooks: Custom React hooks
+- types: TypeScript definitions
+- utils: Utility functions
+- docs: Documentation
 ```
+
+### Pull Request Guidelines
+
+- Include a clear description of changes
+- Reference related issues with `Fixes #issue-number`
+- Ensure all tests pass
+- Update documentation if needed
+- Follow the established code patterns
+- Keep PRs focused on a single feature/fix
 
 ## 📄 License
 
@@ -464,6 +485,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Developed by**: Renzo O. Gorosito  
-**Version**: 1.1.0  
-**Last Updated**: November 2025
+**Developed by**: Renzo O. Gorosito
+**Version**: 1.1.0
+**Last Updated**: December 2025

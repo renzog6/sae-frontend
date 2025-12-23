@@ -8,6 +8,7 @@ export * from "./useEmployees";
 
 // Equipments
 export * from "./useEquipments";
+export * from "./useEquipmentTransactions";
 
 // Tires
 export * from "./useTires";

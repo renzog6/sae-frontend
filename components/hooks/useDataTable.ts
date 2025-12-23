@@ -23,7 +23,16 @@ export function useDataTable<TData>({
   data,
   columns,
   searchableColumns = [],
-}: UseDataTableProps<TData>) {
+  pageCount,
+  rowCount,
+  manualPagination = false,
+  manualFiltering = false,
+}: UseDataTableProps<TData> & {
+  pageCount?: number;
+  rowCount?: number;
+  manualPagination?: boolean;
+  manualFiltering?: boolean;
+}) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -36,6 +45,7 @@ export function useDataTable<TData>({
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount ?? -1,
     state: {
       sorting,
       globalFilter,
@@ -49,9 +59,11 @@ export function useDataTable<TData>({
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: manualPagination ? undefined : getPaginationRowModel(),
+    manualPagination,
+    manualFiltering,
 
     globalFilterFn: "includesString",
   });

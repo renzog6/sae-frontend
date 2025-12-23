@@ -1,3 +1,4 @@
+// filepath: sae-frontend/app/equipments/page.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -8,6 +9,7 @@ import {
   Ruler,
   Wrench,
   Settings,
+  Receipt,
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
@@ -62,6 +64,16 @@ const equipmentSections = [
     hoverBg: "group-hover:bg-orange-600",
   },
   {
+    title: "Transacciones",
+    description: "Gestiona compras y ventas de equipos.",
+    icon: Receipt,
+    href: "/equipments/transactions",
+    color: "text-green-600",
+    bgColor: "bg-green-50",
+    hoverColor: "group-hover:text-green-700",
+    hoverBg: "group-hover:bg-green-600",
+  },
+  {
     title: "Configurador de Ejes",
     description: "Crea ejes completos con posiciones.",
     icon: Settings,
@@ -111,14 +123,14 @@ export default function EquipmentsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.1 }}
           >
-            <Link href={section.href} className="group block h-full">
-              <Card className="h-full transition-all duration-300 border border-zinc-200 shadow-sm hover:shadow-lg hover:border-indigo-200">
+            <Link href={section.href} className="block h-full group">
+              <Card className="h-full transition-all duration-300 border shadow-sm border-zinc-200 hover:shadow-lg hover:border-indigo-200">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <div
                       className={`p-2 rounded-lg ${section.bgColor} ${section.color} ${section.hoverBg} group-hover:text-white transition-colors duration-300`}
                     >
-                      <section.icon className="h-5 w-5" />
+                      <section.icon className="w-5 h-5" />
                     </div>
                     <CardTitle
                       className={`text-xl font-semibold text-zinc-800 ${section.hoverColor} transition-colors`}
@@ -126,14 +138,14 @@ export default function EquipmentsPage() {
                       {section.title}
                     </CardTitle>
                   </div>
-                  <CardDescription className="text-zinc-500 group-hover:text-zinc-600 transition-colors">
+                  <CardDescription className="transition-colors text-zinc-500 group-hover:text-zinc-600">
                     {section.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-sm font-medium text-zinc-500 group-hover:text-indigo-600 transition-colors">
+                  <div className="flex items-center text-sm font-medium transition-colors text-zinc-500 group-hover:text-indigo-600">
                     Abrir sección
-                    <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                   </div>
                 </CardContent>
               </Card>

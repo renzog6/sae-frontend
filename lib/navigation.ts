@@ -17,6 +17,11 @@ export const mainMenu = [
   { title: "Empleados", href: routes.employees.root, icon: Users },
   { title: "Vacaciones", href: routes.employees.vacation, icon: Calendar },
   { title: "Equipos", href: routes.equipments.root, icon: Wrench },
+  {
+    title: "Transacciones",
+    href: routes.equipments.transactions.root,
+    icon: FileText,
+  },
   { title: "Neumáticos", href: routes.tires.root, icon: CircleDot },
   { title: "Reportes", href: routes.reports.root, icon: FileText },
   { title: "Empresas", href: routes.companies.root, icon: Building2 },
