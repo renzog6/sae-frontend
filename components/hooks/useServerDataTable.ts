@@ -12,7 +12,7 @@ import {
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 interface UseServerDataTableProps<TData> {
   queryKey: string[];
@@ -39,17 +39,29 @@ export function useServerDataTable<TData>({
     pageSize: defaultPageSize,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [debouncedColumnFilters, setDebouncedColumnFilters] = useState<ColumnFiltersState>([]);
+
+  // Debounce column filters
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedColumnFilters(columnFilters);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [columnFilters]);
 
   // Convertir filtros de columna a formato para API
   const filters = useMemo(() => {
     const filterObj: Record<string, string> = {};
-    columnFilters.forEach((filter) => {
+    debouncedColumnFilters.forEach((filter) => {
       if (filter.value) {
         filterObj[filter.id] = String(filter.value);
       }
     });
     return filterObj;
-  }, [columnFilters]);
+  }, [debouncedColumnFilters]);
 
   // Construir parámetros para la query
   const queryParams = useMemo(
