@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { EmployeesService } from "@/lib/api/employees";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import {
   useEmployeeCategories,
   useEmployeePositions,
@@ -75,9 +75,12 @@ export default function EmployeeDetailPage() {
     data: employee,
     isLoading,
     error: fetchError,
-  } = useEmployeeDetail(id);
-  const { data: categoriesData } = useEmployeeCategories();
-  const { data: positionsData } = useEmployeePositions();
+  } = useEmployees().useGetById(id ?? 0);
+  const { useGetAll: useGetCategories } = useEmployeeCategories();
+  const { data: categoriesData } = useGetCategories();
+
+  const { useGetAll: useGetPositions } = useEmployeePositions();
+  const { data: positionsData } = useGetPositions();
 
   const categories = categoriesData?.data ?? [];
   const positions = positionsData?.data ?? [];
@@ -689,29 +692,29 @@ export default function EmployeeDetailPage() {
             initial={
               editingAddress
                 ? {
-                    street: editingAddress.street,
-                    number: editingAddress.number,
-                    floor: editingAddress.floor,
-                    apartment: editingAddress.apartment,
-                    neighborhood: editingAddress.neighborhood,
-                    reference: editingAddress.reference,
-                    cityId: editingAddress.cityId,
-                    personId: editingAddress.personId ?? personId,
-                  }
+                  street: editingAddress.street,
+                  number: editingAddress.number,
+                  floor: editingAddress.floor,
+                  apartment: editingAddress.apartment,
+                  neighborhood: editingAddress.neighborhood,
+                  reference: editingAddress.reference,
+                  cityId: editingAddress.cityId,
+                  personId: editingAddress.personId ?? personId,
+                }
                 : personId
-                ? { cityId: 1, personId }
-                : undefined
+                  ? { cityId: 1, personId }
+                  : undefined
             }
             onDelete={
               editingAddress?.id
                 ? () =>
-                    deleteAddressMut.mutate(editingAddress.id!, {
-                      onSuccess: () => {
-                        queryClient.invalidateQueries({
-                          queryKey: ["addresses", "byPerson", personId],
-                        });
-                      },
-                    })
+                  deleteAddressMut.mutate(editingAddress.id!, {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["addresses", "byPerson", personId],
+                      });
+                    },
+                  })
                 : undefined
             }
             onSave={(data) => {
@@ -751,11 +754,11 @@ export default function EmployeeDetailPage() {
             initial={
               editingContact
                 ? {
-                    type: editingContact.type,
-                    value: editingContact.value,
-                    label: editingContact.label ?? undefined,
-                    information: editingContact.information ?? undefined,
-                  }
+                  type: editingContact.type,
+                  value: editingContact.value,
+                  label: editingContact.label ?? undefined,
+                  information: editingContact.information ?? undefined,
+                }
                 : undefined
             }
             onDelete={

@@ -16,21 +16,22 @@ import type {
   EquipmentCategory,
 } from "@/lib/types/domain/equipment";
 import {
-  useEquipments,
   useEquipmentCategories,
+  useEquipmentTypes,
 } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table-v2";
-import { useDataTable } from "@/components/hooks/useDataTable";
+import { useServerDataTable } from "@/components/hooks/useServerDataTable";
 import { getEquipmentColumns } from "./columns";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { EquipmentStatus } from "@/lib/types/shared/enums";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
 import { equipmentStatusLabels } from "@/lib/constants/equipment.constants";
+import { EquipmentsService } from "@/lib/api/equipments";
+import type { EquipmentType } from "@/lib/types/domain/equipment";
 
 export default function EquipmentListPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(
@@ -39,18 +40,89 @@ export default function EquipmentListPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const router = useRouter();
 
-  const { useGetAll: useEquipmentList } = useEquipments();
-  const {
-    data: equipmentResponse,
-    isLoading,
-    error,
-  } = useEquipmentList({
-    page: 1,
-    limit: 0, // Get all equipment to enable client-side filtering
-  });
-
   const { useGetAll: useGetCategories } = useEquipmentCategories();
   const { data: categoriesResponse } = useGetCategories();
+
+  const { useGetAll: useGetTypes } = useEquipmentTypes();
+  const { data: typesResponse } = useGetTypes();
+
+  // Query function for server-side data table
+  const queryFn = async (params: {
+    page: number;
+    limit: number;
+    filters?: Record<string, string>;
+  }) => {
+    const queryParams: any = {
+      page: params.page,
+      limit: params.limit,
+    };
+
+    // Map filters to query params
+    if (params.filters) {
+      if (params.filters.name) queryParams.q = params.filters.name;
+      if (params.filters.internalCode)
+        queryParams.q = params.filters.internalCode;
+      if (params.filters.licensePlate)
+        queryParams.q = params.filters.licensePlate;
+      if (params.filters.status) queryParams.status = params.filters.status;
+      if (params.filters.categoryId)
+        queryParams.categoryId = parseInt(params.filters.categoryId);
+      if (params.filters.typeId)
+        queryParams.typeId = parseInt(params.filters.typeId);
+      if (params.filters.modelId)
+        queryParams.modelId = parseInt(params.filters.modelId);
+
+      // Fix: Filter by Year
+      if (params.filters.year) {
+        queryParams.year = parseInt(params.filters.year);
+      }
+
+      // Fix: Filter by Type (text input mapped to ID)
+      if (params.filters.type && typesResponse?.data) {
+        const filterValue = params.filters.type.toLowerCase();
+        // Find best matching type
+        const matchedType = typesResponse.data.find((t: EquipmentType) =>
+          t.name.toLowerCase().includes(filterValue)
+        );
+
+        if (matchedType) {
+          queryParams.typeId = matchedType.id;
+        } else {
+          // If user typed something that doesn't match any type, potentially send a dummy ID to return 0 results?
+          // Or just ignore. For now, let's ignore or set a non-existent ID.
+          // Setting -1 to ensure no results if no type matches the text
+          queryParams.typeId = -1;
+        }
+      }
+    }
+
+    // Apply global filters
+    if (selectedStatus && selectedStatus !== "ALL") {
+      queryParams.status = selectedStatus;
+    }
+    if (selectedCategory) {
+      // Find category by name and get ID
+      const category = categoriesResponse?.data?.find(
+        (cat: EquipmentCategory) => cat.name === selectedCategory
+      );
+      if (category) {
+        queryParams.categoryId = category.id;
+      }
+    }
+
+    return EquipmentsService.getAll(queryParams);
+  };
+
+  const { table, isLoading, error, totalItems } = useServerDataTable({
+    queryKey: ["equipments"],
+    queryFn,
+    columns: getEquipmentColumns({
+      onView: (item) => {
+        router.push(`/equipments/${item.id}`);
+      },
+    }),
+    defaultPageSize: 10,
+  });
 
   const categories = useMemo(() => {
     return (categoriesResponse?.data || []).sort(
@@ -58,53 +130,6 @@ export default function EquipmentListPage() {
         a.name.localeCompare(b.name)
     );
   }, [categoriesResponse?.data]);
-
-  const columns = useMemo(
-    () =>
-      getEquipmentColumns({
-        onView: (item) => {
-          // Navigate to detail page
-          router.push(`/equipments/${item.id}`);
-        },
-      }),
-    []
-  );
-
-  const equipment = useMemo(() => {
-    let filtered = equipmentResponse?.data || [];
-
-    // Filter by status
-    if (selectedStatus && selectedStatus !== "ALL") {
-      filtered = filtered.filter(
-        (item: Equipment) => item.status === selectedStatus
-      );
-    }
-
-    // Filter by category
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (item: Equipment) => item.category?.name === selectedCategory
-      );
-    }
-
-    // Sort by type name A-Z
-    return filtered.sort((a: Equipment, b: Equipment) => {
-      const typeA = a.type?.name || "";
-      const typeB = b.type?.name || "";
-      return typeA.localeCompare(typeB);
-    });
-  }, [equipmentResponse?.data, selectedStatus, selectedCategory]);
-
-  // Set the search query as global filter
-  const { table, globalFilter, setGlobalFilter } = useDataTable({
-    data: equipment,
-    columns,
-    searchableColumns: ["name", "internalCode", "licensePlate"],
-  });
-
-  // Calculate pagination from table state
-  const totalFilteredItems = table.getFilteredRowModel().rows.length;
-  const totalPages = table.getPageCount();
 
   return (
     <EntityListLayout
@@ -196,13 +221,13 @@ export default function EquipmentListPage() {
     >
       <EntityErrorState error={error} />
 
-      <DataTable<Equipment>
-        table={table}
-        isLoading={isLoading}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        searchPlaceholder="Buscar por nombre, código o patente..."
-      />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Cargando equipos...</p>
+        </div>
+      ) : (
+        <DataTable<Equipment> table={table} totalItems={totalItems} />
+      )}
     </EntityListLayout>
   );
 }

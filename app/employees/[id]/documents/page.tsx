@@ -35,7 +35,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import { useServerFiles } from "@/lib/hooks/useServerFiles";
 import { ServerFile } from "@/lib/types/domain/server-file";
 import {
@@ -74,7 +74,7 @@ export default function EmployeeDocumentsPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
+  const { data: employee, isLoading: employeeLoading } = useEmployees().useGetById(id);
   const serverFilesHooks = useServerFiles();
   const { useGetAll, useUpload, useDelete, useDownload } = serverFilesHooks;
   const { data: documentsData, isLoading: documentsLoading } = useGetAll({

@@ -23,10 +23,8 @@ export interface BaseQueryParams {
   page?: number;
   limit?: number;
 
-  // Búsqueda y orden
+  // Búsqueda
   q?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
 
   // Filtros comunes
   isActive?: boolean;

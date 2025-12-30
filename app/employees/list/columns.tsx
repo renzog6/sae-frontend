@@ -13,6 +13,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
     {
       accessorKey: "employeeCode",
       header: "Legajo",
+      enableColumnFilter: true,
       cell: ({ row }: { row: Row<Employee> }) => (
         <span className="font-medium">{row.original.employeeCode || "-"}</span>
       ),
@@ -20,17 +21,21 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
     {
       id: "fullName",
       header: "Apellido y Nombre",
+      enableColumnFilter: true,
+      accessorFn: (row: Employee) =>
+        `${row.person?.lastName ?? ""} ${row.person?.firstName ?? ""}`.trim(),
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>
-          {`${row.original.person?.lastName ?? ""} ${
-            row.original.person?.firstName ?? ""
-          }`.trim() || "-"}
+          {`${row.original.person?.lastName ?? ""} ${row.original.person?.firstName ?? ""
+            }`.trim() || "-"}
         </span>
       ),
     },
     {
       id: "cuil",
       header: "CUIL",
+      enableColumnFilter: true,
+      accessorFn: (row: Employee) => row.person?.cuil || "",
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>{row.original.person?.cuil || "-"}</span>
       ),
@@ -38,6 +43,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
     {
       accessorKey: "hireDate",
       header: "Ingreso",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => {
         const d = row.original.hireDate
           ? new Date(row.original.hireDate)
@@ -48,6 +54,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
     {
       id: "tenure",
       header: "Antigüedad",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>{formatTenure(row.original.hireDate)}</span>
       ),
@@ -69,6 +76,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
     {
       accessorKey: "information",
       header: "Info",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>{row.original.information || "-"}</span>
       ),

@@ -15,7 +15,8 @@ import { EntityErrorState } from "@/components/entities/entity-error-state";
 import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function EmployeeCategoriesPage() {
-  const { data: categoriesData, isLoading, error } = useEmployeeCategories();
+  const { useGetAll: useGetCategories } = useEmployeeCategories();
+  const { data: categoriesData, isLoading, error } = useGetCategories();
   const categories = categoriesData?.data ?? [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,9 +47,8 @@ export default function EmployeeCategoriesPage() {
     <>
       <EntityListLayout
         title="Categorías de empleados"
-        description={`Gestión de categorías de empleados - ${filteredCount} categoría${
-          filteredCount !== 1 ? "s" : ""
-        }`}
+        description={`Gestión de categorías de empleados - ${filteredCount} categoría${filteredCount !== 1 ? "s" : ""
+          }`}
         actions={
           <Button
             onClick={() => {

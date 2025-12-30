@@ -19,12 +19,11 @@ interface UseServerDataTableProps<TData> {
   queryFn: (params: {
     page: number;
     limit: number;
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
-    filters?: Record<string, string>; // Para filtros por columna
+    filters?: Record<string, string>;
   }) => Promise<{ data: TData[]; meta: { total: number; totalPages: number } }>;
   columns: ColumnDef<TData>[];
   defaultPageSize?: number;
+  debounceDelay?: number;
 }
 
 export function useServerDataTable<TData>({
@@ -32,6 +31,7 @@ export function useServerDataTable<TData>({
   queryFn,
   columns,
   defaultPageSize = 10,
+  debounceDelay = 1000, // Default to 1000ms (1 second)
 }: UseServerDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -45,12 +45,12 @@ export function useServerDataTable<TData>({
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedColumnFilters(columnFilters);
-    }, 500); // 500ms delay
+    }, debounceDelay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [columnFilters]);
+  }, [columnFilters, debounceDelay]);
 
   // Convertir filtros de columna a formato para API
   const filters = useMemo(() => {
@@ -68,11 +68,9 @@ export function useServerDataTable<TData>({
     () => ({
       page: pagination.pageIndex + 1, // API usa 1-based
       limit: pagination.pageSize,
-      sortBy: sorting[0]?.id,
-      sortOrder: sorting[0]?.desc ? ("desc" as const) : ("asc" as const),
       filters: Object.keys(filters).length > 0 ? filters : undefined,
     }),
-    [pagination, sorting, filters]
+    [pagination, filters]
   );
 
   // Query con TanStack Query
@@ -96,7 +94,7 @@ export function useServerDataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    manualSorting: true, // Server-side sorting
+    manualSorting: false, // Client-side sorting for current page
     manualPagination: true, // Server-side pagination
     manualFiltering: true, // Server-side filtering
     pageCount: data?.meta?.totalPages ?? 0,

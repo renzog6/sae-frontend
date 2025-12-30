@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, FilePenLine } from "lucide-react";
 import type { EmployeeVacation } from "@/lib/types/domain/employee";
 import { VacationType, AvailableYear } from "@/lib/types/domain/employee";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
 import { formatDate, formatTenure, calcAge } from "@/lib/utils/date";
@@ -40,7 +40,7 @@ export default function EmployeeVacationsDetailPage() {
     return Number.isNaN(n) ? undefined : n;
   }, [sp]);
 
-  const { data: employee, isLoading, error, refetch } = useEmployeeDetail(id);
+  const { data: employee, isLoading, error, refetch } = useEmployees().useGetById(id!);
 
   const downloadPdfMutation = useEmployeeVacations().useDownloadPdf();
 
@@ -155,9 +155,8 @@ export default function EmployeeVacationsDetailPage() {
                     <span>👤</span> Apellido y Nombre
                   </div>
                   <div className="font-medium text-slate-800">
-                    {`${employee.person?.lastName ?? ""} ${
-                      employee.person?.firstName ?? ""
-                    }`.trim() || "-"}
+                    {`${employee.person?.lastName ?? ""} ${employee.person?.firstName ?? ""
+                      }`.trim() || "-"}
                   </div>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50">
@@ -250,11 +249,10 @@ export default function EmployeeVacationsDetailPage() {
                         <TableCell>{formatDate(v.settlementDate)}</TableCell>
                         <TableCell>
                           <span
-                            className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                              v.type === "ASSIGNED"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-blue-100 text-blue-800"
-                            }`}
+                            className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${v.type === "ASSIGNED"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-blue-100 text-blue-800"
+                              }`}
                           >
                             {v.type === "ASSIGNED" ? "Asignadas" : "Tomadas"}
                           </span>
@@ -268,8 +266,8 @@ export default function EmployeeVacationsDetailPage() {
                         <TableCell>
                           {v.type !== "ASSIGNED"
                             ? `${formatDate(v.startDate)} - ${formatDate(
-                                v.endDate
-                              )}`
+                              v.endDate
+                            )}`
                             : "-"}
                         </TableCell>
                         <TableCell>{v.detail ?? "-"}</TableCell>

@@ -7,9 +7,7 @@ import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EmployeeCategoryForm } from "@/components/forms/employee-category-form";
 import {
-  useCreateEmployeeCategory,
-  useUpdateEmployeeCategory,
-  useDeleteEmployeeCategory,
+  useEmployeeCategories
 } from "@/lib/hooks/useEmployees";
 import {
   AlertDialog,
@@ -38,11 +36,11 @@ export function EmployeeCategoryDialog({
 }: EmployeeCategoryDialogProps) {
   const { toast } = useToast();
   const { mutate: createCategory, isPending: creating } =
-    useCreateEmployeeCategory();
+    useEmployeeCategories().useCreate();
   const { mutate: updateCategory, isPending: updating } =
-    useUpdateEmployeeCategory();
+    useEmployeeCategories().useUpdate();
   const { mutate: deleteCategory, isPending: deleting } =
-    useDeleteEmployeeCategory();
+    useEmployeeCategories().useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -67,7 +65,7 @@ export function EmployeeCategoryDialog({
       });
     } else if (mode === "edit" && category) {
       updateCategory(
-        { id: category.id, data },
+        { id: category.id, dto: data },
         {
           onSuccess: () => {
             toast({
@@ -108,10 +106,10 @@ export function EmployeeCategoryDialog({
             defaultValues={
               mode === "edit" && category
                 ? {
-                    name: category.name,
-                    code: category.code || "",
-                    information: category.information || "",
-                  }
+                  name: category.name,
+                  code: category.code || "",
+                  information: category.information || "",
+                }
                 : undefined
             }
             isEdit={mode === "edit"}

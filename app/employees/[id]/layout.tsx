@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,7 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
   const params = useParams();
   const id = Number(params.id);
 
-  const { data: employee, isLoading, error } = useEmployeeDetail(id);
+  const { data: employee, isLoading, error } = useEmployees().useGetById(id);
 
   if (isLoading) {
     return (

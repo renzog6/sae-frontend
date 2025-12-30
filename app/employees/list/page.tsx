@@ -9,77 +9,113 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import type { Employee } from "@/lib/types/domain/employee";
+import { ChevronDown, Plus } from "lucide-react";
+import type { Employee, EmployeeCategory } from "@/lib/types/domain/employee";
 import { EmployeeStatus } from "@/lib/types/domain/employee";
-import { useEmployeesList } from "@/lib/hooks";
+import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
-import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/hooks/useDataTable";
-import { useGenerateReport } from "@/lib/hooks";
-import { ReportType } from "@/lib/types/domain/report";
-
+import { DataTable } from "@/components/data-table/data-table-v2";
+import { useServerDataTable } from "@/components/hooks/useServerDataTable";
+import { EmployeesService } from "@/lib/api/employees/employees.service";
 import { getEmployeeColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
-import { PaginationBar } from "@/components/data-table/pagination-bar";
+import { ReportType } from "@/lib/types/domain/report";
+import Link from "next/link";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
-
-type StatusFilter = "ALL" | EmployeeStatus;
+import { useRouter } from "next/navigation";
 
 export default function EmployeesPage() {
-  const [status, setStatus] = useState<StatusFilter>(EmployeeStatus.ACTIVE);
-  const [sortBy, setSortBy] = useState("person.lastName");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedStatus, setSelectedStatus] = useState<string>(
+    EmployeeStatus.ACTIVE
+  );
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const router = useRouter();
 
-  const { data: employeesResponse } = useEmployeesList({
-    page: 1,
-    limit: 100,
-    sortBy,
-    sortOrder,
+  const { useGetAll: useGetCategories } = useEmployeeCategories();
+  const { data: categoriesResponse } = useGetCategories();
+
+  const categories = useMemo(() => {
+    return (categoriesResponse?.data || []).sort(
+      (a: EmployeeCategory, b: EmployeeCategory) =>
+        a.name.localeCompare(b.name)
+    );
+  }, [categoriesResponse?.data]);
+
+  const queryFn = async (params: {
+    page: number;
+    limit: number;
+    filters?: Record<string, string>;
+  }) => {
+    const queryParams: any = {
+      page: params.page,
+      limit: params.limit,
+    };
+
+    // Map column filters to query params (using 'q' for text search)
+    if (params.filters) {
+      if (params.filters.employeeCode) queryParams.q = params.filters.employeeCode;
+      if (params.filters.fullName) queryParams.q = params.filters.fullName;
+      if (params.filters.cuil) queryParams.q = params.filters.cuil;
+
+      // If we had specific fields backend supported, we would map them here.
+      // For now, mapping multiple columns to the global 'q' search is a safe fallback 
+      // if the backend 'q' searches across these fields.
+    }
+
+    // Apply global dropdown filters
+    if (selectedStatus && selectedStatus !== "ALL") {
+      queryParams.status = selectedStatus;
+    }
+
+    // Note: EmployeesService might need to support 'categoryId' in params if we want to filter by it.
+    // BaseApiService allows flexible query params, but the backend Controller/Service needs to handle it.
+    // Assuming backend might NOT handle 'categoryId' natively yet in 'getAll' unless we verified it.
+    // But 'equipments' did. Let's assume standard pattern or map it if possible.
+    // If backend doesn't support 'categoryId', this filter won't work server-side.
+    // However, looking at 'equipment', it did. 'employees'?
+    // Let's send it. If it's ignored, we might need to update backend later, 
+    // but the instruction is "implementar lo mismo" (pattern-wise).
+    if (selectedCategory) {
+      const category = categories.find(c => c.name === selectedCategory);
+      if (category) {
+        queryParams.categoryId = category.id;
+      }
+    }
+
+    return EmployeesService.getAll(queryParams);
+  };
+
+  const { table, isLoading, error, totalItems } = useServerDataTable({
+    queryKey: ["employees", selectedStatus, selectedCategory],
+    queryFn,
+    columns: getEmployeeColumns(),
+    defaultPageSize: 10,
   });
-
-  const generateReportMutation = useGenerateReport();
-
-  const allEmployees: Employee[] = employeesResponse?.data ?? [];
-
-  const columns = useMemo(() => getEmployeeColumns(), []);
-
-  // Filter employees by status (client-side filtering)
-  const filteredEmployees = useMemo(() => {
-    if (status === "ALL") return allEmployees;
-    return allEmployees.filter((emp) => emp.status === status);
-  }, [allEmployees, status]);
-
-  // Set up data table with search and pagination
-  const { table, globalFilter, setGlobalFilter } = useDataTable({
-    data: filteredEmployees,
-    columns,
-    searchableColumns: [
-      "employeeCode",
-      "person.lastName",
-      "person.firstName",
-      "person.cuil",
-    ],
-  });
-
-  // Calculate pagination from table state
-  const totalFilteredItems = table.getFilteredRowModel().rows.length;
-  const totalPages = table.getPageCount();
 
   return (
     <EntityListLayout
       title="Empleados"
       description="Gestiona todos los empleados del sistema"
       actions={
-        <ReportExportMenu
-          reportType={ReportType.EMPLOYEE_LIST}
-          filter={{ status: "active" }}
-          title="Empleados"
-        />
+        <div className="flex items-center gap-2">
+          <ReportExportMenu
+            reportType={ReportType.EMPLOYEE_LIST}
+            filter={{
+              status: selectedStatus === "ALL" ? undefined : selectedStatus.toLowerCase()
+            }}
+            title="Empleados"
+          />
+          <Link href="/employees/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo empleado
+            </Button>
+          </Link>
+        </div>
       }
       filters={
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {/* Status filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -88,113 +124,69 @@ export default function EmployeesPage() {
                 className="min-w-[140px] justify-between"
               >
                 <span className="mr-2">🏷️</span>
-                {status === "ALL" ? "Todos" : employeeStatusLabels[status]}
+                {selectedStatus === "ALL"
+                  ? "Todos"
+                  : employeeStatusLabels[selectedStatus as EmployeeStatus]}
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onClick={() => setStatus("ALL")}>
-                <span className="mr-2">👥</span> Todos
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
+                Todos
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setStatus(EmployeeStatus.ACTIVE)}
-              >
-                <span className="mr-2">✅</span>{" "}
+              <DropdownMenuItem onClick={() => setSelectedStatus(EmployeeStatus.ACTIVE)}>
                 {employeeStatusLabels[EmployeeStatus.ACTIVE]}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setStatus(EmployeeStatus.SUSPENDED)}
-              >
-                <span className="mr-2">⏸️</span>{" "}
+              <DropdownMenuItem onClick={() => setSelectedStatus(EmployeeStatus.SUSPENDED)}>
                 {employeeStatusLabels[EmployeeStatus.SUSPENDED]}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setStatus(EmployeeStatus.TERMINATED)}
-              >
-                <span className="mr-2">❌</span>{" "}
+              <DropdownMenuItem onClick={() => setSelectedStatus(EmployeeStatus.TERMINATED)}>
                 {employeeStatusLabels[EmployeeStatus.TERMINATED]}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Sort field selector */}
+          {/* Category filter - New Feature mimicking Equipments */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[160px] justify-between"
+                className="min-w-[140px] justify-between"
               >
-                <span className="mr-2">🔄</span>
-                {sortBy === "person.lastName"
-                  ? "Apellido"
-                  : sortBy === "employeeCode"
-                  ? "Legajo"
-                  : sortBy === "createdAt"
-                  ? "Fecha Creación"
-                  : sortBy}
+                <span className="mr-2">📂</span>
+                {selectedCategory || "Todas las categorías"}
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setSortBy("person.lastName")}>
-                <span className="mr-2">👤</span> Apellido
+            <DropdownMenuContent
+              align="end"
+              className="w-48 overflow-y-auto max-h-60"
+            >
+              <DropdownMenuItem onClick={() => setSelectedCategory("")}>
+                Todas las categorías
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortBy("employeeCode")}>
-                <span className="mr-2">🏷️</span> Legajo
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortBy("createdAt")}>
-                <span className="mr-2">📅</span> Fecha Creación
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Sort order selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="min-w-[120px] justify-between"
-              >
-                <span className="mr-2">⬆️⬇️</span>
-                {sortOrder === "desc" ? "Descendente" : "Ascendente"}
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onClick={() => setSortOrder("asc")}>
-                <span className="mr-2">⬆️</span> Ascendente
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortOrder("desc")}>
-                <span className="mr-2">⬇️</span> Descendente
-              </DropdownMenuItem>
+              {categories.map((category: EmployeeCategory) => (
+                <DropdownMenuItem
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.name)}
+                >
+                  {category.name}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       }
     >
-      <EntityErrorState error={null} />
+      <EntityErrorState error={error} />
 
-      <DataTable<Employee>
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
-
-      <PaginationBar
-        page={table.getState().pagination.pageIndex + 1}
-        totalPages={totalPages}
-        totalItems={totalFilteredItems}
-        limit={table.getState().pagination.pageSize}
-        onPageChange={(newPage) => {
-          table.setPagination({
-            pageIndex: newPage - 1,
-            pageSize: table.getState().pagination.pageSize,
-          });
-        }}
-        onLimitChange={(newLimit) => {
-          table.setPagination({ pageIndex: 0, pageSize: newLimit });
-        }}
-      />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Cargando empleados...</p>
+        </div>
+      ) : (
+        <DataTable<Employee> table={table} totalItems={totalItems} />
+      )}
     </EntityListLayout>
   );
 }

@@ -15,7 +15,7 @@ import { EntityErrorState } from "@/components/entities/entity-error-state";
 import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function EmployeePositionsPage() {
-  const { data: positionsData, isLoading, error } = useEmployeePositions();
+  const { data: positionsData, isLoading, error } = useEmployeePositions().useGetAll();
   const positions = positionsData?.data ?? [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,9 +46,8 @@ export default function EmployeePositionsPage() {
     <>
       <EntityListLayout
         title="Puestos de empleados"
-        description={`Gestión de puestos de empleados - ${filteredCount} puesto${
-          filteredCount !== 1 ? "s" : ""
-        }`}
+        description={`Gestión de puestos de empleados - ${filteredCount} puesto${filteredCount !== 1 ? "s" : ""
+          }`}
         actions={
           <Button
             onClick={() => {

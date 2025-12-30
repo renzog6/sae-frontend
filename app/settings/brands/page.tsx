@@ -48,8 +48,6 @@ export default function BrandsPage() {
   } = useBrands().useGetAll({
     page,
     limit,
-    sortBy: "name",
-    sortOrder: "asc",
     deleted: selectedStatus,
   });
 
@@ -121,8 +119,8 @@ export default function BrandsPage() {
                   {selectedStatus === "ALL"
                     ? "Todos"
                     : selectedStatus === "ACTIVE"
-                    ? "Activo"
-                    : "Inactivo"}
+                      ? "Activo"
+                      : "Inactivo"}
                   <ChevronDown className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>

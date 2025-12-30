@@ -1,3 +1,4 @@
+// filepath: sae-frontend\components\data-table\data-table-v2.tsx 
 "use client";
 
 import * as React from "react";
@@ -27,7 +28,6 @@ import {
 } from "@/components/ui/select";
 import {
   ChevronDown,
-  ChevronUp,
   ChevronsUpDown,
   ChevronLeft,
   ChevronRight,
@@ -36,8 +36,6 @@ import {
   Filter,
   Settings2,
   X,
-  Search,
-  ArrowUpDown,
   ArrowUp,
   ArrowDown,
   Play,
@@ -65,9 +63,6 @@ export function DataTable<TData>({
   showVisibility = true,
   totalItems,
   isLoading = false,
-  globalFilter,
-  setGlobalFilter,
-  searchPlaceholder = "Buscar...",
 }: DataTableProps<TData>) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
@@ -96,12 +91,14 @@ export function DataTable<TData>({
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="h-10 px-2 py-1 text-xs font-bold text-zinc-700 border-r last:border-r-0 whitespace-nowrap"
-                      style={{ width: header.getSize() }}
+                      className="h-10 px-2 py-1 text-xs font-bold text-zinc-700 border-r last:border-r-0 whitespace-nowrap text-center"
+                      style={{
+                        width: header.id === 'actions' ? '80px' : header.getSize()
+                      }}
                     >
                       <div
                         className={cn(
-                          "flex items-center gap-1 group",
+                          "flex items-center justify-center gap-1 group",
                           header.column.getCanSort() && "cursor-pointer select-none"
                         )}
                         onClick={header.column.getToggleSortingHandler()}
@@ -113,7 +110,7 @@ export function DataTable<TData>({
                             header.getContext()
                           )}
                         {showSorting && header.column.getCanSort() && (
-                          <div className="ml-auto flex items-center">
+                          <div className="flex items-center">
                             {header.column.getIsSorted() === "asc" ? (
                               <ArrowUp className="w-3 h-3 text-blue-600" />
                             ) : header.column.getIsSorted() === "desc" ? (
@@ -195,10 +192,12 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={cell.id}
-                      className="px-2 py-1.5 text-xs text-zinc-600 border-r last:border-r-0 truncate"
-                      style={{ width: cell.column.getSize() }}
+                      className="px-2 py-1.5 text-xs text-zinc-600 border-r last:border-r-0 truncate text-center"
+                      style={{
+                        width: cell.column.id === 'actions' ? '80px' : cell.column.getSize()
+                      }}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         {/* Indicador de fila (triángulo) en la primera celda */}
                         {index === 0 && (
                           <Play className="w-2.5 h-2.5 fill-black text-black shrink-0" />
@@ -245,24 +244,8 @@ export function DataTable<TData>({
 
       {/* Styled Pagination Footer (Image-like) */}
       <div className="flex items-center justify-between px-3 py-2 bg-white border-t select-none text-zinc-600">
-        {/* Left: Search Toggle/Icon or Input */}
-        <div className="flex items-center gap-2 max-w-[300px] flex-1">
-          <div className="relative w-full max-w-[200px]">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? (table.getState().globalFilter as string) ?? ""}
-              onChange={(e) => {
-                if (setGlobalFilter) {
-                  setGlobalFilter(e.target.value);
-                } else {
-                  table.setGlobalFilter(e.target.value);
-                }
-              }}
-              className="h-8 pl-8 text-xs border-zinc-200 bg-zinc-50/50 focus-visible:bg-white"
-            />
-          </div>
-        </div>
+        {/* Left: Spacer (was search) */}
+        <div className="flex items-center gap-2 max-w-[300px] flex-1"></div>
 
         {/* Center: Pagination Controls */}
         <div className="flex items-center gap-4">

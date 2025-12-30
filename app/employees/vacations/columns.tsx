@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import type { Employee } from "@/lib/types/domain/employee";
-import { VacationType } from "@/lib/types/domain/employee";
 import { formatTenure } from "@/lib/utils/date";
 import { sumEmployeeVacationDays } from "@/lib/utils/employee";
 
@@ -15,6 +14,7 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
     {
       accessorKey: "employeeCode",
       header: "Legajo",
+      enableColumnFilter: true,
       cell: ({ row }: { row: Row<Employee> }) => (
         <span className="font-medium">{row.original.employeeCode || "-"}</span>
       ),
@@ -22,17 +22,20 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
     {
       id: "fullName",
       header: "Apellido y Nombre",
+      enableColumnFilter: true,
+      accessorFn: (row: Employee) =>
+        `${row.person?.lastName ?? ""} ${row.person?.firstName ?? ""}`.trim(),
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>
-          {`${row.original.person?.lastName ?? ""} ${
-            row.original.person?.firstName ?? ""
-          }`.trim() || "-"}
+          {`${row.original.person?.lastName ?? ""} ${row.original.person?.firstName ?? ""
+            }`.trim() || "-"}
         </span>
       ),
     },
     {
       accessorKey: "hireDate",
       header: "Ingreso",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => {
         const d = row.original.hireDate
           ? new Date(row.original.hireDate)
@@ -43,6 +46,7 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
     {
       id: "tenure",
       header: "Antigüedad",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
         <span>{formatTenure(row.original.hireDate)}</span>
       ),
@@ -55,6 +59,7 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
           <div className="text-xs text-muted-foreground">(Disponibles)</div>
         </div>
       ),
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
         <div className="text-center">
           {sumEmployeeVacationDays(row.original)}
@@ -64,19 +69,19 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
     {
       id: "categoryPosition",
       header: "Categoría y Puesto",
+      enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span>{`${row.original.category?.name ?? "-"} - ${
-          row.original.position?.name ?? "-"
-        }`}</span>
+        <span>{`${row.original.category?.name ?? "-"} - ${row.original.position?.name ?? "-"
+          }`}</span>
       ),
     },
     {
       id: "actions",
-      header: () => <div className="text-right">Acciones</div>,
+      header: () => <div className="text-center">Acciones</div>,
       cell: ({ row }: { row: Row<Employee> }) => {
         const employee = row.original;
         return (
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-center gap-2">
             <Link href={`/employees/vacations/detail?id=${employee.id}`}>
               <Button variant="outline" size="sm" title="Ver / Editar">
                 <Eye className="w-4 h-4" />

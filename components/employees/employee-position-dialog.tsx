@@ -7,9 +7,7 @@ import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EmployeePositionForm } from "@/components/forms/employee-position-form";
 import {
-  useCreateEmployeePosition,
-  useUpdateEmployeePosition,
-  useDeleteEmployeePosition,
+  useEmployeePositions,
 } from "@/lib/hooks/useEmployees";
 import {
   AlertDialog,
@@ -38,11 +36,11 @@ export function EmployeePositionDialog({
 }: EmployeePositionDialogProps) {
   const { toast } = useToast();
   const { mutate: createPosition, isPending: creating } =
-    useCreateEmployeePosition();
+    useEmployeePositions().useCreate();
   const { mutate: updatePosition, isPending: updating } =
-    useUpdateEmployeePosition();
+    useEmployeePositions().useUpdate();
   const { mutate: deletePosition, isPending: deleting } =
-    useDeleteEmployeePosition();
+    useEmployeePositions().useDelete();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -67,7 +65,7 @@ export function EmployeePositionDialog({
       });
     } else if (mode === "edit" && position) {
       updatePosition(
-        { id: position.id, data },
+        { id: position.id, dto: data },
         {
           onSuccess: () => {
             toast({
@@ -108,10 +106,10 @@ export function EmployeePositionDialog({
             defaultValues={
               mode === "edit" && position
                 ? {
-                    name: position.name,
-                    code: position.code || "",
-                    information: position.information || "",
-                  }
+                  name: position.name,
+                  code: position.code || "",
+                  information: position.information || "",
+                }
                 : undefined
             }
             isEdit={mode === "edit"}

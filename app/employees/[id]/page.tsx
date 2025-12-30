@@ -3,7 +3,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, User } from "lucide-react";
@@ -18,7 +18,7 @@ export default function EmployeePage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const { data: employee, isLoading } = useEmployeeDetail(id);
+  const { data: employee, isLoading } = useEmployees().useGetById(id);
 
   if (isLoading) {
     return (

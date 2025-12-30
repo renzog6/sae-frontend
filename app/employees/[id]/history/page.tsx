@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { EmployeeIncidentDialog } from "@/components/employees/employee-incident-dialog";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { useEmployeeDetail } from "@/lib/hooks/useEmployees";
+import { useEmployees } from "@/lib/hooks/useEmployees";
 import {
   useEmployeeHistory,
   useDeleteEmployeeIncident,
@@ -91,7 +91,7 @@ export default function EmployeeHistoryPage() {
 
   const { toast } = useToast();
 
-  const { data: employee, isLoading: employeeLoading } = useEmployeeDetail(id);
+  const { data: employee, isLoading: employeeLoading } = useEmployees().useGetById(id);
   const {
     data: historyData,
     isLoading: historyLoading,
@@ -143,11 +143,10 @@ export default function EmployeeHistoryPage() {
     }
   };
 
-  const deleteDescription = `¿Seguro que quieres eliminar el incidente "${
-    deletingIncident
-      ? employeeIncidentTypeLabels[deletingIncident.type]
-      : "Sin tipo"
-  }"? Esta acción no se puede deshacer.`;
+  const deleteDescription = `¿Seguro que quieres eliminar el incidente "${deletingIncident
+    ? employeeIncidentTypeLabels[deletingIncident.type]
+    : "Sin tipo"
+    }"? Esta acción no se puede deshacer.`;
 
   const handleIncidentSuccess = () => {
     refetch();
