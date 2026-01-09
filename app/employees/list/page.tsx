@@ -15,8 +15,8 @@ import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table/data-table-v2";
-import { useServerDataTable } from "@/components/hooks/useServerDataTable";
-import { EmployeesService } from "@/lib/api/employees/employees.service";
+import { useGraphQLDataTable } from "@/components/hooks/useGraphQLDataTable";
+import { useGetEmployeesQuery, GetEmployeesQuery } from "@/lib/graphql/generated";
 import { getEmployeeColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types/domain/report";
@@ -42,54 +42,27 @@ export default function EmployeesPage() {
     );
   }, [categoriesResponse?.data]);
 
-  const queryFn = async (params: {
-    page: number;
-    limit: number;
-    filters?: Record<string, string>;
-  }) => {
-    const queryParams: any = {
-      page: params.page,
-      limit: params.limit,
-    };
-
-    // Map column filters to query params (using 'q' for text search)
-    if (params.filters) {
-      if (params.filters.employeeCode) queryParams.q = params.filters.employeeCode;
-      if (params.filters.fullName) queryParams.q = params.filters.fullName;
-      if (params.filters.cuil) queryParams.q = params.filters.cuil;
-
-      // If we had specific fields backend supported, we would map them here.
-      // For now, mapping multiple columns to the global 'q' search is a safe fallback 
-      // if the backend 'q' searches across these fields.
-    }
-
-    // Apply global dropdown filters
+  // GraphQL Table Hook
+  // Map dropdown filters to additionalWhere
+  const additionalWhere = useMemo(() => {
+    const where: any = {};
     if (selectedStatus && selectedStatus !== "ALL") {
-      queryParams.status = selectedStatus;
+      where.status = selectedStatus;
     }
-
-    // Note: EmployeesService might need to support 'categoryId' in params if we want to filter by it.
-    // BaseApiService allows flexible query params, but the backend Controller/Service needs to handle it.
-    // Assuming backend might NOT handle 'categoryId' natively yet in 'getAll' unless we verified it.
-    // But 'equipments' did. Let's assume standard pattern or map it if possible.
-    // If backend doesn't support 'categoryId', this filter won't work server-side.
-    // However, looking at 'equipment', it did. 'employees'?
-    // Let's send it. If it's ignored, we might need to update backend later, 
-    // but the instruction is "implementar lo mismo" (pattern-wise).
     if (selectedCategory) {
       const category = categories.find(c => c.name === selectedCategory);
       if (category) {
-        queryParams.categoryId = category.id;
+        where.categoryId = category.id;
       }
     }
+    return where;
+  }, [selectedStatus, selectedCategory, categories]);
 
-    return EmployeesService.getAll(queryParams);
-  };
-
-  const { table, isLoading, error, totalItems } = useServerDataTable({
-    queryKey: ["employees", selectedStatus, selectedCategory],
-    queryFn,
-    columns: getEmployeeColumns(),
+  const { table, isLoading, error, totalItems } = useGraphQLDataTable({
+    useQueryHook: useGetEmployeesQuery,
+    dataAccessor: (data: GetEmployeesQuery) => data.findAllEmployees,
+    columns: getEmployeeColumns() as any,
+    additionalWhere,
     defaultPageSize: 10,
   });
 
@@ -185,7 +158,7 @@ export default function EmployeesPage() {
           <p className="text-muted-foreground">Cargando empleados...</p>
         </div>
       ) : (
-        <DataTable<Employee> table={table} totalItems={totalItems} />
+        <DataTable<Employee> table={table as any} totalItems={totalItems} />
       )}
     </EntityListLayout>
   );

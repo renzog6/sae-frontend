@@ -198,10 +198,6 @@ export function DataTable<TData>({
                       }}
                     >
                       <div className="flex items-center justify-center gap-2">
-                        {/* Indicador de fila (triángulo) en la primera celda */}
-                        {index === 0 && (
-                          <Play className="w-2.5 h-2.5 fill-black text-black shrink-0" />
-                        )}
                         <span className="truncate">
                           {flexRender(
                             cell.column.columnDef.cell,

@@ -1,0 +1,20 @@
+query GetPersons($skip: Int, $take: Int, $where: String, $orderBy: String) {
+  findAllPersons(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    data {
+      id
+      firstName
+      lastName
+      dni
+      cuil
+      status
+      birthDate
+      gender
+      maritalStatus
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}

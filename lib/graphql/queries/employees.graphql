@@ -1,0 +1,30 @@
+query GetEmployees($skip: Int, $take: Int, $where: String, $orderBy: String) {
+  findAllEmployees(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
+    data {
+      id
+      employeeCode
+      status
+      hireDate
+      personId
+      person {
+        firstName
+        lastName
+      }
+      companyId
+      company {
+        name
+      }
+      category {
+        name
+      }
+      position {
+        name
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
