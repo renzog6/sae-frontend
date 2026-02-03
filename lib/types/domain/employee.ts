@@ -7,10 +7,10 @@
 // Import shared types
 import { Company } from "./company";
 import { Address } from "../shared/location";
-import { ContactLink } from "../shared/contact";
 import { ServerFile } from "./server-file";
 import { Inspection } from "../shared/shared";
 import { EmployeeIncident } from "./history";
+import { Contact } from "./contact";
 
 // Re-export enums for backward compatibility
 export {
@@ -45,7 +45,7 @@ export type Person = {
 
   // Relations
   address?: Address | null;
-  contacts?: ContactLink[];
+  contacts?: Contact[] | null;
 
   createdAt: string; // ISO
   updatedAt: string; // ISO

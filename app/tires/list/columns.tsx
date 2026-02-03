@@ -12,6 +12,7 @@ export function getTireColumns(): ColumnDef<Tire>[] {
     {
       accessorKey: "serialNumber",
       header: "N° Serie",
+      enableColumnFilter: true, // Enable filter
       cell: ({ row }: { row: Row<Tire> }) => (
         <span className="font-medium">{row.original.serialNumber}</span>
       ),
@@ -19,6 +20,8 @@ export function getTireColumns(): ColumnDef<Tire>[] {
     {
       id: "brand",
       header: "Marca",
+      accessorFn: (row) => row.model?.brand?.name, // Needed for filtering
+      enableColumnFilter: true, // Enable filter
       cell: ({ row }: { row: Row<Tire> }) => (
         <span>{row.original.model?.brand?.name || "-"}</span>
       ),
@@ -26,6 +29,8 @@ export function getTireColumns(): ColumnDef<Tire>[] {
     {
       id: "model",
       header: "Modelo",
+      accessorFn: (row) => row.model?.name, // Needed for filtering
+      enableColumnFilter: true, // Enable filter
       cell: ({ row }: { row: Row<Tire> }) => (
         <span>{row.original.model?.name || "-"}</span>
       ),
@@ -33,6 +38,8 @@ export function getTireColumns(): ColumnDef<Tire>[] {
     {
       id: "size",
       header: "Medida",
+      accessorFn: (row) => row.model?.size?.mainCode, // Needed for filtering
+      enableColumnFilter: true, // Enable filter
       cell: ({ row }: { row: Row<Tire> }) => (
         <span>{row.original.model?.size?.mainCode || "-"}</span>
       ),

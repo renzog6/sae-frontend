@@ -1,0 +1,54 @@
+# filepath: sae-frontend/lib/graphql/queries/contacts.graphql
+
+query FindContacts(
+  $skip: Int
+  $take: Int
+  $q: String
+  $filter: ContactFilterInput
+) {
+  findContacts(
+    skip: $skip
+    take: $take
+    q: $q
+    filter: $filter
+  ) {
+    data {
+      id
+      type
+      value
+      label
+      information
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
+
+mutation CreateContact($input: CreateContactInput!) {
+  createContact(input: $input) {
+    id
+    type
+    value
+    label
+    information
+  }
+}
+
+mutation UpdateContact($id: Int!, $input: UpdateContactInput!) {
+  updateContact(id: $id, input: $input) {
+    id
+    type
+    value
+    label
+    information
+  }
+}
+
+mutation DeleteContact($id: Int!) {
+  deleteContact(id: $id) {
+    id
+  }
+}

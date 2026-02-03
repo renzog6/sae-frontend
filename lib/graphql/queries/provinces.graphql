@@ -1,0 +1,32 @@
+# filepath: sae-frontend/lib/graphql/queries/provinces.graphql
+
+query FindProvinces(
+  $skip: Int
+  $take: Int
+  $q: String
+) {
+  findProvinces(
+    skip: $skip
+    take: $take
+    q: $q
+  ) {
+    data {
+      id
+      name
+      country {
+        id
+        name
+      }
+      cities {
+        id
+        name
+        postalCode
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}

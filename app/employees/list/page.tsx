@@ -15,23 +15,21 @@ import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
 import { employeeStatusLabels } from "@/lib/constants";
 import { DataTable } from "@/components/data-table/data-table-v2";
-import { useGraphQLDataTable } from "@/components/hooks/useGraphQLDataTable";
-import { useGetEmployeesQuery, GetEmployeesQuery } from "@/lib/graphql/generated";
+import { useServerDataTable } from "@/components/hooks/useServerDataTable";
+import { EmployeesService } from "@/lib/api/employees/employees.service";
 import { getEmployeeColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types/domain/report";
 import Link from "next/link";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
-import { useRouter } from "next/navigation";
+
 
 export default function EmployeesPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(
     EmployeeStatus.ACTIVE
   );
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const router = useRouter();
-
   const { useGetAll: useGetCategories } = useEmployeeCategories();
   const { data: categoriesResponse } = useGetCategories();
 
@@ -42,27 +40,41 @@ export default function EmployeesPage() {
     );
   }, [categoriesResponse?.data]);
 
-  // GraphQL Table Hook
-  // Map dropdown filters to additionalWhere
-  const additionalWhere = useMemo(() => {
-    const where: any = {};
-    if (selectedStatus && selectedStatus !== "ALL") {
-      where.status = selectedStatus;
+  // Query function for server-side data table
+  const queryFn = async (params: {
+    page: number;
+    limit: number;
+    filters?: Record<string, string>;
+  }) => {
+    const queryParams: any = {
+      page: params.page,
+      limit: params.limit,
+    };
+
+    if (params.filters) {
+      if (params.filters.employeeCode) queryParams.q = params.filters.employeeCode;
+      if (params.filters.fullName) queryParams.q = params.filters.fullName;
+      if (params.filters.cuil) queryParams.q = params.filters.cuil;
     }
+
+    if (selectedStatus && selectedStatus !== "ALL") {
+      queryParams.status = selectedStatus;
+    }
+
     if (selectedCategory) {
       const category = categories.find(c => c.name === selectedCategory);
       if (category) {
-        where.categoryId = category.id;
+        queryParams.categoryId = category.id;
       }
     }
-    return where;
-  }, [selectedStatus, selectedCategory, categories]);
 
-  const { table, isLoading, error, totalItems } = useGraphQLDataTable({
-    useQueryHook: useGetEmployeesQuery,
-    dataAccessor: (data: GetEmployeesQuery) => data.findAllEmployees,
-    columns: getEmployeeColumns() as any,
-    additionalWhere,
+    return EmployeesService.getAll(queryParams);
+  };
+
+  const { table, isLoading, error, totalItems } = useServerDataTable({
+    queryKey: ["employees", selectedStatus, selectedCategory],
+    queryFn,
+    columns: useMemo(() => getEmployeeColumns(), []),
     defaultPageSize: 10,
   });
 
@@ -158,7 +170,7 @@ export default function EmployeesPage() {
           <p className="text-muted-foreground">Cargando empleados...</p>
         </div>
       ) : (
-        <DataTable<Employee> table={table as any} totalItems={totalItems} />
+        <DataTable<Employee> table={table} totalItems={totalItems} />
       )}
     </EntityListLayout>
   );

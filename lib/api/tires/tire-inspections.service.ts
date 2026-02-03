@@ -35,18 +35,7 @@ class TireInspectionsServiceClass extends BaseApiService<
   ): Promise<PaginatedResponse<TireInspection>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        // 1) URL base (page, limit, search...)
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        // 2) filtros custom
-        const specificParams = {
-          tireId: filter?.tireId,
-        };
-        const specificQuery = QueryBuilder.buildSpecific(specificParams);
-
-        // 3) URL final combinada
-        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TireInspection>>(finalUrl);
       },
       this.constructor.name,

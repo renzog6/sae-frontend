@@ -1,86 +1,132 @@
 // filepath: sae-frontend/app/tires/list/page.tsx
 "use client";
 
-import { useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Plus, Filter } from "lucide-react";
 import type { Tire } from "@/lib/types/domain/tire";
-import { useTires } from "@/lib/hooks/useTires";
-import { DataTable } from "@/components/data-table/data-table";
-import { useDataTable } from "@/components/hooks/useDataTable";
+import { TiresService } from "@/lib/api/tires/tires.service";
+import { DataTable } from "@/components/data-table/data-table-v2";
+import { useServerDataTable } from "@/components/hooks/useServerDataTable";
 import { getTireColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
-import { PaginationBar } from "@/components/data-table/pagination-bar";
+import Link from "next/link";
+import { EntityListLayout } from "@/components/entities/entity-list-layout";
+import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function TiresPage() {
-  const { useGetAll } = useTires();
-  const { data: tiresData, isLoading, error } = useGetAll();
+  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
-  const tires: Tire[] = Array.isArray(tiresData)
-    ? tiresData
-    : (tiresData as any)?.data ?? [];
+  const queryFn = async (params: {
+    page: number;
+    limit: number;
+    filters?: Record<string, string>;
+  }) => {
+    const queryParams: any = {
+      page: params.page,
+      limit: params.limit,
+    };
+
+    if (params.filters) {
+      // Map basic search fields to 'q' if they are used as column filters
+      if (params.filters.serialNumber) queryParams.q = params.filters.serialNumber;
+      if (params.filters.brand) queryParams.q = params.filters.brand;
+      if (params.filters.model) queryParams.q = params.filters.model;
+    }
+
+    if (selectedStatus && selectedStatus !== "ALL") {
+      queryParams.status = selectedStatus;
+    }
+
+    // Since TiresService.getAll returns Promise<PaginatedResponse<Tire>>,
+    // but useServerDataTable expects { data: TData[]; meta: ... }
+    const response = await TiresService.getAll(queryParams);
+    return response;
+  };
 
   const columns = useMemo(() => getTireColumns(), []);
 
-  const { table, globalFilter, setGlobalFilter } = useDataTable({
-    data: tires,
+  const { table, isLoading, error, totalItems } = useServerDataTable({
+    queryKey: ["tires", selectedStatus],
+    queryFn,
     columns,
-    searchableColumns: ["serialNumber", "brand", "model"],
+    defaultPageSize: 10,
   });
 
-  const filteredCount = table.getFilteredRowModel().rows.length;
-
   return (
-    <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl">Neumáticos</CardTitle>
-            <Button asChild>
-              <a href="/tires/new">Nuevo neumático</a>
-            </Button>
-          </div>
-          <CardDescription>
-            {filteredCount} neumático{filteredCount !== 1 ? "s" : ""}
-          </CardDescription>
-
-          {/* Report generation dropdown */}
+    <EntityListLayout
+      title="Neumáticos"
+      description="Gestiona todos los neumáticos del sistema"
+      actions={
+        <div className="flex items-center gap-2">
           <ReportExportMenu
             reportType={ReportType.TIRE_LIST}
-            filter={{ status: "active" }}
-            title="Neumaticos"
+            filter={{ status: selectedStatus === "ALL" ? undefined : selectedStatus }}
+            title="Neumáticos"
           />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p>Cargando...</p>
-          ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
-          ) : (
-            <DataTable
-              table={table}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-              searchPlaceholder="Buscar neumáticos..."
-            />
-          )}
-          <PaginationBar
-            page={table.getState().pagination.pageIndex + 1}
-            totalPages={table.getPageCount()}
-            totalItems={filteredCount}
-            limit={table.getState().pagination.pageSize}
-            onPageChange={(page) => table.setPageIndex(page - 1)}
-            onLimitChange={(limit) => table.setPageSize(limit)}
-          />
-        </CardContent>
-      </Card>
-    </div>
+          <Link href="/tires/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo neumático
+            </Button>
+          </Link>
+        </div>
+      }
+      filters={
+        <div className="flex gap-2">
+          {/* Status filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="min-w-[140px] justify-between border-dashed"
+              >
+                <div className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  {selectedStatus === "ALL" ? "Todos los estados" : selectedStatus}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
+                Todos los estados
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedStatus("IN_STOCK")}>
+                En Stock
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedStatus("IN_USE")}>
+                En Uso
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedStatus("UNDER_REPAIR")}>
+                En Reparación
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedStatus("RECAP")}>
+                Recapado
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedStatus("DISCARDED")}>
+                Descartado
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      }
+    >
+      <EntityErrorState error={error} />
+
+      {isLoading ? (
+        <EntityLoadingState />
+      ) : (
+        <DataTable<Tire> table={table} totalItems={totalItems} />
+      )}
+    </EntityListLayout>
   );
 }

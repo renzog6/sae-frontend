@@ -19,17 +19,12 @@ import type {
 import { CompaniesService } from "@/lib/api/companies";
 import { Button } from "@/components/ui/button";
 import type { Address } from "@/lib/types/shared/location";
-import type { Contact } from "@/lib/types/shared/contact";
+import type { Contact } from "@/lib/types/domain/contact";
 import { useBusinessCategories } from "@/lib/hooks/useCompanies";
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
 import { useAddresses } from "@/lib/hooks/useLocations";
-import {
-  useContactsByCompany,
-  useCreateContact,
-  useUpdateContact,
-  useDeleteContact,
-} from "@/lib/hooks/useContacts";
+import { useContacts } from "@/lib/hooks/useContacts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,17 +64,21 @@ export default function CompanyDetailPage() {
   );
 
   // Data via hooks
-  const addressesQuery = useAddresses().useByCompany(id ?? 1);
+  const addressesQuery = useAddresses().useByCompany(id ?? 0);
   const { data: addresses = [] } = addressesQuery;
-  const { data: companyContacts = [] } = useContactsByCompany(id ?? 0);
 
-  // Mutations
+  // Contacts filtered by company using REST
+  const contactsQuery = useContacts().useByCompany(id ?? 0);
+  const { data: companyContacts = [] } = contactsQuery;
+
+  // Mutations  
   const createAddressMut = useAddresses().useCreate();
   const updateAddressMut = useAddresses().useUpdate();
   const deleteAddressMut = useAddresses().useDelete();
-  const createContactMut = useCreateContact();
-  const updateContactMut = useUpdateContact();
-  const deleteContactMut = useDeleteContact();
+
+  const createContactMut = useContacts().useCreate();
+  const updateContactMut = useContacts().useUpdate();
+  const deleteContactMut = useContacts().useDelete();
 
   useEffect(() => {
     let ignore = false;
@@ -129,15 +128,15 @@ export default function CompanyDetailPage() {
       businessCategoryId: company.businessCategoryId ?? undefined,
       address: firstAddress
         ? {
-            id: firstAddress.id,
-            street: firstAddress.street,
-            number: firstAddress.number,
-            floor: firstAddress.floor,
-            apartment: firstAddress.apartment,
-            neighborhood: firstAddress.neighborhood,
-            reference: firstAddress.reference,
-            cityId: firstAddress.cityId,
-          }
+          id: firstAddress.id,
+          street: firstAddress.street,
+          number: firstAddress.number,
+          floor: firstAddress.floor,
+          apartment: firstAddress.apartment,
+          neighborhood: firstAddress.neighborhood,
+          reference: firstAddress.reference,
+          cityId: firstAddress.cityId,
+        }
         : undefined,
     } as UpdateCompanyFormData;
   }, [company, addresses]);
@@ -491,29 +490,54 @@ export default function CompanyDetailPage() {
         initial={
           editingAddress
             ? {
-                street: editingAddress.street,
-                number: editingAddress.number,
-                floor: editingAddress.floor,
-                apartment: editingAddress.apartment,
-                neighborhood: editingAddress.neighborhood,
-                reference: editingAddress.reference,
-                cityId: editingAddress.cityId,
-                personId: editingAddress.personId ?? undefined,
-                companyId: editingAddress.companyId ?? undefined,
-              }
+              street: editingAddress.street,
+              number: editingAddress.number,
+              floor: editingAddress.floor,
+              apartment: editingAddress.apartment,
+              neighborhood: editingAddress.neighborhood,
+              reference: editingAddress.reference,
+              cityId: editingAddress.cityId,
+              personId: editingAddress.personId ?? undefined,
+              companyId: editingAddress.companyId ?? undefined,
+            }
             : undefined
         }
         onDelete={
           editingAddress?.id
-            ? () => deleteAddressMut.mutate(editingAddress.id!)
+            ? () =>
+              deleteAddressMut.mutate(editingAddress.id!, {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["addresses", "byCompany", id],
+                  });
+                },
+              })
             : undefined
         }
         onSave={(data) => {
           if (!id) return;
           if (editingAddress?.id) {
-            updateAddressMut.mutate({ id: editingAddress.id, dto: data });
+            updateAddressMut.mutate(
+              { id: editingAddress.id, dto: data },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["addresses", "byCompany", id],
+                  });
+                },
+              }
+            );
           } else {
-            createAddressMut.mutate({ ...data, companyId: id ?? 0 });
+            createAddressMut.mutate(
+              { ...data, companyId: id ?? 0 },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["addresses", "byCompany", id],
+                  });
+                },
+              }
+            );
           }
         }}
       />
@@ -527,23 +551,51 @@ export default function CompanyDetailPage() {
         initial={
           editingContact
             ? {
-                type: editingContact.type,
-                value: editingContact.value,
-                label: editingContact.label ?? undefined,
-                information: editingContact.information ?? undefined,
-              }
+              type: editingContact.type,
+              value: editingContact.value,
+              label: editingContact.label ?? undefined,
+              information: editingContact.information ?? undefined,
+            }
             : undefined
         }
         onDelete={
           editingContact?.id
-            ? () => deleteContactMut.mutate(editingContact.id!)
+            ? () =>
+              deleteContactMut.mutate(editingContact.id!, {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["contacts", "byCompany", id],
+                  });
+                },
+              })
             : undefined
         }
         onSave={(data) => {
           if (editingContact?.id) {
-            updateContactMut.mutate({ id: editingContact.id, data });
+            updateContactMut.mutate(
+              {
+                id: editingContact.id,
+                dto: data,
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["contacts", "byCompany", id],
+                  });
+                },
+              }
+            );
           } else if (id) {
-            createContactMut.mutate({ ...data, companyId: id ?? 0 });
+            createContactMut.mutate(
+              { ...data, companyId: id },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["contacts", "byCompany", id],
+                  });
+                },
+              }
+            );
           }
         }}
       />

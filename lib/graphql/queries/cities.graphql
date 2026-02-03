@@ -1,0 +1,62 @@
+# filepath: sae-frontend/lib/graphql/queries/cities.graphql
+
+query FindCities(
+  $skip: Int
+  $take: Int
+  $q: String
+) {
+  findCities(
+    skip: $skip
+    take: $take
+    q: $q
+  ) {
+    data {
+      id
+      name
+      postalCode
+      province {
+        id
+        name
+        country {
+          id
+          name
+        }
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
+
+mutation CreateCity($input: CreateCityInput!) {
+  createCity(input: $input) {
+    id
+    name
+    postalCode
+    province {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdateCity($id: Int!, $input: UpdateCityInput!) {
+  updateCity(id: $id, input: $input) {
+    id
+    name
+    postalCode
+    province {
+      id
+      name
+    }
+  }
+}
+
+mutation DeleteCity($id: Int!) {
+  deleteCity(id: $id) {
+    id
+  }
+}

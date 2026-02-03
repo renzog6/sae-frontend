@@ -34,19 +34,7 @@ class TireAssignmentsServiceClass extends BaseApiService<
   ): Promise<PaginatedResponse<TireAssignment>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        const specificParams = {
-          equipmentId: filter?.equipmentId,
-          tireId: filter?.tireId,
-          serialNumber: filter?.serialNumber,
-        };
-
-        const finalUrl = QueryBuilder.combineUrls(
-          baseUrl,
-          QueryBuilder.buildSpecific(specificParams)
-        );
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TireAssignment>>(finalUrl);
       },
       this.constructor.name,

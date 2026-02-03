@@ -33,14 +33,7 @@ class TirePositionsServiceClass extends BaseApiService<
   ): Promise<PaginatedResponse<TirePositionConfig>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        const specific = QueryBuilder.buildSpecific({
-          axleId: filter?.axleId,
-        });
-
-        const finalUrl = QueryBuilder.combineUrls(baseUrl, specific);
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TirePositionConfig>>(finalUrl);
       },
       this.constructor.name,

@@ -1,6 +1,5 @@
-// file: sae-frontend/lib/validations/contact.ts
 import { z } from "zod";
-import { ContactType } from "@/lib/types/shared/enums";
+import { ContactType } from "@/lib/types/domain/contact";
 
 export const ContactSchema = z
   .object({
@@ -23,7 +22,7 @@ export const ContactSchema = z
         });
       }
     }
-    if (data.type === ContactType.PHONE || data.type === ContactType.WHATSAPP) {
+    if (data.type === ContactType.PHONE || data.type === ContactType.WHATSAPP || data.type === ContactType.MOBILE) {
       const phoneSchema = z.string().regex(/^\+\d{7,15}$/);
       const res = phoneSchema.safeParse(data.value);
       if (!res.success) {

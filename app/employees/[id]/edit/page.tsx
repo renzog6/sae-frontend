@@ -42,18 +42,15 @@ import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
 import type { Address } from "@/lib/types/shared/location";
 import { useAddresses } from "@/lib/hooks/useLocations";
-import {
-  useContactsByPerson,
-  useCreateContact,
-  useUpdateContact,
-  useDeleteContact,
-} from "@/lib/hooks/useContacts";
+import { useContacts } from "@/lib/hooks/useContacts";
+import type { Contact } from "@/lib/types/domain/contact";
 import {
   personToUpdateForm,
   updatePersonSchema,
   type UpdatePersonFormInput,
   type UpdatePersonFormData,
 } from "@/lib/validations/person";
+
 import { PersonsService } from "@/lib/api/persons/persons.service";
 import { genderLabels, maritalLabels } from "@/lib/constants";
 import { Plus, SquarePen } from "lucide-react";
@@ -88,20 +85,39 @@ export default function EmployeeDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { useByPerson, useCreate, useUpdate, useDelete } = useAddresses();
+  const personId = employee?.personId;
+
+  const {
+    useByPerson: useAddressesByPerson,
+    useCreate: useCreateAddress,
+    useUpdate: useUpdateAddress,
+    useDelete: useDeleteAddress,
+  } = useAddresses();
+
+  const {
+    data: personAddresses,
+    isLoading: addrLoading,
+  } = useAddressesByPerson(personId ?? 0);
+
+  const {
+    useByPerson: useContactsByPerson,
+    useCreate: useCreateContact,
+    useUpdate: useUpdateContact,
+    useDelete: useDeleteContact,
+  } = useContacts();
+
+  const { data: personContacts } = useContactsByPerson(personId);
 
   // Person-scoped lists and mutations
-  const personId = employee?.personId;
-  const personAddressesQuery = useByPerson(personId ?? 0);
-  const { data: personAddresses = [] } = personAddressesQuery;
   // Use address from employee data if available, otherwise from query
   const displayAddresses = employee?.person?.address
     ? [employee.person.address]
-    : personAddresses;
-  const { data: personContacts = [] } = useContactsByPerson(personId ?? 0);
-  const createAddressMut = useCreate();
-  const updateAddressMut = useUpdate();
-  const deleteAddressMut = useDelete();
+    : personAddresses ?? [];
+
+  const createAddressMut = useCreateAddress();
+  const updateAddressMut = useUpdateAddress();
+  const deleteAddressMut = useDeleteAddress();
+
   const createContactMut = useCreateContact();
   const updateContactMut = useUpdateContact();
   const deleteContactMut = useDeleteContact();
@@ -461,7 +477,7 @@ export default function EmployeeDetailPage() {
             </div>
             <div className="space-y-2">
               {personContacts?.length ? (
-                personContacts.map((c) => (
+                personContacts.map((c: Contact) => (
                   <div
                     key={c.id}
                     className="flex items-center justify-between p-3 border rounded-lg border-slate-200 bg-slate-50"
@@ -763,14 +779,42 @@ export default function EmployeeDetailPage() {
             }
             onDelete={
               editingContact?.id
-                ? () => deleteContactMut.mutate(editingContact.id!)
+                ? () =>
+                  deleteContactMut.mutate(editingContact.id!, {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["contacts", "byPerson", personId],
+                      });
+                    },
+                  })
                 : undefined
             }
             onSave={(data) => {
               if (editingContact?.id) {
-                updateContactMut.mutate({ id: editingContact.id, data });
+                updateContactMut.mutate(
+                  {
+                    id: editingContact.id,
+                    dto: data,
+                  },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["contacts", "byPerson", personId],
+                      });
+                    },
+                  }
+                );
               } else if (personId) {
-                createContactMut.mutate({ ...data, personId });
+                createContactMut.mutate(
+                  { ...data, personId },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["contacts", "byPerson", personId],
+                      });
+                    },
+                  }
+                );
               }
             }}
           />

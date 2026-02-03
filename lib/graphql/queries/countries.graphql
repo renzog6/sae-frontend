@@ -1,0 +1,27 @@
+# filepath: sae-frontend/lib/graphql/queries/countries.graphql
+
+query FindCountries(
+  $skip: Int
+  $take: Int
+  $q: String
+) {
+  findCountries(
+    skip: $skip
+    take: $take
+    q: $q
+  ) {
+    data {
+      id
+      name
+      provinces {
+        id
+        name
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}

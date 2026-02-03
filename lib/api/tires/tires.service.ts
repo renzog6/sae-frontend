@@ -11,6 +11,8 @@ import { Tire, CreateTireDto, UpdateTireDto } from "@/lib/types/domain/tire";
 // Filtros específicos para listar neumáticos
 export interface TiresQueryParams extends BaseQueryParams {
   brandId?: number;
+  status?: string;
+  q?: string;
 }
 
 class TiresServiceClass extends BaseApiService<
@@ -23,18 +25,7 @@ class TiresServiceClass extends BaseApiService<
   async getAll(filter?: TiresQueryParams): Promise<PaginatedResponse<Tire>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        // 1. URL base (paginación, búsqueda, ordenación)
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        // 2. Filtros específicos
-        const specificParams = {
-          brandId: filter?.brandId,
-        };
-        const specificQuery = QueryBuilder.buildSpecific(specificParams);
-
-        // 3. URL final combinada
-        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<Tire>>(finalUrl);
       },
       this.constructor.name,

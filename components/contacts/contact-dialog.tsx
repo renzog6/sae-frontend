@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContactSchema, type ContactFormData } from "@/lib/validations/contact";
-import { ContactType } from "@/lib/types/shared/enums";
+import { ContactType } from "@/lib/types/domain/contact";
 
 export interface ContactDialogProps {
   open: boolean;

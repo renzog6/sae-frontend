@@ -1,0 +1,75 @@
+# filepath: sae-frontend/lib/graphql/queries/addresses.graphql
+
+query FindAddresses(
+  $skip: Int
+  $take: Int
+  $q: String
+  $filter: AddressFilterInput
+) {
+  findAddresses(
+    skip: $skip
+    take: $take
+    q: $q
+    filter: $filter
+  ) {
+    data {
+      id
+      street
+      number
+      floor
+      apartment
+      neighborhood
+      reference
+      latitude
+      longitude
+      isActive
+      city {
+        id
+        name
+        province {
+          id
+          name
+          country {
+            id
+            name
+          }
+        }
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
+
+mutation CreateAddress($input: CreateAddressInput!) {
+  createAddress(input: $input) {
+    id
+    street
+    number
+    city {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdateAddress($id: Int!, $input: UpdateAddressInput!) {
+  updateAddress(id: $id, input: $input) {
+    id
+    street
+    number
+    city {
+      id
+      name
+    }
+  }
+}
+
+mutation DeleteAddress($id: Int!) {
+  deleteAddress(id: $id) {
+    id
+  }
+}

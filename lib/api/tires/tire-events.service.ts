@@ -32,18 +32,7 @@ class TireEventsServiceClass extends BaseApiService<TireEvent, any, any> {
   ): Promise<PaginatedResponse<TireEvent>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        // Base (page, limit, q)
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        // Específicos
-        const specificQuery = QueryBuilder.buildSpecific({
-          eventType: filter?.eventType,
-          fromDate: filter?.fromDate,
-          toDate: filter?.toDate,
-        });
-
-        const finalUrl = QueryBuilder.combineUrls(baseUrl, specificQuery);
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TireEvent>>(finalUrl);
       },
       this.constructor.name,

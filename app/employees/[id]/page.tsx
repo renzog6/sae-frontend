@@ -1,5 +1,4 @@
 // filepath: sae-frontend/app/employees/[id]/page.tsx
-
 "use client";
 
 import { useParams } from "next/navigation";
@@ -8,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, User } from "lucide-react";
 import { Address } from "@/lib/types/shared/location";
+import { Contact } from "@/lib/types/domain/contact";
 import {
   genderLabels,
   maritalLabels,
@@ -173,12 +173,15 @@ export default function EmployeePage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {person.contacts.map((contactLink) => (
-                <div key={contactLink.id} className="flex items-center gap-2">
-                  <span>{contactLink.contactId}</span>
-                  <span className="text-sm text-muted-foreground">
-                    (Contact ID: {contactLink.contactId})
-                  </span>
+              {person.contacts.map((contact: Contact) => (
+                <div key={contact.id} className="flex items-center gap-2">
+                  <span className="font-medium">{contact.value}</span>
+                  <Badge variant="outline">{contact.type}</Badge>
+                  {contact.label && (
+                    <span className="text-sm text-muted-foreground">
+                      {contact.label}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
