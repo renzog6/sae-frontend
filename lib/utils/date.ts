@@ -1,20 +1,20 @@
 // filepath: sae-frontend/lib/utils/date.ts
 
 // Utility function for date formatting and tenure calculation
-export function formatTenure(hireDateISO?: string): string {
+export function formatTenure(hireDateISO?: string, endDateISO?: string | null): string {
   if (!hireDateISO) return "-";
 
   const start = new Date(hireDateISO);
   if (isNaN(start.getTime())) return "-";
 
-  const now = new Date();
+  const end = endDateISO ? new Date(endDateISO) : new Date();
 
   let totalMonths =
-    (now.getFullYear() - start.getFullYear()) * 12 +
-    (now.getMonth() - start.getMonth());
+    (end.getFullYear() - start.getFullYear()) * 12 +
+    (end.getMonth() - start.getMonth());
 
-  // Ajuste si el día actual es menor que el día de ingreso
-  if (now.getDate() < start.getDate()) totalMonths--;
+  // Ajuste si el día final es menor que el día de inicio
+  if (end.getDate() < start.getDate()) totalMonths--;
 
   // Nunca devolver valores negativos
   totalMonths = Math.max(totalMonths, 0);
@@ -22,8 +22,13 @@ export function formatTenure(hireDateISO?: string): string {
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  // Returns "Y,M" e.g., "4,5" for 4 years and 5 months
-  return `${years},${months}`;
+  if (years === 0 && months === 0) return "Recién ingresado";
+
+  const yearsPart = years > 0 ? `${years} año${years !== 1 ? "s" : ""} ` : "";
+  const monthsPart = months > 0 ? `${months} mes${months !== 1 ? "es" : ""} ` : "";
+
+  if (yearsPart && monthsPart) return `${yearsPart}, ${monthsPart} `;
+  return yearsPart || monthsPart;
 }
 
 // Format an date string to a localized date string, or return "-" if invalid

@@ -48,7 +48,7 @@ export function getVacationColumns(): ColumnDef<Employee>[] {
       header: "Antigüedad",
       enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span>{formatTenure(row.original.hireDate)}</span>
+        <span>{formatTenure(row.original.hireDate, row.original.endDate)}</span>
       ),
     },
     {

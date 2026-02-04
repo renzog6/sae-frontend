@@ -15,7 +15,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
       header: "Legajo",
       enableColumnFilter: true,
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span className="font-medium">{row.original.employeeCode || "-"}</span>
+        <span>{row.original.employeeCode || "-"}</span>
       ),
     },
     {
@@ -25,7 +25,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
       accessorFn: (row: Employee) =>
         `${row.person?.lastName ?? ""} ${row.person?.firstName ?? ""}`.trim(),
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span>
+        <span className="font-medium">
           {`${row.original.person?.lastName ?? ""} ${row.original.person?.firstName ?? ""
             }`.trim() || "-"}
         </span>
@@ -56,7 +56,7 @@ export function getEmployeeColumns(): ColumnDef<Employee>[] {
       header: "Antigüedad",
       enableColumnFilter: false,
       cell: ({ row }: { row: Row<Employee> }) => (
-        <span>{formatTenure(row.original.hireDate)}</span>
+        <span>{formatTenure(row.original.hireDate, row.original.status === "TERMINATED" ? row.original.endDate : undefined)}</span>
       ),
     },
     {

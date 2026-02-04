@@ -9,6 +9,7 @@ export interface ContactLink {
   // Optionally hydrate
   company?: { id: number; name: string } | null;
   person?: { id: number; firstName: string; lastName: string } | null;
+  contact?: Contact | null;
 }
 
 export interface Contact {
@@ -26,4 +27,4 @@ export interface CreateContactLinkDto {
   personId?: number;
 }
 
-export interface UpdateContactLinkDto extends Partial<CreateContactLinkDto> {}
+export interface UpdateContactLinkDto extends Partial<CreateContactLinkDto> { }
