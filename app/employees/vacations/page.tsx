@@ -24,6 +24,7 @@ export default function EmployeeVacationsPage() {
     const queryParams: any = {
       page: params.page,
       limit: params.limit,
+      status: "ACTIVE",
     };
 
     // Map column filters to query params

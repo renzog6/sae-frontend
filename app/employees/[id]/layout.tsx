@@ -1,5 +1,4 @@
 // filepath: sae-frontend/app/employees/[id]/layout.tsx
-
 "use client";
 
 import { ReactNode } from "react";
@@ -15,8 +14,8 @@ import {
   History,
   FileText,
   Calendar,
-  GraduationCap,
 } from "lucide-react";
+import { getInitials } from "@/lib/utils/string";
 
 const navItems = [
   { href: "", label: "Detalle", icon: User },
@@ -24,7 +23,6 @@ const navItems = [
   { href: "/history", label: "Historial", icon: History },
   { href: "/documents", label: "Documentos", icon: FileText },
   { href: "/vacations", label: "Vacaciones", icon: Calendar },
-  { href: "/trainings", label: "Capacitaciones", icon: GraduationCap },
 ];
 
 export default function EmployeeLayout({ children }: { children: ReactNode }) {
@@ -73,7 +71,7 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
       <Card className="w-full md:w-64">
         <CardHeader className="pb-4">
           <CardTitle className="text-2xl">
-            {employee.person?.firstName} {employee.person?.lastName}
+            {employee.person?.lastName} {getInitials(employee.person?.firstName)}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Puesto: {employee.position?.name}
