@@ -3,17 +3,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { CompanyForm } from "@/components/companies/company-form";
+import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 import type { CompanyFormData } from "@/lib/validations/company";
-import { CompaniesService } from "@/lib/api/companies";
+import { useCreateCompany } from "@/lib/api/companies";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function NewCompanyPage() {
@@ -21,16 +14,13 @@ export default function NewCompanyPage() {
 
   const queryClient = useQueryClient();
 
-  const [saving, setSaving] = useState(false);
+  const createCompanyMutation = useCreateCompany();
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(data: CompanyFormData) {
-    setSaving(true);
     setError(null);
     try {
-      const created = await CompaniesService.create(data);
-      // Invalidate list so it shows the new company later
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      const created = await createCompanyMutation.mutateAsync(data);
       // Go to edit/detail page of the newly created company
       if (created?.id) {
         router.push(`/companies/${created.id}`);
@@ -38,39 +28,24 @@ export default function NewCompanyPage() {
         router.push("/companies/list");
       }
     } catch (e: any) {
-      setError(e?.message || "Error al crear empresa");
-    } finally {
-      setSaving(false);
+      setError((e as Error)?.message || "Error al crear empresa");
     }
   }
 
   return (
-    <div className="p-4 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Crear empresa</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => router.back()}>
-                Volver
-              </Button>
-            </div>
-          </div>
-          <CardDescription>
-            Completa los datos para crear una nueva empresa
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CompanyForm
-            onSubmit={handleSubmit}
-            isLoading={saving}
-            defaultValues={undefined}
-            isEdit={false}
-            onCancel={() => router.back()}
-            error={error}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <EntityFormLayout
+      title="Crear empresa"
+      description="Completa los datos para crear una nueva empresa"
+      backHref="/companies/list"
+    >
+      <CompanyForm
+        onSubmit={handleSubmit}
+        isLoading={createCompanyMutation.isPending}
+        defaultValues={undefined}
+        isEdit={false}
+        onCancel={() => router.back()}
+        error={error}
+      />
+    </EntityFormLayout>
   );
 }

@@ -2,17 +2,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { EquipmentForm } from "@/components/forms/equipment-form";
+import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 
 export default function NewEquipmentPage() {
   const router = useRouter();
@@ -22,36 +13,15 @@ export default function NewEquipmentPage() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center gap-4">
-        <Link href="/equipments/list">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold">Nuevo equipo</h1>
-          <p className="text-gray-600">
-            Completa los datos para registrar un nuevo equipo
-          </p>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Información del equipo</CardTitle>
-          <CardDescription>
-            Ingresa todos los datos requeridos para el registro del equipo
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <EquipmentForm
-            onSuccess={handleSuccess}
-            onCancel={() => router.push("/equipments/list")}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <EntityFormLayout
+      title="Nuevo equipo"
+      description="Completa los datos para registrar un nuevo equipo"
+      backHref="/equipments/list"
+    >
+      <EquipmentForm
+        onSuccess={handleSuccess}
+        onCancel={() => router.push("/equipments/list")}
+      />
+    </EntityFormLayout>
   );
 }

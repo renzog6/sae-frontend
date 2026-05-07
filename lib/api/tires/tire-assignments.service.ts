@@ -9,6 +9,7 @@ import {
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import {
   TireAssignment,
   MountTireDto,
@@ -112,3 +113,12 @@ class TireAssignmentsServiceClass extends BaseApiService<
 }
 
 export const TireAssignmentsService = new TireAssignmentsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireAssignments,
+  useGetById: useTireAssignmentById,
+  useCreate: useCreateTireAssignment,
+  useUpdate: useUpdateTireAssignment,
+  useDelete: useDeleteTireAssignment,
+} = createApiHooks(TireAssignmentsService, "tireAssignments");

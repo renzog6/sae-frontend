@@ -27,16 +27,16 @@ export function EntityListLayout({
 }: EntityListLayoutProps) {
   return (
     <div className="space-y-8">
-      <Card className="transition-shadow shadow-sm border-zinc-200 hover:shadow-md">
+      <Card className="transition-shadow shadow-sm border-border hover:shadow-md">
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-3xl font-bold tracking-tight text-zinc-900">
+            <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
               {title}
             </CardTitle>
             {actions}
           </div>
           {description && (
-            <CardDescription className="text-zinc-500">
+            <CardDescription className="text-muted-foreground">
               {description}
             </CardDescription>
           )}

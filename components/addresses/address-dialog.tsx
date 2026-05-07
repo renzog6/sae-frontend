@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/addresses/address-dialog.tsx
+﻿// filepath: sae-frontend/components/addresses/address-dialog.tsx
 "use client";
 
 import {
@@ -89,11 +89,17 @@ export function AddressDialog({
   }, [initial, form]);
 
   // Provincias y Ciudades
-  const { useGetAll: useGetProvinces } = useProvinces();
+  const { useGetAllNoLimit: useGetProvinces } = useProvinces();
   const { data: provincesResponse, isLoading: provLoading } = useGetProvinces();
-  const provinces = (provincesResponse?.data || []) as Province[];
+  const provinces = useMemo(
+    () =>
+      ((provincesResponse?.data || []) as Province[]).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      ),
+    [provincesResponse]
+  );
 
-  const { useGetAll: useGetCities } = useCities();
+  const { useGetAllNoLimit: useGetCities } = useCities();
   const { data: citiesResponse, isLoading: citiesLoading } = useGetCities();
   const allCities = (citiesResponse?.data || []) as City[];
 
@@ -335,7 +341,6 @@ export function AddressDialog({
                   <Button
                     type="button"
                     variant="destructive"
-                    className="text-white bg-red-500 hover:bg-red-600"
                     onClick={() => {
                       if (
                         confirm(
@@ -355,15 +360,11 @@ export function AddressDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-amber-500 text-amber-600 hover:bg-amber-50"
                   onClick={() => onOpenChange(false)}
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  className="text-white bg-amber-500 hover:bg-amber-600"
-                >
+                <Button type="submit">
                   Guardar
                 </Button>
               </div>

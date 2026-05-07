@@ -1,36 +1,85 @@
 // filepath: sae-frontend/lib/hooks/useTires.ts
-import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { useQuery } from "@tanstack/react-query";
+import { createApiHooks } from "./createApiHooks";
 import {
-  TiresService,
-  TireSizesService,
-  TireSizeAliasesService,
+  useTires as useTiresHook,
+  useTireById,
+  useCreateTire,
+  useUpdateTire,
+  useDeleteTire,
+} from "@/lib/api/tires/tires.service";
+import {
+  useCreateTireModel,
+  useUpdateTireModel,
+  useDeleteTireModel,
   TireModelsService,
+} from "@/lib/api/tires/tire-models.service";
+import {
+  TireSizesService,
+  useCreateTireSize,
+  useUpdateTireSize,
+  useDeleteTireSize,
+  TireSizeAliasesService,
+  useCreateTireSizeAlias,
+  useUpdateTireSizeAlias,
+  useDeleteTireSizeAlias,
+} from "@/lib/api/tires/tire-sizes.service";
+import {
   TirePositionsService,
+  useCreateTirePosition,
+  useUpdateTirePosition,
+  useDeleteTirePosition,
+} from "@/lib/api/tires/tire-positions.service";
+import {
   TireAssignmentsService,
+  useCreateTireAssignment,
+  useUpdateTireAssignment,
+  useDeleteTireAssignment,
+} from "@/lib/api/tires/tire-assignments.service";
+import {
   TireInspectionsService,
+  useCreateTireInspection,
+  useUpdateTireInspection,
+  useDeleteTireInspection,
+} from "@/lib/api/tires/tire-inspections.service";
+import {
   TireRecapsService,
+  useCreateTireRecap,
+  useUpdateTireRecap,
+  useDeleteTireRecap,
+} from "@/lib/api/tires/tire-recaps.service";
+import {
   TireRotationsService,
+  useCreateTireRotation,
+  useUpdateTireRotation,
+  useDeleteTireRotation,
+} from "@/lib/api/tires/tire-rotations.service";
+import {
   TireEventsService,
+  useCreateTireEvent,
+  useUpdateTireEvent,
+  useDeleteTireEvent,
+} from "@/lib/api/tires/tire-events.service";
+import {
   TireReportsService,
-} from "@/lib/api/tires";
+} from "@/lib/api/tires/tire-reports.service";
 
-// ===== TIRES =====
-export const useTires = () => {
-  const base = createApiHooks(TiresService, "tires");
 
-  const useGetByBrand = (brandId: number) =>
-    useQuery({
-      queryKey: ["tires", "byBrand", brandId],
-      queryFn: () => TiresService.getAll({ brandId }),
-      enabled: !!brandId,
-    });
 
-  return {
-    ...base,
-    useGetByBrand,
-  };
-};
+
+// Re-export hooks for backward compatibility
+export { useTiresHook as useTires, useTireById, useCreateTire, useUpdateTire, useDeleteTire };
+export { useCreateTireModel, useUpdateTireModel, useDeleteTireModel };
+export { useCreateTireAssignment, useUpdateTireAssignment, useDeleteTireAssignment };
+export { useCreateTireInspection, useUpdateTireInspection, useDeleteTireInspection };
+export { useCreateTireRecap, useUpdateTireRecap, useDeleteTireRecap };
+export { useCreateTireEvent, useUpdateTireEvent, useDeleteTireEvent };
+export { useCreateTireRotation, useUpdateTireRotation, useDeleteTireRotation };
+
+// Also export the individual service modules for granular usage
+export * from "@/lib/api/tires/tires.service";
+export * from "@/lib/api/tires/tire-models.service";
+export * from "@/lib/api/tires/tire-reports.service";
 
 // ===== TIRE MODELS =====
 export const useTireModels = () => {

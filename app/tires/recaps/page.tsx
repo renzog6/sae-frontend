@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/tires/recaps/page.tsx
+﻿// filepath: sae-frontend/app/tires/recaps/page.tsx
 "use client";
 
 import { useMemo } from "react";
@@ -49,7 +49,7 @@ export default function TireRecapsPage() {
           {isLoading ? (
             <p>Cargando recapados...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

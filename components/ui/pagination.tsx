@@ -24,7 +24,7 @@ export function PaginationLink({ className, isActive, onClick, children, disable
       onClick={onClick}
       className={clsx(
         "inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm",
-        isActive ? "bg-emerald-600 text-white border-emerald-600" : "bg-white hover:bg-zinc-50 border-zinc-200",
+        isActive ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted border-input",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
@@ -45,5 +45,5 @@ export function PaginationNext(props: WithoutChildren<React.ComponentProps<typeo
 }
 
 export function PaginationEllipsis() {
-  return <span className="px-2 text-sm text-zinc-500">…</span>;
+  return <span className="px-2 text-sm text-muted-foreground">…</span>;
 }

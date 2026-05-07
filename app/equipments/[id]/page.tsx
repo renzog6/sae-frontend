@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/equipments/[id]/page.tsx
+﻿// filepath: sae-frontend/app/equipments/[id]/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
@@ -41,9 +41,9 @@ export default function EquipmentDetailPage() {
   if (error || !equipment) {
     return (
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-red-600">Error</h1>
+        <h1 className="text-2xl font-bold text-destructive">Error</h1>
         <p className="text-gray-600">
-          {error?.message || "Equipo no encontrado"}
+          {(error as Error)?.message || "Equipo no encontrado"}
         </p>
         <Link href="/equipments/list">
           <Button className="mt-4">
@@ -120,15 +120,15 @@ export default function EquipmentDetailPage() {
                   {equipment.fuelType === "DIESEL"
                     ? "Diésel"
                     : equipment.fuelType === "GASOLINE"
-                    ? "Nafta/Gasolina"
-                    : equipment.fuelType === "ELECTRIC"
-                    ? "Eléctrico"
-                    : equipment.fuelType === "HYBRID"
-                    ? "Híbrido"
-                    : equipment.fuelType === "LPG" ||
-                      equipment.fuelType === "CNG"
-                    ? "GNC"
-                    : "Ninguno"}
+                      ? "Nafta/Gasolina"
+                      : equipment.fuelType === "ELECTRIC"
+                        ? "Eléctrico"
+                        : equipment.fuelType === "HYBRID"
+                          ? "Híbrido"
+                          : equipment.fuelType === "LPG" ||
+                              equipment.fuelType === "CNG"
+                            ? "GNC"
+                            : "Ninguno"}
                 </p>
               </div>
             )}

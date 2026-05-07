@@ -5,6 +5,7 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
 } from "@/lib/types/domain/employee";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 
 class EmployeesServiceClass extends BaseApiService<
   Employee,
@@ -15,3 +16,12 @@ class EmployeesServiceClass extends BaseApiService<
 }
 
 export const EmployeesService = new EmployeesServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useEmployees,
+  useGetById: useEmployeeById,
+  useCreate: useCreateEmployee,
+  useUpdate: useUpdateEmployee,
+  useDelete: useDeleteEmployee,
+} = createApiHooks(EmployeesService, "employees");

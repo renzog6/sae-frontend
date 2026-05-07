@@ -8,6 +8,7 @@ import {
   CreateCompanyDto,
   UpdateCompanyDto,
 } from "@/lib/types/domain/company";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 //private static basePath = "/companies";
 
 class CompaniesServiceClass extends BaseApiService<
@@ -38,3 +39,12 @@ class CompaniesServiceClass extends BaseApiService<
 }
 
 export const CompaniesService = new CompaniesServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useCompanies,
+  useGetById: useCompanyById,
+  useCreate: useCreateCompany,
+  useUpdate: useUpdateCompany,
+  useDelete: useDeleteCompany,
+} = createApiHooks(CompaniesService, "companies");

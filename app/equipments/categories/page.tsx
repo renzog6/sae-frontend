@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/equipments/categories/page.tsx
+﻿// filepath: sae-frontend/app/equipments/categories/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
@@ -21,7 +21,10 @@ import { PaginationBar } from "@/components/data-table/pagination-bar";
 export default function EquipmentCategoriesPage() {
   const { useGetAll } = useEquipmentCategories();
   const { data: categoriesResponse, isLoading, error } = useGetAll();
-  const categories = categoriesResponse?.data || [];
+  const response = categoriesResponse as any;
+  const categories = Array.isArray(response?.data)
+    ? response.data
+    : response?.data?.data || [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -36,7 +39,7 @@ export default function EquipmentCategoriesPage() {
           setDialogOpen(true);
         },
       }),
-    []
+    [],
   );
 
   const { table, globalFilter, setGlobalFilter } = useDataTable({
@@ -72,7 +75,7 @@ export default function EquipmentCategoriesPage() {
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

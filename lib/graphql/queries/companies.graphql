@@ -1,0 +1,97 @@
+# Companies GraphQL Queries and Mutations
+
+query FindAllCompanies(
+  $skip: Int! = 0
+  $take: Int! = 10
+  $orderBy: String
+  $q: String
+  $where: String
+) {
+  findAllCompanies(
+    skip: $skip
+    take: $take
+    orderBy: $orderBy
+    q: $q
+    where: $where
+  ) {
+    data {
+      id
+      name
+      businessName
+      cuit
+      isActive
+      createdAt
+      businessCategory {
+        id
+        name
+      }
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
+
+query FindOneCompany($id: Int!) {
+  findOneCompany(id: $id) {
+    id
+    name
+    businessName
+    cuit
+    isActive
+    information
+    businessCategoryId
+    businessCategory {
+      id
+      name
+      subCategories {
+        id
+        name
+      }
+    }
+    contacts {
+      id
+      type
+      value
+      label
+    }
+  }
+}
+
+mutation CreateCompany($input: CreateCompanyDto!) {
+  createCompany(input: $input) {
+    id
+    name
+    businessName
+    cuit
+  }
+}
+
+mutation UpdateCompany($id: String!, $input: UpdateCompanyDto!) {
+  updateCompany(id: $id, input: $input) {
+    id
+    name
+    businessName
+    cuit
+  }
+}
+
+mutation RemoveCompany($id: Int!) {
+  removeCompany(id: $id) {
+    id
+  }
+}
+
+mutation RestoreCompany($id: Int!) {
+  restoreCompany(id: $id) {
+    id
+  }
+}
+
+mutation HardDeleteCompany($id: Int!) {
+  hardDeleteCompany(id: $id) {
+    id
+  }
+}

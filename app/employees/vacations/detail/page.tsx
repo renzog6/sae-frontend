@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/employees/vacations/detail/page.tsx
+﻿// filepath: sae-frontend/app/employees/vacations/detail/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
@@ -111,7 +111,7 @@ export default function EmployeeVacationsDetailPage() {
         </div>
         <CardContent className="space-y-8">
           {error && (
-            <div className="flex items-center gap-2 p-4 text-sm text-red-600 border border-red-200 rounded-lg bg-red-50">
+            <div className="flex items-center gap-2 p-4 text-sm text-destructive border border-destructive/20 rounded-lg bg-destructive/10">
               <span className="text-red-500">⚠️</span>
               {(error as any)?.message ?? "Error al cargar"}
             </div>

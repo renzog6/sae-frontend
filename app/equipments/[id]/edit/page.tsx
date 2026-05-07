@@ -9,8 +9,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toaster";
-import { Card, CardContent } from "@/components/ui/card";
 import { FuelType } from "@/lib/types/shared/enums";
+import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 
 export default function EquipmentEditPage() {
   const params = useParams();
@@ -31,8 +31,8 @@ export default function EquipmentEditPage() {
   if (isLoading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="w-1/4 h-8 bg-gray-200 rounded"></div>
-        <div className="h-64 bg-gray-200 rounded"></div>
+        <div className="w-1/4 h-8 bg-muted rounded"></div>
+        <div className="h-64 bg-muted rounded"></div>
       </div>
     );
   }
@@ -40,9 +40,9 @@ export default function EquipmentEditPage() {
   if (error || !equipment) {
     return (
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-red-600">Error</h1>
-        <p className="text-gray-600">
-          {error?.message || "Equipo no encontrado"}
+        <h1 className="text-2xl font-bold text-destructive">Error</h1>
+        <p className="text-muted-foreground">
+          {(error as Error)?.message || "Equipo no encontrado"}
         </p>
         <Link href="/equipments/list">
           <Button className="mt-4">
@@ -56,7 +56,7 @@ export default function EquipmentEditPage() {
 
   const handleSubmit = (data: any) => {
     updateEquipment(
-      { id: equipment.id, dto: data },
+      { id: equipment.id, data },
       {
         onSuccess: () => {
           toast({
@@ -73,7 +73,7 @@ export default function EquipmentEditPage() {
             variant: "error",
           });
         },
-      }
+      },
     );
   };
 
@@ -81,7 +81,6 @@ export default function EquipmentEditPage() {
     router.push(`/equipments/${equipment.id}`);
   };
 
-  // Transform equipment data to form format
   const defaultValues = {
     id: equipment.id,
     internalCode: equipment.internalCode || "",
@@ -102,24 +101,17 @@ export default function EquipmentEditPage() {
   };
 
   return (
-    <>
-      <Card>
-        <CardContent className="space-y-6">
-          <div className="pt-4 border-t border-slate-200">
-            <h2 className="text-2xl font-semibold">Editar Equipo</h2>
-            <p className="text-muted-foreground">
-              Modifica la información del equipo seleccionado.
-            </p>
-          </div>
-
-          <EquipmentForm
-            defaultValues={defaultValues}
-            isEdit={true}
-            onSuccess={handleSubmit}
-            onCancel={handleCancel}
-          />
-        </CardContent>
-      </Card>
-    </>
+    <EntityFormLayout
+      title="Editar Equipo"
+      description="Modifica la información del equipo seleccionado."
+      backHref={`/equipments/${equipment.id}`}
+    >
+      <EquipmentForm
+        defaultValues={defaultValues}
+        isEdit={true}
+        onSuccess={handleSubmit}
+        onCancel={handleCancel}
+      />
+    </EntityFormLayout>
   );
 }

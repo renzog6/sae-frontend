@@ -2,37 +2,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
-import { useTires, useTireModels } from "@/lib/hooks/useTires";
+import { useCreateTire, useTireModels } from "@/lib/hooks/useTires";
 import { CreateTireForm } from "@/components/forms/create-tire-form";
 import { useToast } from "@/components/ui/toaster";
+import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 
 export default function TireNewPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Fetch tire models for the form
   const { useGetAll: useGetModels } = useTireModels();
   const { data: modelsResponse, isLoading: modelsLoading } = useGetModels({
     page: 1,
     limit: 100,
-  }); // Get all models for selection
+  });
 
-  const { useCreate: useCreateTire } = useTires();
   const createTireMutation = useCreateTire();
 
   const handleCreateTire = async (data: any) => {
     try {
       if (data.tires) {
-        // Bulk creation - create multiple tires
         for (const tireData of data.tires) {
           await createTireMutation.mutateAsync(tireData);
         }
@@ -42,7 +31,6 @@ export default function TireNewPage() {
           variant: "success",
         });
       } else {
-        // Single creation
         await createTireMutation.mutateAsync(data);
         toast({
           title: "Éxito",
@@ -60,41 +48,18 @@ export default function TireNewPage() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/tires");
-  };
-
   return (
-    <div className="p-0 space-y-0 sm:space-y-2 md:space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCancel}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Volver
-            </Button>
-            <div>
-              <CardTitle className="text-2xl">Nuevo Neumático</CardTitle>
-              <CardDescription>
-                Crear un nuevo neumático en el sistema
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <CreateTireForm
-            onSubmit={handleCreateTire}
-            onCancel={handleCancel}
-            tireModels={modelsResponse?.data || []}
-            isLoading={createTireMutation.isPending || modelsLoading}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <EntityFormLayout
+      title="Nuevo Neumático"
+      description="Crear un nuevo neumático en el sistema"
+      backHref="/tires"
+    >
+      <CreateTireForm
+        onSubmit={handleCreateTire}
+        onCancel={() => router.push("/tires")}
+        tireModels={modelsResponse?.data || []}
+        isLoading={createTireMutation.isPending || modelsLoading}
+      />
+    </EntityFormLayout>
   );
 }

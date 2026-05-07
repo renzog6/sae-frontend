@@ -1,4 +1,4 @@
-//filepath: sae-frontend/app/tires/assignments/TireAssignmentsContainer.tsx
+﻿//filepath: sae-frontend/app/tires/assignments/TireAssignmentsContainer.tsx
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
@@ -121,7 +121,7 @@ export function TireAssignmentsContainer() {
   if (isErrorEquipments) {
     return (
       <div className="w-full p-6 mx-auto max-w-7xl">
-        <div className="p-4 text-red-700 rounded-md bg-red-50">
+        <div className="p-4 text-red-700 rounded-md bg-destructive/10">
           Error cargando equipos. Reintenta o contacta al administrador.
         </div>
       </div>

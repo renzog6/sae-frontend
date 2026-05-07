@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/equipments/[id]/tires/page.tsx
+﻿// filepath: sae-frontend/app/equipments/[id]/tires/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
@@ -33,9 +33,9 @@ export default function EquipmentTiresPage() {
   if (error || !tireAssignments) {
     return (
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-red-600">Error</h1>
+        <h1 className="text-2xl font-bold text-destructive">Error</h1>
         <p className="text-gray-600">
-          {error?.message || "No se pudieron cargar los neumáticos"}
+          {(error as Error)?.message || "No se pudieron cargar los neumáticos"}
         </p>
         <Link href={`/equipments/${equipmentId}`}>
           <Button className="mt-4">
@@ -128,8 +128,8 @@ export default function EquipmentTiresPage() {
                             {assignment.positionConfig?.side === "LEFT"
                               ? "Izquierdo"
                               : assignment.positionConfig?.side === "RIGHT"
-                              ? "Derecho"
-                              : assignment.positionConfig?.side || "N/A"}
+                                ? "Derecho"
+                                : assignment.positionConfig?.side || "N/A"}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">

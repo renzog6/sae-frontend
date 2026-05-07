@@ -3,13 +3,7 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Brand } from "@/lib/types/shared/catalogs";
 import { useBrands } from "@/lib/hooks";
 import { DataTable } from "@/components/data-table/data-table";
@@ -39,8 +33,6 @@ export default function BrandsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
   const {
     data: brandsResponse,
     isLoading,
@@ -48,7 +40,6 @@ export default function BrandsPage() {
   } = useBrands().useGetAll({
     page,
     limit,
-    deleted: selectedStatus,
   });
 
   const { mutate: deleteBrand, isPending: deleting } = useBrands().useDelete();
@@ -108,34 +99,7 @@ export default function BrandsPage() {
         }
         filters={
           <div className="flex gap-2">
-            {/* Status filter */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="min-w-[140px] justify-between"
-                >
-                  <span className="mr-2">📊</span>{" "}
-                  {selectedStatus === "ALL"
-                    ? "Todos"
-                    : selectedStatus === "ACTIVE"
-                      ? "Activo"
-                      : "Inactivo"}
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setSelectedStatus("ALL")}>
-                  Todos los estados
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedStatus("ACTIVE")}>
-                  Activo
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedStatus("INACTIVE")}>
-                  Inactivo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Filter placeholder - can be added later */}
           </div>
         }
       >

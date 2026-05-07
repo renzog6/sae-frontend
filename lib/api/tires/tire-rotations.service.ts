@@ -2,6 +2,8 @@
 import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
+
 import {
   TireRotation,
   CreateTireRotationDto,
@@ -31,3 +33,12 @@ class TireRotationsServiceClass extends BaseApiService<
 }
 
 export const TireRotationsService = new TireRotationsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireRotations,
+  useGetById: useTireRotationById,
+  useCreate: useCreateTireRotation,
+  useUpdate: useUpdateTireRotation,
+  useDelete: useDeleteTireRotation,
+} = createApiHooks(TireRotationsService, "tireRotations");

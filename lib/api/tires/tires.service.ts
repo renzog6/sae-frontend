@@ -5,6 +5,7 @@ import { ApiClient } from "@/lib/api/apiClient";
 import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 
 import { Tire, CreateTireDto, UpdateTireDto } from "@/lib/types/domain/tire";
 
@@ -36,3 +37,12 @@ class TiresServiceClass extends BaseApiService<
 }
 
 export const TiresService = new TiresServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTires,
+  useGetById: useTireById,
+  useCreate: useCreateTire,
+  useUpdate: useUpdateTire,
+  useDelete: useDeleteTire,
+} = createApiHooks(TiresService, "tires");

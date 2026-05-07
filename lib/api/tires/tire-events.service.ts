@@ -4,6 +4,7 @@ import { ApiClient } from "@/lib/api/apiClient";
 import { BaseQueryParams, PaginatedResponse } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { TireEvent } from "@/lib/types/domain/tire";
 
 // 🔹 Query params específicos de eventos
@@ -43,3 +44,12 @@ class TireEventsServiceClass extends BaseApiService<TireEvent, any, any> {
 }
 
 export const TireEventsService = new TireEventsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireEvents,
+  useGetById: useTireEventById,
+  useCreate: useCreateTireEvent,
+  useUpdate: useUpdateTireEvent,
+  useDelete: useDeleteTireEvent,
+} = createApiHooks(TireEventsService, "tireEvents");

@@ -36,6 +36,17 @@ export function useCreateEquipmentTransaction() {
   });
 }
 
+export function useDeleteEquipmentTransaction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => equipmentTransactionsService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipment-transactions"] });
+    },
+  });
+}
+
 export function useEquipmentTransactionSummary(equipmentId?: number) {
   return useQuery({
     queryKey: ["equipment-transactions", "summary", equipmentId],

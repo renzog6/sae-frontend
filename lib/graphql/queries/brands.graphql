@@ -1,0 +1,74 @@
+# Brands GraphQL Queries and Mutations
+
+query FindAllBrands(
+  $skip: Int! = 0
+  $take: Int! = 10
+  $orderBy: String
+  $q: String
+  $where: String
+) {
+  findAllBrands(
+    skip: $skip
+    take: $take
+    orderBy: $orderBy
+    q: $q
+    where: $where
+  ) {
+    data {
+      id
+      name
+      code
+      isActive
+      information
+    }
+    meta {
+      total
+      page
+      limit
+    }
+  }
+}
+
+query FindOneBrand($id: Int!) {
+  findOneBrand(id: $id) {
+    id
+    name
+    code
+    isActive
+    information
+  }
+}
+
+mutation CreateBrand($input: CreateBrandDto!) {
+  createBrand(input: $input) {
+    id
+    name
+    code
+  }
+}
+
+mutation UpdateBrand($id: Int!, $input: UpdateBrandDto!) {
+  updateBrand(id: $id, input: $input) {
+    id
+    name
+    code
+  }
+}
+
+mutation RemoveBrand($id: Int!) {
+  removeBrand(id: $id) {
+    id
+  }
+}
+
+mutation RestoreBrand($id: Int!) {
+  restoreBrand(id: $id) {
+    id
+  }
+}
+
+mutation HardDeleteBrand($id: Int!) {
+  hardDeleteBrand(id: $id) {
+    id
+  }
+}

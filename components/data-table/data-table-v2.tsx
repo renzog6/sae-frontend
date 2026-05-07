@@ -72,7 +72,7 @@ export function DataTable<TData>({
   const to = Math.min((pageIndex + 1) * pageSize, totalCount);
 
   return (
-    <div className="flex flex-col w-full h-full bg-white border rounded shadow-sm relative">
+    <div className="flex flex-col w-full h-full bg-card border rounded shadow-sm relative">
       {/* Refetching Progress Bar */}
       {isLoading && table.getRowModel().rows.length > 0 && (
         <div className="absolute top-0 left-0 right-0 h-0.5 z-20 overflow-hidden">
@@ -83,7 +83,7 @@ export function DataTable<TData>({
       {/* Table Container with scroll overflow */}
       <div className="flex-1 overflow-auto">
         <Table className="border-collapse table-fixed w-full">
-          <TableHeader className="bg-zinc-50 sticky top-0 z-10">
+          <TableHeader className="bg-muted sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <React.Fragment key={headerGroup.id}>
                 {/* Row 1: Column Titles */}
@@ -91,7 +91,7 @@ export function DataTable<TData>({
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="h-10 px-2 py-1 text-xs font-bold text-zinc-700 border-r last:border-r-0 whitespace-nowrap text-center"
+                      className="h-10 px-2 py-1 text-xs font-bold text-foreground border-r last:border-r-0 whitespace-nowrap text-center"
                       style={{
                         width: header.id === 'actions' ? '80px' : header.getSize()
                       }}
@@ -112,11 +112,11 @@ export function DataTable<TData>({
                         {showSorting && header.column.getCanSort() && (
                           <div className="flex items-center">
                             {header.column.getIsSorted() === "asc" ? (
-                              <ArrowUp className="w-3 h-3 text-blue-600" />
+                              <ArrowUp className="w-3 h-3 text-primary" />
                             ) : header.column.getIsSorted() === "desc" ? (
-                              <ArrowDown className="w-3 h-3 text-blue-600" />
+                              <ArrowDown className="w-3 h-3 text-primary" />
                             ) : (
-                              <ChevronsUpDown className="w-3 h-3 text-zinc-400 group-hover:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <ChevronsUpDown className="w-3 h-3 text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                             )}
                           </div>
                         )}
@@ -142,17 +142,17 @@ export function DataTable<TData>({
                               onChange={(e) =>
                                 header.column.setFilterValue(e.target.value)
                               }
-                              className="h-7 px-2 pr-7 text-xs bg-white border-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-sm"
+                              className="h-7 px-2 pr-7 text-xs bg-background border-input focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
                             />
                             {Boolean(header.column.getFilterValue()) ? (
                               <button
                                 onClick={() => header.column.setFilterValue("")}
-                                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 <X className="w-3.5 h-3.5" />
                               </button>
                             ) : (
-                              <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
+                              <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
                             )}
                           </div>
                         ) : null}
@@ -184,7 +184,7 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   className={cn(
-                    "hover:bg-zinc-50 border-b group",
+                    "hover:bg-muted/50 border-b group",
                     // Ejemplo de resaltado (puedes ajustar según lógica de negocio si el usuario lo pide)
                     row.original && (row.original as any).status === 'Confirmed' && "bg-green-50/50"
                   )}
@@ -192,7 +192,7 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={cell.id}
-                      className="px-2 py-1.5 text-xs text-zinc-600 border-r last:border-r-0 truncate text-center"
+                      className="px-2 py-1.5 text-xs text-muted-foreground border-r last:border-r-0 truncate text-center"
                       style={{
                         width: cell.column.id === 'actions' ? '80px' : cell.column.getSize()
                       }}
@@ -216,8 +216,8 @@ export function DataTable<TData>({
                   className="py-12 text-center"
                 >
                   <div className="flex flex-col items-center justify-center space-y-2">
-                    <Filter className="w-8 h-8 text-zinc-200" />
-                    <p className="text-zinc-500 text-sm">
+                    <Filter className="w-8 h-8 text-muted" />
+                    <p className="text-muted-foreground text-sm">
                       No se encontraron resultados para los filtros aplicados.
                     </p>
                     {table.getState().columnFilters.length > 0 && (
@@ -225,7 +225,7 @@ export function DataTable<TData>({
                         variant="link"
                         size="sm"
                         onClick={() => table.resetColumnFilters()}
-                        className="text-blue-600"
+                        className="text-primary"
                       >
                         Limpiar todos los filtros
                       </Button>
@@ -239,7 +239,7 @@ export function DataTable<TData>({
       </div>
 
       {/* Styled Pagination Footer (Image-like) */}
-      <div className="flex items-center justify-between px-3 py-2 bg-white border-t select-none text-zinc-600">
+      <div className="flex items-center justify-between px-3 py-2 bg-background border-t select-none text-muted-foreground">
         {/* Left: Spacer (was search) */}
         <div className="flex items-center gap-2 max-w-[300px] flex-1"></div>
 
@@ -249,7 +249,7 @@ export function DataTable<TData>({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-zinc-500"
+              className="h-8 w-8 text-muted-foreground"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
@@ -258,7 +258,7 @@ export function DataTable<TData>({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-zinc-500"
+              className="h-8 w-8 text-muted-foreground"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
@@ -269,7 +269,7 @@ export function DataTable<TData>({
           <div className="flex items-center gap-2 text-xs">
             <span>Página</span>
             <Input
-              className="h-8 w-12 text-center px-1 text-xs border-zinc-200"
+              className="h-8 w-12 text-center px-1 text-xs border-input"
               value={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
@@ -283,7 +283,7 @@ export function DataTable<TData>({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-zinc-500"
+              className="h-8 w-8 text-muted-foreground"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
@@ -292,7 +292,7 @@ export function DataTable<TData>({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-zinc-500"
+              className="h-8 w-8 text-muted-foreground"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
@@ -307,7 +307,7 @@ export function DataTable<TData>({
               table.setPageSize(Number(value));
             }}
           >
-            <SelectTrigger className="h-8 w-20 text-xs border-zinc-200 bg-white">
+            <SelectTrigger className="h-8 w-20 text-xs border-input bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent align="end">
@@ -321,7 +321,7 @@ export function DataTable<TData>({
         </div>
 
         {/* Right: Record info */}
-        <div className="text-xs font-medium text-zinc-500 min-w-[150px] text-right">
+        <div className="text-xs font-medium text-muted-foreground min-w-[150px] text-right">
           Mostrando {from} - {to} de {totalCount}
         </div>
       </div>

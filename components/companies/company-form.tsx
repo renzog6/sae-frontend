@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/companies/company-form.tsx
+﻿// filepath: sae-frontend/components/companies/company-form.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -50,7 +50,7 @@ export function CompanyForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {error && (
-          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+          <div className="p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10">
             {error}
           </div>
         )}
@@ -121,7 +121,6 @@ export function CompanyForm({
             <Button
               type="button"
               variant="outline"
-              className="border-amber-500 text-amber-600 hover:bg-amber-50"
               onClick={onCancel}
               disabled={isLoading}
             >
@@ -131,7 +130,6 @@ export function CompanyForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="text-white bg-amber-500 hover:bg-amber-600"
           >
             {isLoading
               ? isEdit

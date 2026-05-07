@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/companies/[id]/page.tsx
+﻿// filepath: sae-frontend/app/companies/[id]/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -16,7 +16,7 @@ import type {
   CompanyFormData,
   UpdateCompanyFormData,
 } from "@/lib/validations/company";
-import { CompaniesService } from "@/lib/api/companies";
+import { CompaniesService, useCompanyById, useUpdateCompany } from "@/lib/api/companies";
 import { Button } from "@/components/ui/button";
 import type { Address } from "@/lib/types/shared/location";
 import type { Contact } from "@/lib/types/domain/contact";
@@ -51,17 +51,19 @@ export default function CompanyDetailPage() {
   }, [params]);
 
   const [company, setCompany] = useState<Company | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const [addressOpen, setAddressOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | undefined>(
-    undefined
+    undefined,
   );
   const [contactOpen, setContactOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | undefined>(
-    undefined
+    undefined,
   );
+
+  // Company data via hooks
+  const companyQuery = useCompanyById(id ?? 0);
+  const updateCompanyMutation = useUpdateCompany();
 
   // Data via hooks
   const addressesQuery = useAddresses().useByCompany(id ?? 0);
@@ -71,7 +73,7 @@ export default function CompanyDetailPage() {
   const contactsQuery = useContacts().useByCompany(id ?? 0);
   const { data: companyContacts = [] } = contactsQuery;
 
-  // Mutations  
+  // Mutations
   const createAddressMut = useAddresses().useCreate();
   const updateAddressMut = useAddresses().useUpdate();
   const deleteAddressMut = useAddresses().useDelete();
@@ -80,38 +82,23 @@ export default function CompanyDetailPage() {
   const updateContactMut = useContacts().useUpdate();
   const deleteContactMut = useContacts().useDelete();
 
+  // Set company data from hook
   useEffect(() => {
-    let ignore = false;
-    async function load() {
-      setLoading(true);
+    if (companyQuery.data) {
+      setCompany(companyQuery.data);
       setError(null);
-      try {
-        const data = await CompaniesService.getById(id ?? 0);
-        if (!ignore) setCompany(data);
-      } catch (e: any) {
-        if (!ignore) setError(e?.message || "Error al cargar la empresa");
-      } finally {
-        if (!ignore) setLoading(false);
-      }
+    } else if (companyQuery.error) {
+      setError((companyQuery.error as Error)?.message || "Error al cargar la empresa");
     }
-    load();
-    return () => {
-      ignore = true;
-    };
-  }, [id]);
+  }, [companyQuery.data, companyQuery.error]);
 
   async function handleSubmit(data: UpdateCompanyFormData) {
-    setSaving(true);
     setError(null);
     try {
-      await CompaniesService.update(id ?? 0, data);
-      // Ensure companies list reflects latest data
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      await updateCompanyMutation.mutateAsync({ id: id ?? 0, dto: data });
       router.push("/companies/list");
     } catch (e: any) {
-      setError(e?.message || "Error al guardar cambios");
-    } finally {
-      setSaving(false);
+      setError((e as Error)?.message || "Error al guardar cambios");
     }
   }
   // Asegura la compatibilidad de tipos con CompanyForm (CompanyFormData)
@@ -128,15 +115,15 @@ export default function CompanyDetailPage() {
       businessCategoryId: company.businessCategoryId ?? undefined,
       address: firstAddress
         ? {
-          id: firstAddress.id,
-          street: firstAddress.street,
-          number: firstAddress.number,
-          floor: firstAddress.floor,
-          apartment: firstAddress.apartment,
-          neighborhood: firstAddress.neighborhood,
-          reference: firstAddress.reference,
-          cityId: firstAddress.cityId,
-        }
+            id: firstAddress.id,
+            street: firstAddress.street,
+            number: firstAddress.number,
+            floor: firstAddress.floor,
+            apartment: firstAddress.apartment,
+            neighborhood: firstAddress.neighborhood,
+            reference: firstAddress.reference,
+            cityId: firstAddress.cityId,
+          }
         : undefined,
     } as UpdateCompanyFormData;
   }, [company, addresses]);
@@ -154,35 +141,35 @@ export default function CompanyDetailPage() {
     onUpdated?: (newId: number | undefined) => void;
   }) {
     const { data: categoriesResponse, isLoading } = useBusinessCategories();
-    const categories = categoriesResponse || [];
+    const categories = ((categoriesResponse as any)?.data || []) as Array<{
+      id: number;
+      name: string;
+    }>;
+    const categoriesList = categories.length > 0 ? categories : [];
     const [adding, setAdding] = useState(false);
-    const [savingCat, setSavingCat] = useState(false);
     const [selectedId, setSelectedId] = useState<number | "">(
-      currentCategoryId ?? ""
+      currentCategoryId ?? "",
     );
     const [confirmOpen, setConfirmOpen] = useState(false);
     const queryClient = useQueryClient();
 
     async function handleSave() {
-      setSavingCat(true);
       try {
         const payload: UpdateCompanyFormData = {
           businessCategoryId:
             selectedId === "" ? undefined : Number(selectedId),
         };
-        await CompaniesService.update(companyId, payload);
+        await updateCompanyMutation.mutateAsync({ id: companyId, dto: payload });
         onUpdated?.(payload.businessCategoryId);
-        // Refresh companies list page caches
-        queryClient.invalidateQueries({ queryKey: ["companies"] });
         setAdding(false);
         // Reset selection so the control shows clean state
         setSelectedId(payload.businessCategoryId ?? "");
-      } finally {
-        setSavingCat(false);
+      } catch (e: any) {
+        // Error is handled by the mutation
       }
     }
 
-    const current = categories.find((c) => c.id === currentCategoryId);
+    const current = categoriesList.find((c) => c.id === currentCategoryId);
 
     return (
       <section className="pt-4 border-t border-slate-200">
@@ -224,7 +211,7 @@ export default function CompanyDetailPage() {
               }
             >
               <option value="">Sin categoría</option>
-              {categories.map((c) => (
+              {categoriesList.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -232,10 +219,10 @@ export default function CompanyDetailPage() {
             </select>
             <Button
               className="text-white bg-amber-500 hover:bg-amber-600"
-              disabled={savingCat}
+              disabled={updateCompanyMutation.isPending}
               onClick={handleSave}
             >
-              {savingCat ? "Guardando..." : "Guardar"}
+              {updateCompanyMutation.isPending ? "Guardando..." : "Guardar"}
             </Button>
           </div>
         )}
@@ -252,17 +239,20 @@ export default function CompanyDetailPage() {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
-                className="text-white bg-red-500 hover:bg-red-600"
+                className="text-white bg-destructive/100 hover:bg-red-600"
                 onClick={async () => {
                   // Ejecutar eliminación
                   setSelectedId("");
-                  await CompaniesService.update(companyId, {
-                    businessCategoryId: undefined,
-                  });
-                  onUpdated?.(undefined);
-                  // Refresh companies list page caches
-                  queryClient.invalidateQueries({ queryKey: ["companies"] });
-                  setConfirmOpen(false);
+                  try {
+                    await updateCompanyMutation.mutateAsync({
+                      id: companyId,
+                      dto: { businessCategoryId: undefined }
+                    });
+                    onUpdated?.(undefined);
+                    setConfirmOpen(false);
+                  } catch (e: any) {
+                    // Error handled by mutation
+                  }
                 }}
               >
                 Quitar
@@ -420,16 +410,16 @@ export default function CompanyDetailPage() {
         </div>
         <CardContent className="space-y-8">
           {error && (
-            <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+            <div className="p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10">
               {error}
             </div>
           )}
 
           {/* Formulario base */}
-          {!loading && company && (
+          {!companyQuery.isLoading && company && (
             <CompanyForm
               onSubmit={handleFormSubmit}
-              isLoading={saving}
+              isLoading={updateCompanyMutation.isPending}
               defaultValues={defaultValues}
               isEdit
               onCancel={() => router.back()}
@@ -437,14 +427,14 @@ export default function CompanyDetailPage() {
             />
           )}
 
-          {loading && (
+          {companyQuery.isLoading && (
             <div className="text-sm text-slate-500">
               Cargando datos de la empresa...
             </div>
           )}
 
           {/* Categorías (rubros) */}
-          {!loading && company && id && (
+          {!companyQuery.isLoading && company && id && (
             <CategoryList
               companyId={id}
               currentCategoryId={company.businessCategoryId}
@@ -452,7 +442,7 @@ export default function CompanyDetailPage() {
                 setCompany((prev) =>
                   prev
                     ? { ...prev, businessCategoryId: newId ?? undefined }
-                    : prev
+                    : prev,
                 )
               }
             />
@@ -490,28 +480,28 @@ export default function CompanyDetailPage() {
         initial={
           editingAddress
             ? {
-              street: editingAddress.street,
-              number: editingAddress.number,
-              floor: editingAddress.floor,
-              apartment: editingAddress.apartment,
-              neighborhood: editingAddress.neighborhood,
-              reference: editingAddress.reference,
-              cityId: editingAddress.cityId,
-              personId: editingAddress.personId ?? undefined,
-              companyId: editingAddress.companyId ?? undefined,
-            }
+                street: editingAddress.street,
+                number: editingAddress.number,
+                floor: editingAddress.floor,
+                apartment: editingAddress.apartment,
+                neighborhood: editingAddress.neighborhood,
+                reference: editingAddress.reference,
+                cityId: editingAddress.cityId,
+                personId: editingAddress.personId ?? undefined,
+                companyId: editingAddress.companyId ?? undefined,
+              }
             : undefined
         }
         onDelete={
           editingAddress?.id
             ? () =>
-              deleteAddressMut.mutate(editingAddress.id!, {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({
-                    queryKey: ["addresses", "byCompany", id],
-                  });
-                },
-              })
+                deleteAddressMut.mutate(editingAddress.id!, {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries({
+                      queryKey: ["addresses", "byCompany", id],
+                    });
+                  },
+                })
             : undefined
         }
         onSave={(data) => {
@@ -525,7 +515,7 @@ export default function CompanyDetailPage() {
                     queryKey: ["addresses", "byCompany", id],
                   });
                 },
-              }
+              },
             );
           } else {
             createAddressMut.mutate(
@@ -536,7 +526,7 @@ export default function CompanyDetailPage() {
                     queryKey: ["addresses", "byCompany", id],
                   });
                 },
-              }
+              },
             );
           }
         }}
@@ -551,23 +541,23 @@ export default function CompanyDetailPage() {
         initial={
           editingContact
             ? {
-              type: editingContact.type,
-              value: editingContact.value,
-              label: editingContact.label ?? undefined,
-              information: editingContact.information ?? undefined,
-            }
+                type: editingContact.type,
+                value: editingContact.value,
+                label: editingContact.label ?? undefined,
+                information: editingContact.information ?? undefined,
+              }
             : undefined
         }
         onDelete={
           editingContact?.id
             ? () =>
-              deleteContactMut.mutate(editingContact.id!, {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({
-                    queryKey: ["contacts", "byCompany", id],
-                  });
-                },
-              })
+                deleteContactMut.mutate(editingContact.id!, {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries({
+                      queryKey: ["contacts", "byCompany", id],
+                    });
+                  },
+                })
             : undefined
         }
         onSave={(data) => {
@@ -583,7 +573,7 @@ export default function CompanyDetailPage() {
                     queryKey: ["contacts", "byCompany", id],
                   });
                 },
-              }
+              },
             );
           } else if (id) {
             createContactMut.mutate(
@@ -594,7 +584,7 @@ export default function CompanyDetailPage() {
                     queryKey: ["contacts", "byCompany", id],
                   });
                 },
-              }
+              },
             );
           }
         }}

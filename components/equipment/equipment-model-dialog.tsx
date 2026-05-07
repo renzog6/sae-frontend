@@ -1,12 +1,13 @@
-// filepath: sae-frontend/components/equipment/equipment-model-dialog.tsx
+﻿// filepath: sae-frontend/components/equipment/equipment-model-dialog.tsx
 "use client";
 
 import * as React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { EquipmentModel } from "@/lib/types/domain/equipment";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EquipmentModelForm } from "@/components/forms/equipment-model-form";
-import { useEquipmentModels } from "@/lib/hooks/useEquipments";
+import { EquipmentModelsService } from "@/lib/api/equipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,53 +34,77 @@ export function EquipmentModelDialog({
   model,
 }: EquipmentModelDialogProps) {
   const { toast } = useToast();
-  const { useCreate, useUpdate, useDelete } = useEquipmentModels();
-  const { mutate: createModel, isPending: creating } = useCreate();
-  const { mutate: updateModel, isPending: updating } = useUpdate();
-  const { mutate: deleteModel, isPending: deleting } = useDelete();
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: (data: any) => EquipmentModelsService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentModels"] });
+      toast({
+        title: "Modelo creado",
+        description: `"${(model as any)?.name || (model as any)?.name || "Modelo"}" creado correctamente.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al crear modelo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      EquipmentModelsService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentModels"] });
+      toast({
+        title: "Modelo actualizado",
+        description: `"${model?.name}" guardado correctamente.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al actualizar modelo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => EquipmentModelsService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentModels"] });
+      toast({
+        title: "Modelo eliminado",
+        description: `"${model?.name}" eliminado.`,
+        variant: "success",
+      });
+      setConfirmOpen(false);
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al eliminar modelo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      createModel(data, {
-        onSuccess: () => {
-          toast({
-            title: "Modelo creado",
-            description: `"${data.name}" creado correctamente.`,
-            variant: "success",
-          });
-          onOpenChange(false);
-        },
-        onError: (e: any) => {
-          toast({
-            title: "Error al crear modelo",
-            description: e?.message || "Intenta nuevamente.",
-            variant: "error",
-          });
-        },
-      });
+      createMutation.mutate(data);
     } else if (mode === "edit" && model) {
-      updateModel(
-        { id: model.id, dto: data },
-        {
-          onSuccess: () => {
-            toast({
-              title: "Modelo actualizado",
-              description: `"${data.name}" guardado correctamente.`,
-              variant: "success",
-            });
-            onOpenChange(false);
-          },
-          onError: (e: any) => {
-            toast({
-              title: "Error al actualizar modelo",
-              description: e?.message || "Intenta nuevamente.",
-              variant: "error",
-            });
-          },
-        }
-      );
+      updateMutation.mutate({ id: model.id, data });
     }
   };
 
@@ -98,7 +123,7 @@ export function EquipmentModelDialog({
         <div className="space-y-4">
           <EquipmentModelForm
             onSubmit={onSubmit}
-            isLoading={creating || updating}
+            isLoading={createMutation.isPending || updateMutation.isPending}
             defaultValues={
               mode === "edit" && model
                 ? {
@@ -119,7 +144,7 @@ export function EquipmentModelDialog({
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-sm font-medium text-destructive">
                     Eliminar modelo
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -129,7 +154,7 @@ export function EquipmentModelDialog({
                 <Button
                   variant="destructive"
                   onClick={() => setConfirmOpen(true)}
-                  disabled={deleting}
+                  disabled={deleteMutation.isPending}
                 >
                   Eliminar
                 </Button>
@@ -153,24 +178,7 @@ export function EquipmentModelDialog({
             <AlertDialogAction
               onClick={() => {
                 if (model) {
-                  deleteModel(model.id, {
-                    onSuccess: () => {
-                      toast({
-                        title: "Modelo eliminado",
-                        description: `"${model.name}" eliminado.`,
-                        variant: "success",
-                      });
-                      setConfirmOpen(false);
-                      onOpenChange(false);
-                    },
-                    onError: (e: any) => {
-                      toast({
-                        title: "Error al eliminar modelo",
-                        description: e?.message || "Intenta nuevamente.",
-                        variant: "error",
-                      });
-                    },
-                  });
+                  deleteMutation.mutate(model.id);
                 }
               }}
             >

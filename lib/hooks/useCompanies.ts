@@ -1,41 +1,76 @@
 // file: sae-frontend/lib/hooks/useCompanies.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { invalidateCompanyRelatedQueries } from "@/lib/utils/cache-invalidation";
 import {
-  CompaniesService,
-  BusinessCategoriesService,
-  BusinessSubCategoriesService,
-} from "@/lib/api/companies";
+  useFindAllCompaniesQuery,
+  useFindOneCompanyQuery,
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation,
+  useRemoveCompanyMutation,
+  useRestoreCompanyMutation,
+  useFindAllBusinessCategoriesQuery,
+  useFindOneBusinessCategoryQuery,
+  useFindAllBusinessSubCategoriesQuery,
+} from "@/lib/graphql/generated";
+import { BusinessSubCategory } from "@/lib/types/domain/company";
 import {
-  Company,
-  BusinessCategory,
-  BusinessSubCategory,
-} from "@/lib/types/domain/company";
-import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
   CreateBusinessCategoryDto,
   UpdateBusinessCategoryDto,
-  CreateBusinessSubcategoryDto,
-  UpdateBusinessSubcategoryDto,
 } from "@/lib/types/domain/company";
-import { BaseQueryParams } from "../types/core/api";
+
+const GRAPHQL_ENDPOINT =
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:3305/graphql";
 
 // ========== Business Categories ==========
-export function useBusinessCategories(params?: BaseQueryParams) {
-  return useQuery<BusinessCategory[], Error>({
-    queryKey: ["business-categories", params],
-    queryFn: async () => {
-      const response = await BusinessCategoriesService.getAll();
-      return response.data;
+export function useBusinessCategories() {
+  return useFindAllBusinessCategoriesQuery(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {},
+    {
+      select: (data: any) => {
+        const result = data?.findAllBusinessCategories;
+        if (result && "data" in result) {
+          return {
+            ...result,
+            data: result.data.map((item: any) => ({
+              ...item,
+              __typename: undefined,
+            })),
+          };
+        }
+        return { data: [], meta: { total: 0, page: 0, limit: 0 } };
+      },
     },
-  });
+  );
+}
+
+export function useBusinessCategory(id: number) {
+  return useFindOneBusinessCategoryQuery(
+    { endpoint: GRAPHQL_ENDPOINT },
+    { id },
+    {
+      select: (data: any) => {
+        const result = data?.findOneBusinessCategory;
+        if (result) {
+          return {
+            ...result,
+            __typename: undefined,
+          };
+        }
+        return undefined;
+      },
+      enabled: !!id,
+    },
+  );
 }
 
 export function useCreateBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateBusinessCategoryDto) =>
-      BusinessCategoriesService.create(data),
+    mutationFn: async (data: CreateBusinessCategoryDto) => {
+      const { BusinessCategoriesService } = await import("@/lib/api/companies");
+      return BusinessCategoriesService.create(data);
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["business-categories"] }),
   });
@@ -44,13 +79,16 @@ export function useCreateBusinessCategory() {
 export function useUpdateBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       id,
       data,
     }: {
       id: number;
       data: UpdateBusinessCategoryDto;
-    }) => BusinessCategoriesService.update(id, data),
+    }) => {
+      const { BusinessCategoriesService } = await import("@/lib/api/companies");
+      return BusinessCategoriesService.update(id, data);
+    },
     onSuccess: (_d, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -61,7 +99,10 @@ export function useUpdateBusinessCategory() {
 export function useDeleteBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessCategoriesService.delete(id),
+    mutationFn: async (id: number) => {
+      const { BusinessCategoriesService } = await import("@/lib/api/companies");
+      return BusinessCategoriesService.delete(id);
+    },
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -72,7 +113,10 @@ export function useDeleteBusinessCategory() {
 export function useRestoreBusinessCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessCategoriesService.restore(id),
+    mutationFn: async (id: number) => {
+      const { BusinessCategoriesService } = await import("@/lib/api/companies");
+      return BusinessCategoriesService.restore(id);
+    },
     onSuccess: (_m, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-categories"] });
       queryClient.invalidateQueries({ queryKey: ["business-category", id] });
@@ -81,20 +125,36 @@ export function useRestoreBusinessCategory() {
 }
 
 // ========== Business SubCategories ==========
-export function useBusinessSubCategories(params?: BaseQueryParams) {
-  return useQuery<BusinessSubCategory[], Error>({
-    queryKey: ["business-subcategories", params],
-    queryFn: async () => {
-      const response = await BusinessSubCategoriesService.getAll();
-      return response.data;
+export function useBusinessSubCategories() {
+  return useFindAllBusinessSubCategoriesQuery(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {},
+    {
+      select: (data: any) => {
+        const result = data?.findAllBusinessSubCategories;
+        if (result && "data" in result) {
+          return {
+            ...result,
+            data: result.data.map((item: any) => ({
+              ...item,
+              __typename: undefined,
+            })),
+          };
+        }
+        return { data: [], meta: { total: 0, page: 0, limit: 0 } };
+      },
     },
-  });
+  );
 }
 
 export function useBusinessSubCategory(id: number) {
   return useQuery<BusinessSubCategory, Error>({
     queryKey: ["business-subcategory", id],
-    queryFn: () => BusinessSubCategoriesService.getById(id),
+    queryFn: async () => {
+      const { BusinessSubCategoriesService } =
+        await import("@/lib/api/companies");
+      return BusinessSubCategoriesService.getById(id);
+    },
     enabled: !!id,
   });
 }
@@ -102,8 +162,11 @@ export function useBusinessSubCategory(id: number) {
 export function useCreateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateBusinessSubcategoryDto) =>
-      BusinessSubCategoriesService.create(data),
+    mutationFn: async (data: any) => {
+      const { BusinessSubCategoriesService } =
+        await import("@/lib/api/companies");
+      return BusinessSubCategoriesService.create(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
     },
@@ -113,13 +176,11 @@ export function useCreateBusinessSubCategory() {
 export function useUpdateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: number;
-      data: UpdateBusinessSubcategoryDto;
-    }) => BusinessSubCategoriesService.update(id, data),
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const { BusinessSubCategoriesService } =
+        await import("@/lib/api/companies");
+      return BusinessSubCategoriesService.update(id, data);
+    },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({
@@ -132,7 +193,11 @@ export function useUpdateBusinessSubCategory() {
 export function useDeleteBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessSubCategoriesService.delete(id),
+    mutationFn: async (id: number) => {
+      const { BusinessSubCategoriesService } =
+        await import("@/lib/api/companies");
+      return BusinessSubCategoriesService.delete(id);
+    },
     onSuccess: (_message, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({ queryKey: ["business-subcategory", id] });
@@ -143,7 +208,11 @@ export function useDeleteBusinessSubCategory() {
 export function useRestoreBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => BusinessSubCategoriesService.restore(id),
+    mutationFn: async (id: number) => {
+      const { BusinessSubCategoriesService } =
+        await import("@/lib/api/companies");
+      return BusinessSubCategoriesService.restore(id);
+    },
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({ queryKey: ["business-subcategory", id] });
@@ -152,66 +221,103 @@ export function useRestoreBusinessSubCategory() {
 }
 
 // ========== Companies ==========
-export function useCompanies(params?: BaseQueryParams) {
-  return useQuery<Company[], Error>({
-    queryKey: ["companies", params],
-    queryFn: async () => {
-      const response = await CompaniesService.getAll(params);
-      return response.data;
+export function useCompanies(params?: {
+  skip?: number;
+  take?: number;
+  q?: string;
+}) {
+  return useFindAllCompaniesQuery(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {
+      skip: params?.skip ?? 0,
+      take: params?.take ?? 10,
+      q: params?.q,
     },
-  });
+    {
+      select: (data: any) => {
+        const result = data?.findAllCompanies;
+        if (result && "data" in result) {
+          return {
+            ...result,
+            data: result.data.map((item: any) => ({
+              ...item,
+              __typename: undefined,
+            })),
+          };
+        }
+        return { data: [], meta: { total: 0, page: 0, limit: 0 } };
+      },
+    },
+  );
 }
 
 export function useCompany(id: number) {
-  return useQuery<Company, Error>({
-    queryKey: ["company", id],
-    queryFn: () => CompaniesService.getById(id),
-    enabled: !!id,
-  });
+  return useFindOneCompanyQuery(
+    { endpoint: GRAPHQL_ENDPOINT },
+    { id },
+    {
+      select: (data: any) => {
+        const result = data?.findOneCompany;
+        if (result) {
+          return {
+            ...result,
+            __typename: undefined,
+          };
+        }
+        return undefined;
+      },
+      enabled: !!id,
+    },
+  );
 }
 
 export function useCreateCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateCompanyDto) => CompaniesService.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
+  return useCreateCompanyMutation(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {
+      onSuccess: () => {
+        invalidateCompanyRelatedQueries(queryClient);
+      },
     },
-  });
+  );
 }
 
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateCompanyDto }) =>
-      CompaniesService.update(id, data),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", variables.id] });
+  return useUpdateCompanyMutation(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {
+      onSuccess: (_data, variables) => {
+        invalidateCompanyRelatedQueries(queryClient, Number(variables.id));
+      },
     },
-  });
+  );
 }
 
 export function useDeleteCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => CompaniesService.delete(id),
-    onSuccess: (_message, id) => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", id] });
+  return useRemoveCompanyMutation(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {
+      onSuccess: (_message, id) => {
+        invalidateCompanyRelatedQueries(queryClient, Number(id));
+      },
     },
-  });
+  );
 }
 
 export function useRestoreCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => CompaniesService.restore(id),
-    onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", id] });
+  return useRestoreCompanyMutation(
+    { endpoint: GRAPHQL_ENDPOINT },
+    {
+      onSuccess: (_data, id) => {
+        queryClient.invalidateQueries({ queryKey: ["companies"] });
+        queryClient.invalidateQueries({ queryKey: ["company", id] });
+      },
     },
-  });
+  );
 }
 
 // Backward compatibility aliases

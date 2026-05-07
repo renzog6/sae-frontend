@@ -10,14 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Filter, Folder } from "lucide-react";
 import type {
   Equipment,
   EquipmentCategory,
 } from "@/lib/types/domain/equipment";
-import {
-  useEquipmentCategories,
-} from "@/lib/hooks/useEquipments";
+import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table-v2";
 import { useServerDataTable } from "@/components/hooks/useServerDataTable";
 import { getEquipmentColumns } from "./columns";
@@ -28,21 +26,19 @@ import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 import { equipmentStatusLabels } from "@/lib/constants/equipment.constants";
 import { EquipmentsService } from "@/lib/api/equipments";
 
-
 export default function EquipmentListPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(
-    EquipmentStatus.ACTIVE
+    EquipmentStatus.ACTIVE,
   );
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const router = useRouter();
 
   const { useGetAll: useGetCategories } = useEquipmentCategories();
   const { data: categoriesResponse } = useGetCategories();
-
-
 
   // Query function for server-side data table
   const queryFn = async (params: {
@@ -84,13 +80,7 @@ export default function EquipmentListPage() {
       queryParams.status = selectedStatus;
     }
     if (selectedCategory) {
-      // Find category by name and get ID
-      const category = categoriesResponse?.data?.find(
-        (cat: EquipmentCategory) => cat.name === selectedCategory
-      );
-      if (category) {
-        queryParams.categoryId = category.id;
-      }
+      queryParams.categoryId = selectedCategory;
     }
 
     return EquipmentsService.getAll(queryParams);
@@ -108,11 +98,14 @@ export default function EquipmentListPage() {
   });
 
   const categories = useMemo(() => {
-    return (categoriesResponse?.data || []).sort(
-      (a: EquipmentCategory, b: EquipmentCategory) =>
-        a.name.localeCompare(b.name)
+    const response = categoriesResponse as any;
+    const data = Array.isArray(response?.data)
+      ? response.data
+      : response?.data?.data || [];
+    return (data || []).sort((a: EquipmentCategory, b: EquipmentCategory) =>
+      a.name.localeCompare(b.name),
     );
-  }, [categoriesResponse?.data]);
+  }, [categoriesResponse]);
 
   return (
     <EntityListLayout
@@ -127,7 +120,9 @@ export default function EquipmentListPage() {
                 selectedStatus === "ALL"
                   ? undefined
                   : selectedStatus.toLowerCase(),
-              category: selectedCategory || undefined,
+              category: selectedCategory
+                ? categories.find((c: EquipmentCategory) => c.id === selectedCategory)?.name
+                : undefined,
             }}
             title="Equipos"
           />
@@ -146,13 +141,15 @@ export default function EquipmentListPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">📊</span>
-                {selectedStatus === "ALL"
-                  ? "Todos los estados"
-                  : equipmentStatusLabels[selectedStatus as EquipmentStatus]}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  {selectedStatus === "ALL"
+                    ? "Todos los estados"
+                    : equipmentStatusLabels[selectedStatus as EquipmentStatus]}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -175,24 +172,29 @@ export default function EquipmentListPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">🏷️</span>
-                {selectedCategory || "Todas las categorías"}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Folder className="mr-2 h-4 w-4" />
+                  {selectedCategory
+                    ? categories.find((c: EquipmentCategory) => c.id === selectedCategory)?.name ||
+                      "Categoría no encontrada"
+                    : "Todas las categorías"}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
               className="w-48 overflow-y-auto max-h-60"
             >
-              <DropdownMenuItem onClick={() => setSelectedCategory("")}>
+              <DropdownMenuItem onClick={() => setSelectedCategory(null)}>
                 Todas las categorías
               </DropdownMenuItem>
               {categories.map((category: EquipmentCategory) => (
                 <DropdownMenuItem
                   key={category.id}
-                  onClick={() => setSelectedCategory(category.name)}
+                  onClick={() => setSelectedCategory(category.id)}
                 >
                   {category.name}
                 </DropdownMenuItem>
@@ -205,9 +207,9 @@ export default function EquipmentListPage() {
       <EntityErrorState error={error} />
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <p className="text-muted-foreground">Cargando equipos...</p>
-        </div>
+
+        <EntityLoadingState />
+
       ) : (
         <DataTable<Equipment> table={table} totalItems={totalItems} />
       )}

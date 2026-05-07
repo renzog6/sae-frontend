@@ -14,6 +14,7 @@ import type { Tire } from "@/lib/types/domain/tire";
 import { TiresService } from "@/lib/api/tires/tires.service";
 import { DataTable } from "@/components/data-table/data-table-v2";
 import { useServerDataTable } from "@/components/hooks/useServerDataTable";
+import { useTires } from "@/lib/hooks/useTires";
 import { getTireColumns } from "./columns";
 import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
@@ -25,32 +26,32 @@ import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 export default function TiresPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
-  const queryFn = async (params: {
-    page: number;
-    limit: number;
-    filters?: Record<string, string>;
-  }) => {
-    const queryParams: any = {
-      page: params.page,
-      limit: params.limit,
-    };
+    const queryFn = async (params: {
+      page: number;
+      limit: number;
+      filters?: Record<string, string>;
+    }) => {
+      const queryParams: any = {
+        page: params.page,
+        limit: params.limit,
+     };
 
-    if (params.filters) {
-      // Map basic search fields to 'q' if they are used as column filters
-      if (params.filters.serialNumber) queryParams.q = params.filters.serialNumber;
-      if (params.filters.brand) queryParams.q = params.filters.brand;
-      if (params.filters.model) queryParams.q = params.filters.model;
-    }
+     if (params.filters) {
+       // Map basic search fields to 'q' if they are used as column filters
+       if (params.filters.serialNumber) queryParams.q = params.filters.serialNumber;
+       if (params.filters.brand) queryParams.q = params.filters.brand;
+       if (params.filters.model) queryParams.q = params.filters.model;
+     }
 
-    if (selectedStatus && selectedStatus !== "ALL") {
-      queryParams.status = selectedStatus;
-    }
+     if (selectedStatus && selectedStatus !== "ALL") {
+       queryParams.status = selectedStatus;
+     }
 
-    // Since TiresService.getAll returns Promise<PaginatedResponse<Tire>>,
-    // but useServerDataTable expects { data: TData[]; meta: ... }
-    const response = await TiresService.getAll(queryParams);
-    return response;
-  };
+     // We're keeping the direct service call for now to maintain compatibility with useServerDataTable
+     // In a future refactor, we could modify useServerDataTable to work directly with the hook's data
+     const response = await TiresService.getAll(queryParams);
+     return response;
+   };
 
   const columns = useMemo(() => getTireColumns(), []);
 

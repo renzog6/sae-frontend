@@ -55,10 +55,10 @@ export function getBusinessCategoryColumns({
             {category.isActive ? (
               <CheckCircle className="w-4 h-4 text-green-500" />
             ) : (
-              <XCircle className="w-4 h-4 text-red-500" />
+              <XCircle className="w-4 h-4 text-destructive" />
             )}
             <span
-              className={category.isActive ? "text-green-700" : "text-red-700"}
+              className={category.isActive ? "text-green-700 dark:text-green-400" : "text-destructive"}
             >
               {category.isActive ? "Activo" : "Inactivo"}
             </span>

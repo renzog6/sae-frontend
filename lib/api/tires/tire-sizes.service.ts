@@ -3,6 +3,7 @@
 import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 
 import {
   TireSize,
@@ -28,6 +29,15 @@ class TireSizesServiceClass extends BaseApiService<
 }
 
 export const TireSizesService = new TireSizesServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireSizes,
+  useGetById: useTireSizeById,
+  useCreate: useCreateTireSize,
+  useUpdate: useUpdateTireSize,
+  useDelete: useDeleteTireSize,
+} = createApiHooks(TireSizesService, "tireSizes");
 
 // ======================
 // TIRE SIZE ALIASES
@@ -62,3 +72,12 @@ class TireSizeAliasesServiceClass extends BaseApiService<
 }
 
 export const TireSizeAliasesService = new TireSizeAliasesServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireSizeAliases,
+  useGetById: useTireSizeAliasById,
+  useCreate: useCreateTireSizeAlias,
+  useUpdate: useUpdateTireSizeAlias,
+  useDelete: useDeleteTireSizeAlias,
+} = createApiHooks(TireSizeAliasesService, "tireSizeAliases");

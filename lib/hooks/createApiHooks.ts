@@ -7,11 +7,25 @@ export function createApiHooks<
   TCreateDto,
   TUpdateDto,
   TQuery extends object = {}
->(service: BaseApiService<TEntity, TCreateDto, TUpdateDto>, keyPrefix: string) {
+>(
+  service: BaseApiService<TEntity, TCreateDto, TUpdateDto>,
+  keyPrefix: string,
+  options?: {
+    onCreateSuccess?: (queryClient: ReturnType<typeof useQueryClient>) => void;
+    onUpdateSuccess?: (queryClient: ReturnType<typeof useQueryClient>, id: number) => void;
+    onDeleteSuccess?: (queryClient: ReturnType<typeof useQueryClient>) => void;
+  }
+) {
   const useGetAll = (query?: TQuery) =>
     useQuery({
       queryKey: [keyPrefix, "list", query],
       queryFn: () => service.getAll(query as any),
+    });
+
+  const useGetAllNoLimit = () =>
+    useQuery({
+      queryKey: [keyPrefix, "list", "all"],
+      queryFn: () => service.getAllNoLimit(),
     });
 
   const useGetById = (id: number) =>
@@ -25,7 +39,13 @@ export function createApiHooks<
     const qc = useQueryClient();
     return useMutation({
       mutationFn: (dto: TCreateDto) => service.create(dto),
-      onSuccess: () => qc.invalidateQueries({ queryKey: [keyPrefix, "list"] }),
+      onSuccess: () => {
+        if (options?.onCreateSuccess) {
+          options.onCreateSuccess(qc);
+        } else {
+          qc.invalidateQueries({ queryKey: [keyPrefix, "list"] });
+        }
+      },
     });
   };
 
@@ -35,8 +55,12 @@ export function createApiHooks<
       mutationFn: (data: { id: number; dto: TUpdateDto }) =>
         service.update(data.id, data.dto),
       onSuccess: (_, { id }) => {
-        qc.invalidateQueries({ queryKey: [keyPrefix, "detail", id] });
-        qc.invalidateQueries({ queryKey: [keyPrefix, "list"] });
+        if (options?.onUpdateSuccess) {
+          options.onUpdateSuccess(qc, id);
+        } else {
+          qc.invalidateQueries({ queryKey: [keyPrefix, "detail", id] });
+          qc.invalidateQueries({ queryKey: [keyPrefix, "list"] });
+        }
       },
     });
   };
@@ -45,9 +69,15 @@ export function createApiHooks<
     const qc = useQueryClient();
     return useMutation({
       mutationFn: (id: number) => service.delete(id),
-      onSuccess: () => qc.invalidateQueries({ queryKey: [keyPrefix, "list"] }),
+      onSuccess: () => {
+        if (options?.onDeleteSuccess) {
+          options.onDeleteSuccess(qc);
+        } else {
+          qc.invalidateQueries({ queryKey: [keyPrefix, "list"] });
+        }
+      },
     });
   };
 
-  return { useGetAll, useGetById, useCreate, useUpdate, useDelete };
+  return { useGetAll, useGetAllNoLimit, useGetById, useCreate, useUpdate, useDelete };
 }

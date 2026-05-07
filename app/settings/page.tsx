@@ -77,10 +77,10 @@ export default function SettingsPage() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Administra Configuración
           </h1>
-          <p className="text-zinc-500">
+          <p className="text-muted-foreground">
             Gestiona las entidades base del sistema de forma simple y
             organizada.
           </p>
@@ -100,9 +100,9 @@ export default function SettingsPage() {
               href={section.href}
               aria-label={section.ariaLabel}
               aria-describedby={section.ariaDescribedBy}
-              className="group block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:focus-visible:ring-emerald-400/60 rounded-2xl"
+              className="group block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
             >
-              <Card className="h-full transition-all duration-300 border border-zinc-200 shadow-sm hover:shadow-lg hover:border-teal-200">
+              <Card className="h-full transition-all duration-300 border border-border shadow-sm hover:shadow-lg hover:border-primary/50">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <div
@@ -111,20 +111,20 @@ export default function SettingsPage() {
                       <section.icon className="h-5 w-5" />
                     </div>
                     <CardTitle
-                      className={`text-xl font-semibold text-zinc-800 ${section.hoverColor} transition-colors`}
+                      className={`text-xl font-semibold text-card-foreground ${section.hoverColor} transition-colors`}
                     >
                       {section.title}
                     </CardTitle>
                   </div>
                   <CardDescription
                     id={section.ariaDescribedBy}
-                    className="text-zinc-500 group-hover:text-zinc-600 transition-colors"
+                    className="text-muted-foreground group-hover:text-foreground transition-colors"
                   >
                     {section.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-sm font-medium text-zinc-500 group-hover:text-teal-600 transition-colors">
+                  <div className="flex items-center text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
                     Abrir sección
                     <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>

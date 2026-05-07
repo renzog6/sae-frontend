@@ -55,6 +55,22 @@
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
     --tracking-normal: 0.025em;
     --spacing: 0.25rem;
+
+    /* Estado tokens para badges consistentes */
+    --success: oklch(0.7234 0.1514 154.6164);
+    --success-foreground: oklch(0.2626 0.0147 166.4589);
+    --warning: oklch(0.7686 0.1647 70.0804);
+    --warning-foreground: oklch(0.2626 0.0147 166.4589);
+    --info: oklch(0.5523 0.1927 232.7272);
+    --info-foreground: oklch(0.9934 0.0032 17.2118);
+
+    /* === ESTÁNDARES DE DISEÑO === */
+    /* Encabezados */
+    --text-page-title: 1.5rem;
+    --text-section-title: 1.25rem;
+    --text-card-title: 1.125rem;
+    --text-body: 0.875rem;
+    --text-metadata: 0.75rem;
   }
 
   .dark {
@@ -90,6 +106,15 @@
     --sidebar-accent-foreground: oklch(0.9851 0 0);
     --sidebar-border: oklch(0.2809 0 0);
     --sidebar-ring: oklch(0.8003 0.1821 151.711);
+
+    /* Estado tokens para badges - dark mode */
+    --success: oklch(0.5523 0.1927 154.6164);
+    --success-foreground: oklch(0.9934 0.0032 17.2118);
+    --warning: oklch(0.6959 0.1491 70.0804);
+    --warning-foreground: oklch(0.2046 0 0);
+    --info: oklch(0.5523 0.1927 232.7272);
+    --info-foreground: oklch(0.9934 0.0032 17.2118);
+
     --font-sans: Outfit, sans-serif;
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-mono: monospace;
@@ -134,6 +159,12 @@
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);

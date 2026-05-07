@@ -2,7 +2,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useTires } from "@/lib/hooks/useTires";
+import { useTireById } from "@/lib/hooks/useTires";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ export default function TireDetailPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const { data: tire, isLoading } = useTires().useGetById(id);
+  const { data: tire, isLoading } = useTireById(id);
 
   if (isLoading) {
     return (

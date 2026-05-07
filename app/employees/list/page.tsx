@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, Filter, Folder } from "lucide-react";
 import type { Employee, EmployeeCategory } from "@/lib/types/domain/employee";
 import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
@@ -23,6 +23,7 @@ import { ReportType } from "@/lib/types/domain/report";
 import Link from "next/link";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 
 export default function EmployeesPage() {
@@ -106,13 +107,15 @@ export default function EmployeesPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">🏷️</span>
-                {selectedStatus === "ALL"
-                  ? "Todos"
-                  : employeeStatusLabels[selectedStatus as EmployeeStatus]}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  {selectedStatus === "ALL"
+                    ? "Todos"
+                    : employeeStatusLabels[selectedStatus as EmployeeStatus]}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -136,11 +139,13 @@ export default function EmployeesPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">📂</span>
-                {selectedCategory || "Todas las categorías"}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Folder className="mr-2 h-4 w-4" />
+                  {selectedCategory || "Todas las categorías"}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

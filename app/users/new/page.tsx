@@ -2,25 +2,17 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
 import { UserForm } from "@/components/forms/user-form";
-import { useUsers } from "@/lib/hooks/useUsers";
+import { useCreateUser } from "@/lib/hooks/useUsers";
 import { UpdateUserFormData } from "@/lib/validations/auth";
+import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 
 export default function NewUserPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const createUserMutation = useUsers().useCreate();
+  const createUserMutation = useCreateUser();
 
   const handleSubmit = async (data: UpdateUserFormData) => {
     try {
@@ -37,28 +29,18 @@ export default function NewUserPage() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/users");
-  };
-
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle>Crear Nuevo Usuario</CardTitle>
-          <CardDescription>
-            Completa los datos para crear un nuevo usuario en el sistema.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UserForm
-            onSubmit={handleSubmit}
-            isLoading={createUserMutation.isPending}
-            onCancel={handleCancel}
-            error={error}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <EntityFormLayout
+      title="Crear Nuevo Usuario"
+      description="Completa los datos para crear un nuevo usuario en el sistema."
+      backHref="/users"
+    >
+      <UserForm
+        onSubmit={handleSubmit}
+        isLoading={createUserMutation.isPending}
+        onCancel={() => router.push("/users")}
+        error={error}
+      />
+    </EntityFormLayout>
   );
 }

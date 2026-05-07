@@ -24,7 +24,7 @@ import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 const ITEMS_PER_PAGE = 5;
 
 export default function TireStockPage() {
-  const { useGetAll } = useTires();
+  const useGetAll = useTires;
   const { data: tiresData, isLoading } = useGetAll({
     status: "IN_STOCK",
     page: 1,

@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/tire/tire-size-dialog.tsx
+﻿// filepath: sae-frontend/components/tire/tire-size-dialog.tsx
 "use client";
 
 import * as React from "react";
@@ -120,7 +120,7 @@ export function TireSizeDialog({
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-sm font-medium text-destructive">
                     Eliminar tamaño
                   </p>
                   <p className="text-xs text-muted-foreground">

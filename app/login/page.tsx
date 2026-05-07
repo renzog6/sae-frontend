@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/login/page.tsx
+﻿// filepath: sae-frontend/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -106,7 +106,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="flex items-center p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50 animate-in slide-in-from-top-2">
+              <div className="flex items-center p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10 animate-in slide-in-from-top-2">
                 <AlertCircle className="w-4 h-4 mr-2" />
                 <span>{error}</span>
               </div>
@@ -128,7 +128,7 @@ export default function LoginPage() {
                 }`}
               />
               {errors.email && (
-                <p className="text-xs text-red-600">{errors.email.message}</p>
+                <p className="text-xs text-destructive">{errors.email.message}</p>
               )}
             </div>
 
@@ -170,7 +170,7 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-destructive">
                   {errors.password.message}
                 </p>
               )}

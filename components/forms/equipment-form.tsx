@@ -53,14 +53,16 @@ export function EquipmentForm({
 }: EquipmentFormProps) {
   const { toast } = useToast();
 
-  const {
-    data: categoriesResponse,
-    isLoading,
-    error,
-  } = useEquipmentCategories().useGetAll();
-  const categories = categoriesResponse?.data || [];
+  const categoriesQuery = useEquipmentCategories().useGetAll();
+  const categories = Array.isArray(categoriesQuery.data)
+    ? categoriesQuery.data
+    : categoriesQuery.data?.data || [];
 
   const { data: companies = [] } = useCompanies();
+  const companiesList = ((companies as any)?.data || companies || []) as Array<{
+    id: number;
+    name: string;
+  }>;
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentFormSchema),
@@ -112,7 +114,11 @@ export function EquipmentForm({
     : (typesData as any)?.data || [];
 
   const { useGetByType } = useEquipmentModels();
-  const { data: models } = useGetByType(selectedTypeId || 0);
+  const { data: modelsRaw } = useGetByType(selectedTypeId || 0);
+  const models = ((modelsRaw as any)?.data || modelsRaw || []) as Array<{
+    id: number;
+    name: string;
+  }>;
 
   const { useCreate, useUpdate } = useEquipments();
   const { mutate: createEquipment, isPending } = useCreate();
@@ -137,7 +143,7 @@ export function EquipmentForm({
     if (isEdit) {
       // Update existing equipment
       updateEquipment(
-        { id: (defaultValues as any)?.id, dto: submitData },
+        { id: (defaultValues as any)?.id, data: submitData },
         {
           onSuccess: () => {
             toast({
@@ -167,7 +173,7 @@ export function EquipmentForm({
               });
             }
           },
-        }
+        },
       );
     } else {
       // Create new equipment
@@ -294,7 +300,7 @@ export function EquipmentForm({
                   <Combobox
                     options={types
                       .filter((type: any) =>
-                        type.name.toLowerCase().includes("")
+                        type.name.toLowerCase().includes(""),
                       )
                       .sort((a: any, b: any) => a.name.localeCompare(b.name))
                       .map((type: any) => ({
@@ -327,7 +333,7 @@ export function EquipmentForm({
                   <Combobox
                     options={(models || [])
                       .filter((model: any) =>
-                        model.name.toLowerCase().includes("")
+                        model.name.toLowerCase().includes(""),
                       )
                       .sort((a: any, b: any) => a.name.localeCompare(b.name))
                       .map((model: any) => ({
@@ -426,7 +432,7 @@ export function EquipmentForm({
                     value={field.value || ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined
+                        e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
                     disabled={isPending}
@@ -514,7 +520,7 @@ export function EquipmentForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {companies.map((company) => (
+                    {companiesList.map((company) => (
                       <SelectItem
                         key={company.id}
                         value={company.id.toString()}
@@ -623,8 +629,8 @@ export function EquipmentForm({
                 ? "Actualizando..."
                 : "Creando..."
               : isEdit
-              ? "Actualizar Equipo"
-              : "Crear Equipo"}
+                ? "Actualizar Equipo"
+                : "Crear Equipo"}
           </Button>
         </div>
       </form>

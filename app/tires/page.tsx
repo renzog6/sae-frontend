@@ -151,10 +151,10 @@ export default function TiresPage() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Gestión de Neumáticos
           </h1>
-          <p className="text-zinc-500">
+          <p className="text-muted-foreground">
             Administra todo el ciclo de vida de los neumáticos de tu flota.
           </p>
         </div>
@@ -171,9 +171,9 @@ export default function TiresPage() {
           >
             <Link
               href={section.href}
-              className="block h-full group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:focus-visible:ring-emerald-400/60 rounded-2xl"
+              className="block h-full group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
             >
-              <Card className="h-full transition-all duration-300 border shadow-sm border-zinc-200 hover:shadow-lg hover:border-teal-200">
+              <Card className="h-full transition-all duration-300 border shadow-sm border-border hover:shadow-lg hover:border-primary/50">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <div
@@ -182,17 +182,17 @@ export default function TiresPage() {
                       <section.icon className="w-5 h-5" />
                     </div>
                     <CardTitle
-                      className={`text-xl font-semibold text-zinc-800 ${section.hoverColor} transition-colors`}
+                      className={`text-xl font-semibold text-card-foreground ${section.hoverColor} transition-colors`}
                     >
                       {section.title}
                     </CardTitle>
                   </div>
-                  <CardDescription className="transition-colors text-zinc-500 group-hover:text-zinc-600">
+                  <CardDescription className="transition-colors text-muted-foreground group-hover:text-foreground">
                     {section.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-sm font-medium transition-colors text-zinc-500 group-hover:text-teal-600">
+                  <div className="flex items-center text-sm font-medium transition-colors text-muted-foreground group-hover:text-primary">
                     Abrir sección
                     <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                   </div>

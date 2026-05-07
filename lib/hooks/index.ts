@@ -19,9 +19,12 @@ export * from "./useCatalogs";
 // Locations
 export * from "./useLocations";
 
-
 // Users
 export * from "./useUsers";
 
 // Reports
 export * from "./useReports";
+
+// Shared hooks
+export * from "./useApiState";
+export * from "./useApiErrorHandler";

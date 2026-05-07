@@ -8,7 +8,9 @@
     "dev": "next dev --turbopack --port 3003",
     "build": "next build --turbopack",
     "start": "next start --port 3003",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -61,6 +63,7 @@
     "eslint": "9.39.2",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4.1.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.54.0"
   }
 }

@@ -3,6 +3,7 @@
 import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 
 import {
   TireModel,
@@ -45,3 +46,12 @@ class TireModelsServiceClass extends BaseApiService<
 }
 
 export const TireModelsService = new TireModelsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireModels,
+  useGetById: useTireModelById,
+  useCreate: useCreateTireModel,
+  useUpdate: useUpdateTireModel,
+  useDelete: useDeleteTireModel,
+} = createApiHooks(TireModelsService, "tire-models");

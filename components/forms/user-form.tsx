@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/user-form.tsx
+﻿// filepath: sae-frontend/components/forms/user-form.tsx
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
@@ -106,7 +106,7 @@ export function UserForm({
       className="w-full max-w-md mx-auto space-y-4"
     >
       {error && (
-        <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+        <div className="p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10">
           {error}
         </div>
       )}
@@ -120,7 +120,7 @@ export function UserForm({
           autoComplete="name"
         />
         {errors.name && (
-          <p className="text-sm text-red-600">{errors.name.message}</p>
+          <p className="text-sm text-destructive">{errors.name.message}</p>
         )}
       </div>
 
@@ -134,7 +134,7 @@ export function UserForm({
           autoComplete="email"
         />
         {errors.email && (
-          <p className="text-sm text-red-600">{errors.email.message}</p>
+          <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
 
@@ -147,7 +147,7 @@ export function UserForm({
           autoComplete="username"
         />
         {errors.username && (
-          <p className="text-sm text-red-600">{errors.username.message}</p>
+          <p className="text-sm text-destructive">{errors.username.message}</p>
         )}
       </div>
 
@@ -167,7 +167,7 @@ export function UserForm({
           autoComplete="new-password"
         />
         {errors.password && (
-          <p className="text-sm text-red-600">{errors.password.message}</p>
+          <p className="text-sm text-destructive">{errors.password.message}</p>
         )}
       </div>
 
@@ -189,7 +189,7 @@ export function UserForm({
           )}
         />
         {errors.role && (
-          <p className="text-sm text-red-600">{errors.role.message}</p>
+          <p className="text-sm text-destructive">{errors.role.message}</p>
         )}
       </div>
 
@@ -202,7 +202,7 @@ export function UserForm({
           placeholder="1"
         />
         {errors.companyId && (
-          <p className="text-sm text-red-600">{errors.companyId.message}</p>
+          <p className="text-sm text-destructive">{errors.companyId.message}</p>
         )}
       </div>
 
@@ -219,7 +219,7 @@ export function UserForm({
           value="{}"
         />
         {errors.preferences && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-destructive">
             {String(errors.preferences.message)}
           </p>
         )}
@@ -239,7 +239,7 @@ export function UserForm({
         />
         <Label htmlFor="isActive">Usuario activo</Label>
         {errors.isActive && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-destructive">
             {String(errors.isActive.message)}
           </p>
         )}

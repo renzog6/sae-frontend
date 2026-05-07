@@ -4,7 +4,7 @@
 import { useTires, useTireReports } from "@/lib/hooks/useTires";
 
 export default function TireReportsSummaryPage() {
-  const { useGetAll } = useTires();
+  const useGetAll = useTires;
   const { data: tiresData } = useGetAll({ status: "IN_STOCK" });
 
   const { useAverageLife, useCostPerKm, useOverRecapped } = useTireReports();
@@ -21,7 +21,7 @@ export default function TireReportsSummaryPage() {
   const averageCostPerKm =
     costPerKmData && costPerKmData.length > 0
       ? `$${
-          costPerKmData.reduce((sum, item) => sum + (item.costPerKm || 0), 0) /
+          costPerKmData.reduce((sum: number, item: any) => sum + (item.costPerKm || 0), 0) /
           costPerKmData.length
         }`
       : "$0.00";

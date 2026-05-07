@@ -29,6 +29,19 @@ export abstract class BaseApiService<
     );
   }
 
+  // GET ALL without pagination limit (for small static datasets like provinces, cities, etc.)
+  async getAllNoLimit(): Promise<PaginatedResponse<TEntity>> {
+    return ApiErrorHandler.handleApiCall(
+      async () => {
+        const url = QueryBuilder.buildUrl(this.basePath, { limit: 9999 });
+        return ApiClient.get<PaginatedResponse<TEntity>>(url);
+      },
+      this.constructor.name,
+      "getAllNoLimit",
+      {}
+    );
+  }
+
   // GET BY ID
   async getById(id: number): Promise<TEntity> {
     return ApiErrorHandler.handleApiCall(
