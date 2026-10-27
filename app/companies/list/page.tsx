@@ -29,7 +29,7 @@ export default function CompaniesPage() {
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
 
   const { data: categoriesResponse } = useBusinessCategories();
-  const categories: BusinessCategory[] = categoriesResponse || [];
+  const categories: BusinessCategory[] = categoriesResponse?.data ?? [];
 
   const columns = useMemo(() => getCompanyColumns(), []);
 

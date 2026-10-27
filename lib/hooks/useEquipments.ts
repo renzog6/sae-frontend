@@ -2,13 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { invalidateEquipmentRelatedQueries } from "@/lib/utils/cache-invalidation";
 import {
-  useFindAllEquipmentQuery,
-  useFindOneEquipmentQuery,
-  useRemoveEquipmentMutation,
-  useRestoreEquipmentMutation,
-  useHardDeleteEquipmentMutation,
-} from "@/lib/graphql/generated";
-import {
+  EquipmentsService,
   EquipmentCategoriesService,
   EquipmentTypesService,
   EquipmentModelsService,
@@ -16,12 +10,17 @@ import {
 } from "@/lib/api/equipments";
 import { CreateAxleWithPositionsDto } from "@/lib/types/domain/equipment";
 
-const GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:3305/graphql";
-
 //==== EQUIPMENT =====
 export const useEquipments = () => {
   return {
+    /**
+     * Listado paginado de equipos.
+     *
+     * Acepta tanto `{ page, limit }` como la forma histórica `{ skip, take }`.
+     * `status` se mantiene en la firma por compatibilidad, pero no se envía:
+     * `BaseQueryDto` del backend no lo admite y el `ValidationPipe` global
+     * rechazaría el request con 400. (Comportamiento idéntico al anterior.)
+     */
     useGetAll: (options?: {
       skip?: number;
       take?: number;
@@ -29,80 +28,28 @@ export const useEquipments = () => {
       page?: number;
       limit?: number;
       status?: string;
-    }) =>
-      useFindAllEquipmentQuery(
-        { endpoint: GRAPHQL_ENDPOINT },
-        {
-          skip: options?.page
-            ? (options.page - 1) * (options.limit || 10)
-            : (options?.skip ?? 0),
-          take: options?.limit ?? options?.take ?? 10,
-          q: options?.q,
-        },
-        {
-          select: (data: any) => {
-            const result = data?.findAllEquipment;
-            if (result && "data" in result) {
-              return {
-                ...result,
-                data: result.data.map((item: any) => ({
-                  ...item,
-                  __typename: undefined,
-                })),
-              };
-            }
-            return { data: [], meta: { total: 0, page: 0, limit: 0 } };
-          },
-        },
-      ),
+    }) => {
+      const take = options?.limit ?? options?.take ?? 10;
+      const page =
+        options?.page ??
+        (options?.skip && take ? Math.floor(options.skip / take) + 1 : 1);
+
+      return useQuery({
+        queryKey: ["equipments", "list", { page, limit: take, q: options?.q }],
+        queryFn: () =>
+          EquipmentsService.getAll({ page, limit: take, q: options?.q }),
+      });
+    },
     useGetById: (id: number) =>
-      useFindOneEquipmentQuery(
-        { endpoint: GRAPHQL_ENDPOINT },
-        { id },
-        {
-          select: (data: any) => {
-            const result = data?.findOneEquipment;
-            if (result) {
-              return {
-                ...result,
-                __typename: undefined,
-              };
-            }
-            return undefined;
-          },
-          enabled: !!id,
-        },
-      ),
+      useQuery({
+        queryKey: ["equipments", "detail", id],
+        queryFn: () => EquipmentsService.getById(id),
+        enabled: !!id,
+      }),
     useCreate: () => {
       const queryClient = useQueryClient();
       return useMutation({
-        mutationFn: async (data: any) => {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") : ""}`,
-              },
-              body: JSON.stringify({
-                query: `
-                mutation CreateEquipment($input: CreateEquipmentDto!) {
-                  createEquipment(input: $input) {
-                    id
-                    name
-                    internalCode
-                  }
-                }
-              `,
-                variables: { input: data },
-              }),
-            },
-          );
-          const json = await response.json();
-          if (json.errors) throw new Error(json.errors[0].message);
-          return json.data.createEquipment;
-        },
+        mutationFn: (data: any) => EquipmentsService.create(data),
         onSuccess: () => {
           invalidateEquipmentRelatedQueries(queryClient);
         },
@@ -111,75 +58,17 @@ export const useEquipments = () => {
     useUpdate: () => {
       const queryClient = useQueryClient();
       return useMutation({
-        mutationFn: async ({ id, data }: { id: number; data: any }) => {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") : ""}`,
-              },
-              body: JSON.stringify({
-                query: `
-                mutation UpdateEquipment($id: Int!, $input: UpdateEquipmentDto!) {
-                  updateEquipment(id: $id, input: $input) {
-                    id
-                    name
-                    internalCode
-                  }
-                }
-              `,
-                variables: { id, input: data },
-              }),
-            },
-          );
-          const json = await response.json();
-          if (json.errors) throw new Error(json.errors[0].message);
-          return json.data.updateEquipment;
-        },
+        mutationFn: ({ id, data }: { id: number; data: any }) =>
+          EquipmentsService.update(id, data),
         onSuccess: (_, variables) => {
           invalidateEquipmentRelatedQueries(queryClient, variables.id);
         },
       });
     },
-    useRemove: () => {
-      const queryClient = useQueryClient();
-      return useRemoveEquipmentMutation(
-        { endpoint: GRAPHQL_ENDPOINT },
-        {
-          onSuccess: () => {
-            invalidateEquipmentRelatedQueries(queryClient);
-          },
-        },
-      );
-    },
-    useRestore: () => {
-      const queryClient = useQueryClient();
-      return useRestoreEquipmentMutation(
-        { endpoint: GRAPHQL_ENDPOINT },
-        {
-          onSuccess: () => {
-            invalidateEquipmentRelatedQueries(queryClient);
-          },
-        },
-      );
-    },
-    useHardDelete: () => {
-      const queryClient = useQueryClient();
-      return useHardDeleteEquipmentMutation(
-        { endpoint: GRAPHQL_ENDPOINT },
-        {
-          onSuccess: () => {
-            invalidateEquipmentRelatedQueries(queryClient);
-          },
-        },
-      );
-    },
   };
 };
 
-// ===== EQUIPMENT CATEGORIES (REST API for now) =====
+// ===== EQUIPMENT CATEGORIES =====
 export const useEquipmentCategories = () => {
   return {
     useGetAll: () =>
@@ -227,7 +116,7 @@ export const useEquipmentCategories = () => {
   };
 };
 
-//==== EQUIPMENT TYPES (REST API for now) =====
+//==== EQUIPMENT TYPES =====
 export const useEquipmentTypes = () => {
   return {
     useGetAll: (options?: { skip?: number; take?: number; q?: string }) =>
@@ -244,7 +133,7 @@ export const useEquipmentTypes = () => {
   };
 };
 
-//==== EQUIPMENT MODELS (REST API for now) =====
+//==== EQUIPMENT MODELS =====
 export const useEquipmentModels = () => {
   return {
     useGetAll: (options?: {
@@ -271,7 +160,7 @@ export const useEquipmentModels = () => {
   };
 };
 
-//==== EQUIPMENT AXLES (REST API for now) =====
+//==== EQUIPMENT AXLES =====
 export const useEquipmentAxles = () => {
   // GET ALL
   const useGetAll = (filter?: { equipmentId?: number }) =>
