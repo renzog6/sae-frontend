@@ -1,37 +1,115 @@
-import * as React from "react";
-import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { Slot } from "radix-ui"
 
-const Breadcrumb = ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
-  <nav aria-label="breadcrumb" className={cn("w-full", className)} {...props} />
-);
-Breadcrumb.displayName = "Breadcrumb";
+import { cn } from "@/lib/utils"
+import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
 
-const BreadcrumbList = ({ className, ...props }: React.OlHTMLAttributes<HTMLOListElement>) => (
-  <ol className={cn("flex items-center gap-1 text-sm text-muted-foreground", className)} {...props} />
-);
-BreadcrumbList.displayName = "BreadcrumbList";
+function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+  return (
+    <nav
+      aria-label="breadcrumb"
+      data-slot="breadcrumb"
+      className={cn(className)}
+      {...props}
+    />
+  )
+}
 
-const BreadcrumbItem = ({ className, ...props }: React.LiHTMLAttributes<HTMLLIElement>) => (
-  <li className={cn("inline-flex items-center gap-1", className)} {...props} />
-);
-BreadcrumbItem.displayName = "BreadcrumbItem";
+function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+  return (
+    <ol
+      data-slot="breadcrumb-list"
+      className={cn(
+        "flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+}
 
-type BreadcrumbSeparatorProps = React.SVGProps<SVGSVGElement>;
-const BreadcrumbSeparator = ({ className, ...props }: BreadcrumbSeparatorProps) => {
-  return <ChevronRight className={cn("h-4 w-4 text-laurel-400", className)} {...props} />;
-};
-BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
+function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="breadcrumb-item"
+      className={cn("inline-flex items-center gap-1", className)}
+      {...props}
+    />
+  )
+}
 
-const BreadcrumbLink = ({ className, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-  <a className={cn("hover:text-foreground text-laurel-700", className)} {...props} />
-);
-BreadcrumbLink.displayName = "BreadcrumbLink";
+function BreadcrumbLink({
+  asChild,
+  className,
+  ...props
+}: React.ComponentProps<"a"> & {
+  asChild?: boolean
+}) {
+  const Comp = asChild ? Slot.Root : "a"
 
-const BreadcrumbPage = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span aria-current="page" className={cn("font-semibold text-foreground", className)} {...props} />
-);
-BreadcrumbPage.displayName = "BreadcrumbPage";
+  return (
+    <Comp
+      data-slot="breadcrumb-link"
+      className={cn("transition-colors hover:text-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="breadcrumb-page"
+      role="link"
+      aria-disabled="true"
+      aria-current="page"
+      className={cn("font-normal text-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbSeparator({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="breadcrumb-separator"
+      role="presentation"
+      aria-hidden="true"
+      className={cn("[&>svg]:size-3.5", className)}
+      {...props}
+    >
+      {children ?? (
+        <ChevronRightIcon />
+      )}
+    </li>
+  )
+}
+
+function BreadcrumbEllipsis({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="breadcrumb-ellipsis"
+      role="presentation"
+      aria-hidden="true"
+      className={cn(
+        "flex size-5 items-center justify-center [&>svg]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <MoreHorizontalIcon
+      />
+      <span className="sr-only">More</span>
+    </span>
+  )
+}
 
 export {
   Breadcrumb,
@@ -40,4 +118,5 @@ export {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-};
+  BreadcrumbEllipsis,
+}
