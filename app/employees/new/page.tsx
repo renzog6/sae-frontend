@@ -2,31 +2,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { EntityFormLayout } from "@/components/entities/entity-form-layout";
 import { EmployeeCreateForm } from "@/components/forms/employee-create-form";
-import { useCreateEmployeeApplication } from "@/lib/application/employee-application.hooks";
+import { useCreateEmployeeApplication } from "@/lib/hooks/useEmployees";
 import { EmployeeStatus } from "@/lib/types/domain/employee";
-import type { CreatePersonFormInput, CreatePersonFormData } from "@/lib/validations/person";
+import type { CreatePersonFormInput } from "@/lib/validations/person";
 
 export default function EmployeeNewPage() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const createEmployeeApplicationMutation = useCreateEmployeeApplication();
 
   async function handleSubmit(data: CreatePersonFormInput) {
     try {
       const applicationData = {
-        personData: data as CreatePersonFormData,
+        personData: {
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          birthDate: data.birthDate,
+          dni: data.dni,
+          cuil: data.cuil,
+          gender: data.gender,
+          maritalStatus: data.maritalStatus,
+          information: data.information,
+        },
         employeeData: {
           companyId: 1,
-          employeeCode: "00000",
+          employeeCode: data.dni || "00000",
           information: "",
-          hireDate: new Date().toISOString(),
+          hireDate: data.hireDate || new Date().toISOString(),
           endDate: undefined,
-          categoryId: 4,
-          positionId: 9,
+          categoryId: data.categoryId!,
+          positionId: data.positionId!,
           status: EmployeeStatus.ACTIVE,
         },
       };

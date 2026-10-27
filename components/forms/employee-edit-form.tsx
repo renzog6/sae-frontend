@@ -21,7 +21,7 @@ import {
 import { AddressDialog } from "@/components/addresses/address-dialog";
 import { ContactDialog } from "@/components/contacts/contact-dialog";
 
-import { useUpdateEmployeeApplication } from "@/lib/application/employee-application.hooks";
+import { useUpdateEmployeeApplication } from "@/lib/hooks/useEmployees";
 import {
   Employee,
   EmployeeStatus,

@@ -1,8 +1,12 @@
 // filepath: sae-frontend/lib/hooks/useEmployees.ts
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createApiHooks } from "./createApiHooks";
 import { invalidateEmployeeRelatedQueries } from "@/lib/utils/cache-invalidation";
 import {
   EmployeesService,
+  EmployeesApplicationService,
+  CreateEmployeeApplicationData,
+  UpdateEmployeeApplicationData,
   EmployeeCategoriesService,
   EmployeePositionsService,
 } from "@/lib/api/employees";
@@ -28,6 +32,38 @@ const employeePositionsHooks = createApiHooks(
   "employeePositions"
 );
 export const useEmployeePositions = () => employeePositionsHooks;
+
+// ==== APPLICATION-LEVEL HOOKS ====
+export function useCreateEmployeeApplication() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateEmployeeApplicationData) =>
+      EmployeesApplicationService.createEmployee(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({ queryKey: ["persons"] });
+    },
+  });
+}
+
+export function useUpdateEmployeeApplication() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: UpdateEmployeeApplicationData;
+    }) => EmployeesApplicationService.updateEmployee(id, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({ queryKey: ["employee", id] });
+    },
+  });
+}
 
 
 
