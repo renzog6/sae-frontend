@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // filepath: sae-frontend/components/forms/tire-model-form.tsx
 "use client";
 
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox-simple";
 import {
   createTireModelSchema,
   type CreateTireModelFormData,
@@ -89,7 +88,6 @@ export function TireModelForm({
               <FormItem>
                 <FormLabel>Marca *</FormLabel>
                 <FormControl>
-                  {/* @ts-ignore - base-ui combobox no tiene prop options */}
                   <Combobox
                     options={
                       brands?.map((brand: Brand) => ({
@@ -118,7 +116,6 @@ export function TireModelForm({
               <FormItem>
                 <FormLabel>Medida *</FormLabel>
                 <FormControl>
-                  {/* @ts-ignore - base-ui combobox no tiene prop options */}
                   <Combobox
                     options={
                       sizes?.map((size: any) => ({

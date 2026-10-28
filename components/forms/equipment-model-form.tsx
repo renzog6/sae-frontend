@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // filepath: sae-frontend/components/forms/equipment-model-form.tsx
 "use client";
 
@@ -29,7 +28,7 @@ import {
 import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
 import { useBrands } from "@/lib/hooks/useCatalogs";
 import { Brand } from "@/lib/types/shared/catalogs";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox-simple";
 
 interface EquipmentModelFormProps {
   onSubmit: (data: EquipmentModelFormData) => void;
@@ -149,7 +148,6 @@ export function EquipmentModelForm({
             <FormItem>
               <FormLabel>Tipo *</FormLabel>
               <FormControl>
-                {/* @ts-ignore - base-ui combobox no tiene prop options */}
                 <Combobox
                   options={types
                     .filter((type: any) => type.name.toLowerCase().includes(""))
@@ -180,7 +178,6 @@ export function EquipmentModelForm({
             <FormItem>
               <FormLabel>Marca *</FormLabel>
               <FormControl>
-                {/* @ts-ignore - base-ui combobox no tiene prop options */}
                 <Combobox
                   options={brands
                     .filter((brand: Brand) =>

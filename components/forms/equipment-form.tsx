@@ -1,4 +1,3 @@
-// @ts-nocheck
 // filepath: sae-frontend/components/forms/equipment-form.tsx
 "use client";
 
@@ -23,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox-simple";
 import { EquipmentStatus, FuelType } from "@/lib/types/shared/enums";
 import {
   equipmentFormSchema,
@@ -298,7 +297,6 @@ export function EquipmentForm({
               <FormItem>
                 <FormLabel>Tipo</FormLabel>
                 <FormControl>
-                  {/* @ts-ignore - base-ui combobox no tiene prop options */}
                   <Combobox
                     options={types
                       .filter((type: any) =>
@@ -332,7 +330,6 @@ export function EquipmentForm({
               <FormItem>
                 <FormLabel>Modelo</FormLabel>
                 <FormControl>
-                  {/* @ts-ignore - base-ui combobox no tiene prop options */}
                   <Combobox
                     options={(models || [])
                       .filter((model: any) =>
