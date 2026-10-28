@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import Link from "next/link";
 import { useToast } from "@/components/ui/toaster";
 
 export default function GlobalError({ error }: { error: Error }) {
@@ -18,9 +19,9 @@ export default function GlobalError({ error }: { error: Error }) {
     <div className="flex flex-col items-center justify-center h-screen text-center">
       <h1 className="mb-4 text-2xl font-bold">An unexpected error occurred</h1>
       <p className="mb-8 text-muted-foreground">{error.message}</p>
-      <a href="/" className="text-blue-500 hover:underline">
+      <Link href="/" className="text-blue-500 hover:underline">
         Return to Dashboard
-      </a>
+      </Link>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 // filepath: sae-frontend/app/tires/reports/layout.tsx
+import Link from "next/link";
 
 export default function ReportsLayout({
   children,
@@ -11,12 +12,12 @@ export default function ReportsLayout({
         Reportes de Neumáticos
       </h1>
       <nav className="flex gap-4 pb-2 mb-6 text-sm text-gray-600 border-b">
-        <a href="/tires/reports/summary" className="hover:text-green-700">
+        <Link href="/tires/reports/summary" className="hover:text-green-700">
           Resumen
-        </a>
-        <a href="/tires/reports/events" className="hover:text-green-700">
+        </Link>
+        <Link href="/tires/reports/events" className="hover:text-green-700">
           Eventos
-        </a>
+        </Link>
       </nav>
       {children}
     </div>

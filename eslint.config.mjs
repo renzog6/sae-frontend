@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
+import nextPlugin from "@next/eslint-plugin-next";
 
 export default [
   // Ignore patterns
@@ -20,6 +21,9 @@ export default [
 
   // TypeScript ESLint configuration
   ...tseslint.configs.recommended,
+
+  // Reglas de Next.js (flat config, disponible desde eslint-plugin-next 16)
+  nextPlugin.configs["core-web-vitals"],
 
   // Next.js core web vitals configuration
   {
