@@ -1,5 +1,5 @@
-# Dockerfile para SAE-Frontend con Node.js 22 Alpine
-FROM node:22-alpine AS base
+# Dockerfile para SAE-Frontend con Node.js 24 Alpine
+FROM node:24-alpine AS base
 
 # Instalar dependencias del sistema necesarias
 RUN apk add --no-cache \
