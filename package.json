@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start --port 3003",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "openapi:types": "openapi-typescript ../sae-backend/openapi.json -o lib/api/schema.d.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -58,6 +59,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "9.39.2",
     "eslint-config-next": "16.1.1",
+    "openapi-typescript": "^7.13.0",
     "shadcn": "^4.7.0",
     "tailwindcss": "^4.1.17",
     "typescript": "^5",
