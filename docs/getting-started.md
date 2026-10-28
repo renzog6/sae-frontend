@@ -64,7 +64,7 @@ Edita `.env.local` con tus valores:
 NODE_ENV=development
 
 # Backend API (NestJS) - IMPORTANTE: Cambiar el puerto
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305
 API_URL=http://localhost:3305/api
 
 # NextAuth - URL donde corre tu frontend
@@ -255,7 +255,7 @@ npm install
 # Verificar que el backend esté corriendo:
 curl http://localhost:3305/api/auth/login
 
-# Verificar NEXT_PUBLIC_API_BASE_URL en .env.local
+# Verificar NEXT_PUBLIC_API_URL en .env.local
 ```
 
 ---

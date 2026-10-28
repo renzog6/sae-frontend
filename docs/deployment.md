@@ -88,7 +88,7 @@ git push origin main
 # En Vercel Dashboard > Settings > Environment Variables
 
 # Agregar estas variables:
-NEXT_PUBLIC_API_BASE_URL=https://tu-backend.com
+NEXT_PUBLIC_API_URL=https://tu-backend.com
 NEXTAUTH_URL=https://tu-app.vercel.app
 NEXTAUTH_SECRET=tu-secret-key-generado
 ```
@@ -134,7 +134,7 @@ Ubicación: `/Dockerfile`
 
 ```dockerfile
 # Multi-stage build para optimizar tamaño
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 
 # Instalar dependencias del sistema
 RUN apk add --no-cache openssl ca-certificates curl
@@ -348,7 +348,7 @@ sudo apt update && sudo apt upgrade -y
 #### 2. Instalar Node.js
 
 ```bash
-# Instalar Node.js 22.x
+# Instalar Node.js 24.x
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
@@ -383,7 +383,7 @@ npm ci --omit=dev
 # Crear .env.production
 cat > .env.production << EOF
 NODE_ENV=production
-NEXT_PUBLIC_API_BASE_URL=https://api.tuempresa.com
+NEXT_PUBLIC_API_URL=https://api.tuempresa.com
 NEXTAUTH_URL=https://app.tuempresa.com
 NEXTAUTH_SECRET=$(openssl rand -hex 32)
 EOF

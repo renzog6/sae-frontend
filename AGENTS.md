@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-- **Type**: Next.js 15 (App Router) + TypeScript enterprise webapp
+- **Type**: Next.js 16 (App Router) + TypeScript enterprise webapp
 - **Port**: 3003 (dev), 3003 (prod)
 - **Backend**: http://localhost:3305
 - **Auth**: NextAuth.js with JWT
@@ -22,7 +22,7 @@ Create `.env.local`:
 
 ```env
 NODE_ENV=development
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305
 API_URL=http://localhost:3305/api
 NEXTAUTH_URL=http://localhost:3003
 NEXTAUTH_SECRET=<generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
@@ -94,7 +94,7 @@ The project has AI skills installed in `.agents/skills/`. Use them as reference 
 
 ### Core Skills
 - **zod** - Validation schemas with Zod (lib/validations/)
-- **next-best-practices** - Next.js 15 best practices
+- **next-best-practices** - Next.js 16 best practices
 - **composition-patterns** - React composition patterns
 - **tailwind-v4-shadcn** - Tailwind CSS v4 + shadcn/ui setup
 - **tailwind-css-patterns** - Tailwind CSS patterns
@@ -169,7 +169,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: npm ci
       - run: npm run build
 ```
