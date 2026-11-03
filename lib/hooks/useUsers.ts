@@ -1,5 +1,8 @@
 // filepath: sae-frontend/lib/hooks/useUsers.ts
-import { createApiHooks } from "@/lib/hooks/createApiHooks";
-import { UsersService } from "@/lib/api/users/users.service";
+import { useUsers as useUsersHook, useUserById, useCreateUser, useUpdateUser, useDeleteUser } from "@/lib/api/users/users.service";
 
-export const useUsers = () => createApiHooks(UsersService, "users");
+// Re-export for backward compatibility
+export { useUsersHook as useUsers, useUserById, useCreateUser, useUpdateUser, useDeleteUser };
+
+// Also export the individual hooks for granular usage
+export * from "@/lib/api/users/users.service";

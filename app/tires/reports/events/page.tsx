@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/tires/reports/events/page.tsx
+﻿// filepath: sae-frontend/app/tires/reports/events/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -215,7 +215,7 @@ export default function TireReportsEventsPage() {
           {isLoading ? (
             <p>Cargando eventos...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : eventsList.length === 0 ? (
             <p className="text-gray-500">
               No se encontraron eventos con los filtros aplicados.

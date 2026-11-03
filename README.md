@@ -1,6 +1,6 @@
 # SAE Frontend
 
-A comprehensive enterprise web application built with **Next.js 15 (App Router)**, **TypeScript 5.1+**, and **Tailwind CSS 4.0**. Modern, responsive, and accessible interface integrating robust JWT authentication, complete user management, companies, employees, equipment, specialized tires, polymorphic contacts, and geographic locations. Includes 80+ pages and 200+ components organized by business domain with scalable modular architecture.
+A comprehensive enterprise web application built with **Next.js 16 (App Router)**, **TypeScript 5.1+**, and **Tailwind CSS 4.0**. Modern, responsive, and accessible interface integrating robust JWT authentication, complete user management, companies, employees, equipment, specialized tires, polymorphic contacts, and geographic locations. Includes 80+ pages and 200+ components organized by business domain with scalable modular architecture.
 
 ## 📋 Table of Contents
 
@@ -23,14 +23,14 @@ A comprehensive enterprise web application built with **Next.js 15 (App Router)*
 
 ## 🚀 Overview
 
-SAE Frontend is a high-quality, scalable enterprise web application built with Next.js 15 (App Router), TypeScript 5.1+ (strict mode), and Tailwind CSS 4.0, providing a complete and professional interface for the SAE business management system. It integrates secure authentication with NextAuth.js 4.24+, form validation with Zod 4.1+, efficient state management with TanStack Query 5.90+, and a modern, fully accessible UI based on shadcn/ui and Radix UI. Designed for medium and large companies with vehicle fleets and specialized tire management.
+SAE Frontend is a high-quality, scalable enterprise web application built with Next.js 16 (App Router), TypeScript 5.1+ (strict mode), and Tailwind CSS 4.0, providing a complete and professional interface for the SAE business management system. It integrates secure authentication with NextAuth.js 4.24+, form validation with Zod 4.1+, efficient state management with TanStack Query 5.90+, and a modern, fully accessible UI based on shadcn/ui and Radix UI. Designed for medium and large companies with vehicle fleets and specialized tire management.
 
 ### 📊 Project Statistics
 
 - **Version**: 1.1.0
 - **Author**: Renzo O. Gorosito
 - **License**: MIT
-- **Framework**: Next.js 15.5.3 (App Router)
+- **Framework**: Next.js 16.4.3 (App Router)
 - **Language**: TypeScript 5.1+ (strict mode)
 - **UI Framework**: Tailwind CSS 4.0 + shadcn/ui
 - **Pages**: 80+ pages organized by business domain
@@ -79,7 +79,7 @@ SAE Frontend is a high-quality, scalable enterprise web application built with N
 
 ### 🏗️ Advanced Enterprise Technical Architecture
 
-- **🚀 Next.js 15 App Router**: Modern routing with nested layouts, loading states, and error boundaries
+- **🚀 Next.js 16 App Router**: Modern routing with nested layouts, loading states, and error boundaries
 - **📝 Enterprise TypeScript**: Strong typing across 200+ files with strict mode and noImplicitAny
 - **💾 TanStack Query Enterprise**: Optimized server/client state management with intelligent caching, background refetching, and optimistic updates
 - **🌐 Advanced Axios Interceptors**: HTTP client with automatic JWT token handling, retry logic, and global error handling
@@ -95,7 +95,7 @@ SAE Frontend is a high-quality, scalable enterprise web application built with N
 
 ### 🏛️ Hexagonal Enterprise Architecture Pattern
 
-The project implements a **modular and scalable hexagonal architecture** following Next.js 15 best practices, with **clear responsibility separation** and **well-defined layers**:
+The project implements a **modular and scalable hexagonal architecture** following Next.js 16 best practices, with **clear responsibility separation** and **well-defined layers**:
 
 #### **🏗️ Domain-Driven Structure**
 
@@ -201,7 +201,7 @@ Create a `.env.local` file in the project root with the following variables:
 NODE_ENV=development
 
 # Backend API (NestJS)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305
 API_URL=http://localhost:3305/api
 
 # NextAuth
@@ -216,7 +216,7 @@ NEXTAUTH_DEBUG=true
 
 ### Environment Variables Explanation
 
-- `NEXT_PUBLIC_API_BASE_URL`: Public URL for the SAE backend API (used in browser)
+- `NEXT_PUBLIC_API_URL`: Public URL for the SAE backend API (used in browser)
 - `API_URL`: Internal API URL for server-side calls (Docker/internal)
 - `NEXTAUTH_URL`: Complete URL where the app is running
 - `NEXTAUTH_SECRET`: Secure secret for JWT token signing (generate a strong random string)
@@ -267,7 +267,7 @@ docker build -t sae-frontend .
 
 # Run the container
 docker run -p 3003:3003 \
-  -e NEXT_PUBLIC_API_BASE_URL=http://your-backend-url \
+  -e NEXT_PUBLIC_API_URL=http://your-backend-url \
   -e API_URL=http://your-backend-url/api \
   -e NEXTAUTH_URL=http://your-frontend-url \
   -e NEXTAUTH_SECRET=your-secret \
@@ -284,7 +284,7 @@ services:
     ports:
       - "3003:3003"
     environment:
-      - NEXT_PUBLIC_API_BASE_URL=http://sae-backend:3305
+      - NEXT_PUBLIC_API_URL=http://sae-backend:3305
       - API_URL=http://sae-backend:3305/api
       - NEXTAUTH_URL=http://localhost:3003
       - NEXTAUTH_SECRET=your-secret

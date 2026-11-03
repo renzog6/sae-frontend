@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/equipments/types/page.tsx
+﻿// filepath: sae-frontend/app/equipments/types/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
@@ -80,7 +80,7 @@ export default function EquipmentTypesPage() {
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

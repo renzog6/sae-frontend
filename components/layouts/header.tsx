@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/layouts/header.tsx
+﻿// filepath: sae-frontend/components/layouts/header.tsx
 "use client";
 
 import React from "react";
@@ -75,7 +75,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const handleProfile = () => router.push("/profile");
 
   return (
-    <header className="flex items-center justify-between p-4 bg-white border-b border-laurel-200">
+    <header className="flex items-center justify-between p-4 bg-card border-b border-border">
       <div className="flex items-center">
         {/* Botón del menú hamburguesa - IMPORTANTE: fuera del DropdownMenu */}
         <Button
@@ -137,7 +137,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           className="relative text-laurel-600"
         >
           <Bell className="w-5 h-5" />
-          <span className="absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
+          <span className="absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-destructive/100 rounded-full -top-1 -right-1">
             3
           </span>
         </Button>
@@ -171,7 +171,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuSeparator className="bg-laurel-100" />
             <DropdownMenuItem
               onClick={handleLogout}
-              className="flex items-center text-red-600 cursor-pointer focus:bg-red-50"
+              className="flex items-center text-destructive cursor-pointer focus:bg-destructive/10"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Cerrar sesión

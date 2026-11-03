@@ -64,8 +64,7 @@ export function TireAssignmentsDialog({
   const [searchTerm, setSearchTerm] = useState("");
 
   // Queries
-  const { useGetAll } = useTires();
-  const { data: tiresData, isLoading: tiresLoading } = useGetAll({
+  const { data: tiresData, isLoading: tiresLoading } = useTires({
     status: "IN_STOCK",
     page: 1,
     limit: 50,

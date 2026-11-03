@@ -45,7 +45,17 @@ export default function BusinessCategoriesPage() {
     data: categoriesResponse,
     isLoading,
     error,
-  } = useBusinessCategories();
+  } = useBusinessCategories() as {
+    data: {
+      data: BusinessCategory[];
+      meta: { total: number; page: number; limit: number };
+    };
+    isLoading: boolean;
+    error: Error | null;
+  };
+
+  // Extract categories array from response
+  const categories = categoriesResponse?.data || [];
 
   const { mutate: deleteCategory, isPending: deleting } =
     useDeleteBusinessCategory();
@@ -58,7 +68,7 @@ export default function BusinessCategoriesPage() {
     useState<BusinessCategory | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState<"delete" | "restore">(
-    "delete"
+    "delete",
   );
 
   const columns = useMemo(
@@ -81,28 +91,28 @@ export default function BusinessCategoriesPage() {
         },
         showRestore: true,
       }),
-    [deleteCategory]
+    [deleteCategory],
   );
 
   // Filter categories by status (client-side filtering)
   const filteredCategories = useMemo(() => {
-    let filtered = categoriesResponse || [];
+    let filtered = categories;
 
     // Filter by status
     if (selectedStatus && selectedStatus !== "ALL") {
       const isActive = selectedStatus === "ACTIVE";
       filtered = filtered.filter(
-        (item: BusinessCategory) => item.isActive === isActive
+        (item: BusinessCategory) => item.isActive === isActive,
       );
     }
 
     // Sort by name A-Z
-    return filtered.sort((a: BusinessCategory, b: BusinessCategory) => {
+    return [...filtered].sort((a: BusinessCategory, b: BusinessCategory) => {
       const nameA = a.name || "";
       const nameB = b.name || "";
       return nameA.localeCompare(nameB);
     });
-  }, [categoriesResponse, selectedStatus]);
+  }, [categories, selectedStatus]);
 
   // Set up data table with search and pagination
   const { table, globalFilter, setGlobalFilter } = useDataTable({
@@ -145,8 +155,8 @@ export default function BusinessCategoriesPage() {
                   {selectedStatus === "ALL"
                     ? "Todos"
                     : selectedStatus === "ACTIVE"
-                    ? "Activo"
-                    : "Inactivo"}
+                      ? "Activo"
+                      : "Inactivo"}
                   <ChevronDown className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -172,7 +182,7 @@ export default function BusinessCategoriesPage() {
         ) : (
           <>
             <DataTable<BusinessCategory>
-              table={table}
+              table={table as any}
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
             />

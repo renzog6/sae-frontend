@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/tire-size-form.tsx
+﻿// filepath: sae-frontend/components/forms/tire-size-form.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +64,7 @@ export function TireSizeForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {error && (
-          <div className="p-3 text-sm text-red-600 rounded-md bg-red-50">
+          <div className="p-3 text-sm text-destructive rounded-md bg-destructive/10">
             {error}
           </div>
         )}

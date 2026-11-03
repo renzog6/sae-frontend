@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/addresses/address-dialog.tsx
+﻿// filepath: sae-frontend/components/addresses/address-dialog.tsx
 "use client";
 
 import {
@@ -24,7 +24,10 @@ import {
   AddressSchema,
   type AddressFormData,
 } from "@/lib/validations/location";
-import { useProvinces, useCities } from "@/lib/hooks/useLocations";
+import {
+  useProvinces,
+  useCities,
+} from "@/lib/hooks/useLocations";
 import type { Province, City } from "@/lib/types/shared/location";
 import { useMemo, useState, useEffect } from "react";
 import {
@@ -86,17 +89,19 @@ export function AddressDialog({
   }, [initial, form]);
 
   // Provincias y Ciudades
-  const { data: provincesResponse, isLoading: provLoading } =
-    useProvinces().useGetAll({
-      limit: "0",
-      sortBy: "name",
-      sortOrder: "asc",
-    });
-  const provinces = provincesResponse?.data || [];
+  const { useGetAllNoLimit: useGetProvinces } = useProvinces();
+  const { data: provincesResponse, isLoading: provLoading } = useGetProvinces();
+  const provinces = useMemo(
+    () =>
+      ((provincesResponse?.data || []) as Province[]).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      ),
+    [provincesResponse]
+  );
 
-  const { data: citiesResponse, isLoading: citiesLoading } =
-    useCities().useGetAll();
-  const allCities = citiesResponse?.data || [];
+  const { useGetAllNoLimit: useGetCities } = useCities();
+  const { data: citiesResponse, isLoading: citiesLoading } = useGetCities();
+  const allCities = (citiesResponse?.data || []) as City[];
 
   // Provincia seleccionada (no forma parte del AddressSchema)
   const [provinceOpen, setProvinceOpen] = useState(false);
@@ -109,14 +114,14 @@ export function AddressDialog({
   useEffect(() => {
     if (initial?.cityId && allCities.length > 0) {
       const city = allCities.find((c: City) => c.id === initial.cityId);
-      if (city) setSelectedProvinceId(city.provinceId);
+      if (city?.province) setSelectedProvinceId(city.province.id);
     }
   }, [initial?.cityId, allCities]);
 
   const filteredCities = useMemo(
     () =>
       selectedProvinceId
-        ? allCities.filter((c) => c.provinceId === selectedProvinceId)
+        ? allCities.filter((c: City) => c.province?.id === selectedProvinceId)
         : [],
     [allCities, selectedProvinceId]
   );
@@ -230,11 +235,11 @@ export function AddressDialog({
                     >
                       {selectedProvinceId
                         ? provinces.find(
-                            (p: Province) => p.id === selectedProvinceId
-                          )?.name
+                          (p: Province) => p.id === selectedProvinceId
+                        )?.name
                         : provLoading
-                        ? "Cargando..."
-                        : "Selecciona una provincia"}
+                          ? "Cargando..."
+                          : "Selecciona una provincia"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
@@ -290,13 +295,13 @@ export function AddressDialog({
                         >
                           {field.value
                             ? filteredCities.find(
-                                (c: City) => c.id === field.value
-                              )?.name
+                              (c: City) => c.id === field.value
+                            )?.name
                             : !selectedProvinceId
-                            ? "Selecciona una provincia primero"
-                            : citiesLoading
-                            ? "Cargando ciudades..."
-                            : "Selecciona una ciudad"}
+                              ? "Selecciona una provincia primero"
+                              : citiesLoading
+                                ? "Cargando ciudades..."
+                                : "Selecciona una ciudad"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
@@ -336,7 +341,6 @@ export function AddressDialog({
                   <Button
                     type="button"
                     variant="destructive"
-                    className="text-white bg-red-500 hover:bg-red-600"
                     onClick={() => {
                       if (
                         confirm(
@@ -356,15 +360,11 @@ export function AddressDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-amber-500 text-amber-600 hover:bg-amber-50"
                   onClick={() => onOpenChange(false)}
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  className="text-white bg-amber-500 hover:bg-amber-600"
-                >
+                <Button type="submit">
                   Guardar
                 </Button>
               </div>

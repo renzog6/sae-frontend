@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/tires/models/page.tsx
+﻿// filepath: sae-frontend/app/tires/models/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
@@ -75,7 +75,7 @@ export default function TireModelsPage() {
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

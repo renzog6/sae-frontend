@@ -49,8 +49,8 @@ export function getUserColumns({
         <span
           className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
             row.original.isActive
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              ? "bg-green-500/10 text-green-700 dark:text-green-400"
+              : "bg-destructive/10 text-destructive"
           }`}
         >
           {row.original.isActive ? "Activo" : "Inactivo"}

@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/employees/employee-vacation-dialog.tsx
+﻿// filepath: sae-frontend/components/employees/employee-vacation-dialog.tsx
 "use client";
 
 import * as React from "react";
@@ -218,7 +218,7 @@ export function EmployeeVacationDialog({
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-sm font-medium text-destructive">
                     Eliminar vacación
                   </p>
                   <p className="text-xs text-muted-foreground">

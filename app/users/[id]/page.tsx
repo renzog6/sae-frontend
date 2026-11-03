@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/users/[id]/page.tsx
+﻿// filepath: sae-frontend/app/users/[id]/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 
 import { UserForm } from "@/components/forms/user-form";
-import { useUsers } from "@/lib/hooks/useUsers";
+import { useUserById, useUpdateUser } from "@/lib/hooks/useUsers";
 import { UpdateUserFormData } from "@/lib/validations/auth";
 
 export default function EditUserPage() {
@@ -23,9 +23,9 @@ export default function EditUserPage() {
   const [error, setError] = useState<string | null>(null);
 
   const { data: user, isLoading: isLoadingUser } =
-    useUsers().useGetById(userId);
+    useUserById(userId);
 
-  const updateUserMutation = useUsers().useUpdate();
+  const updateUserMutation = useUpdateUser();
 
   const handleSubmit = async (data: UpdateUserFormData) => {
     try {
@@ -63,7 +63,7 @@ export default function EditUserPage() {
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardContent className="p-6">
-            <div className="text-center text-red-600">
+            <div className="text-center text-destructive">
               Usuario no encontrado
             </div>
           </CardContent>

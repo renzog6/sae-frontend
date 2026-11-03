@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/employee-category-form.tsx
+﻿// filepath: sae-frontend/components/forms/employee-category-form.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -59,7 +59,7 @@ export function EmployeeCategoryForm({
         className="space-y-4"
       >
         {error && (
-          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+          <div className="p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10">
             {error}
           </div>
         )}
@@ -121,7 +121,7 @@ export function EmployeeCategoryForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+
           >
             {isLoading
               ? isEdit

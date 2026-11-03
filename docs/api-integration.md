@@ -33,7 +33,7 @@ Esta guía explica cómo el frontend SAE se integra con el backend SAE-NestJS a 
 # .env.local
 
 # URL pública del API (usada en el navegador)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305
 
 # URL interna del API (usada en servidor Next.js)
 API_URL=http://localhost:3305/api
@@ -51,8 +51,8 @@ export class ApiClient {
       // Server-side: usa API_URL
       return process.env.API_URL || "http://localhost:3305/api";
     }
-    // Client-side: usa NEXT_PUBLIC_API_BASE_URL
-    return process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
+    // Client-side: usa NEXT_PUBLIC_API_URL
+    return process.env.NEXT_PUBLIC_API_URL || "/api";
   }
 
   // Construye URL completa

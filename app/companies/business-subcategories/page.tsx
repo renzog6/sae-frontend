@@ -45,7 +45,17 @@ export default function BusinessSubCategoriesPage() {
     data: subcategoriesResponse,
     isLoading,
     error,
-  } = useBusinessSubCategories();
+  } = useBusinessSubCategories() as {
+    data: {
+      data: BusinessSubCategory[];
+      meta: { total: number; page: number; limit: number };
+    };
+    isLoading: boolean;
+    error: Error | null;
+  };
+
+  // Extract subcategories array from response
+  const subcategories = subcategoriesResponse?.data || [];
 
   const { mutate: deleteSubcategory, isPending: deleting } =
     useDeleteBusinessSubCategory();
@@ -58,7 +68,7 @@ export default function BusinessSubCategoriesPage() {
     useState<BusinessSubCategory | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState<"delete" | "restore">(
-    "delete"
+    "delete",
   );
 
   const columns = useMemo(
@@ -81,28 +91,30 @@ export default function BusinessSubCategoriesPage() {
         },
         showRestore: true,
       }),
-    [deleteSubcategory]
+    [deleteSubcategory],
   );
 
   // Filter subcategories by status (client-side filtering)
   const filteredSubcategories = useMemo(() => {
-    let filtered = subcategoriesResponse || [];
+    let filtered = subcategories;
 
     // Filter by status
     if (selectedStatus && selectedStatus !== "ALL") {
       const isActive = selectedStatus === "ACTIVE";
       filtered = filtered.filter(
-        (item: BusinessSubCategory) => item.isActive === isActive
+        (item: BusinessSubCategory) => item.isActive === isActive,
       );
     }
 
     // Sort by name A-Z
-    return filtered.sort((a: BusinessSubCategory, b: BusinessSubCategory) => {
-      const nameA = a.name || "";
-      const nameB = b.name || "";
-      return nameA.localeCompare(nameB);
-    });
-  }, [subcategoriesResponse, selectedStatus]);
+    return [...filtered].sort(
+      (a: BusinessSubCategory, b: BusinessSubCategory) => {
+        const nameA = a.name || "";
+        const nameB = b.name || "";
+        return nameA.localeCompare(nameB);
+      },
+    );
+  }, [subcategories, selectedStatus]);
 
   // Set up data table with search and pagination
   const { table, globalFilter, setGlobalFilter } = useDataTable({
@@ -145,8 +157,8 @@ export default function BusinessSubCategoriesPage() {
                   {selectedStatus === "ALL"
                     ? "Todos"
                     : selectedStatus === "ACTIVE"
-                    ? "Activo"
-                    : "Inactivo"}
+                      ? "Activo"
+                      : "Inactivo"}
                   <ChevronDown className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -172,7 +184,7 @@ export default function BusinessSubCategoriesPage() {
         ) : (
           <>
             <DataTable<BusinessSubCategory>
-              table={table}
+              table={table as any}
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
             />

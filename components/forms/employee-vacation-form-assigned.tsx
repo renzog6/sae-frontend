@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/employee-vacation-form-assigned.tsx
+﻿// filepath: sae-frontend/components/forms/employee-vacation-form-assigned.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -80,7 +80,7 @@ export function EmployeeVacationFormAssigned({
         className="space-y-4"
       >
         {error && (
-          <div className="p-3 text-sm text-red-600 border border-red-200 rounded-md bg-red-50">
+          <div className="p-3 text-sm text-destructive border border-destructive/20 rounded-md bg-destructive/10">
             {error}
           </div>
         )}
@@ -135,7 +135,7 @@ export function EmployeeVacationFormAssigned({
           />
         </div>
         {form.formState.errors.year && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-destructive">
             {form.formState.errors.year.message}
           </p>
         )}
@@ -164,7 +164,7 @@ export function EmployeeVacationFormAssigned({
           <Button
             type="submit"
             disabled={isLoading}
-            className="text-white bg-emerald-600 hover:bg-emerald-700"
+
           >
             {isLoading
               ? isEdit

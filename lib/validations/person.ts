@@ -10,25 +10,11 @@ import type { Person } from "@/lib/types/domain/employee";
 export const createPersonSchema = z.object({
   firstName: z.string().min(1, "Nombre requerido").max(100),
   lastName: z.string().min(1, "Apellido requerido").max(100),
-  birthDate: z
-    .string()
-    .optional()
-    .nullable()
-    .transform((v) => v ?? undefined), // ISO
-  dni: z
-    .string()
-    .max(50)
-    .optional()
-    .nullable()
-    .transform((v) => v ?? undefined),
-  cuil: z
-    .string()
-    .max(50)
-    .optional()
-    .nullable()
-    .transform((v) => v ?? undefined),
-  gender: z.nativeEnum(Gender).optional(),
-  maritalStatus: z.nativeEnum(MaritalStatus).optional(),
+  birthDate: z.string().min(1, "Fecha de nacimiento requerida"),
+  dni: z.string().min(1, "DNI requerido").max(50),
+  cuil: z.string().min(1, "CUIL requerido").max(50),
+  gender: z.nativeEnum(Gender, { message: "Género requerido" }),
+  maritalStatus: z.nativeEnum(MaritalStatus, { message: "Estado civil requerido" }),
   information: z
     .string()
     .max(500)
@@ -36,6 +22,9 @@ export const createPersonSchema = z.object({
     .nullable()
     .transform((v) => v ?? undefined),
   status: z.nativeEnum(PersonStatus).optional(),
+  hireDate: z.string().min(1, "Fecha de ingreso requerida"),
+  categoryId: z.number().int().positive("Categoría requerida"),
+  positionId: z.number().int().positive("Puesto requerido"),
 });
 
 export type CreatePersonFormData = z.infer<typeof createPersonSchema>;
@@ -50,13 +39,16 @@ export type UpdatePersonFormInput = z.input<typeof updatePersonSchema>;
 export const createPersonDefaultValues: Partial<CreatePersonFormData> = {
   firstName: "",
   lastName: "",
-  birthDate: undefined,
-  dni: undefined,
-  cuil: undefined,
+  birthDate: "",
+  dni: "",
+  cuil: "",
   gender: undefined,
   maritalStatus: undefined,
   information: "",
   status: PersonStatus.ACTIVE,
+  hireDate: "",
+  categoryId: undefined,
+  positionId: undefined,
 };
 
 export function personToUpdateForm(p: Person): UpdatePersonFormData {

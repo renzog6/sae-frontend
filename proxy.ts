@@ -1,4 +1,4 @@
-// filepath: sae-frontend/middleware.ts
+// filepath: sae-frontend/proxy.ts
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -17,7 +17,7 @@ const protectedRoutes = [
 const adminRoutes = ["/users/new", "/users/[id]/edit", "/users/[id]/delete"];
 
 export default withAuth(
-  function middleware(req) {
+  function proxy(req) {
     const { pathname, origin } = req.nextUrl;
     const token = req.nextauth.token as any;
 

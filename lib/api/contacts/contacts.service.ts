@@ -1,60 +1,47 @@
-// filepath: sae-frontend/lib/api/contacts/contacts.service.ts
-
 import { BaseApiService } from "@/lib/api/base-api.service";
-import { ApiClient } from "@/lib/api/apiClient";
+import {
+    Contact,
+    CreateContactDto,
+    UpdateContactDto,
+} from "@/lib/types/domain/contact";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
-import { QueryBuilder } from "@/lib/api/queryBuilder";
-
-import { CreateContactDto, UpdateContactDto } from "@/lib/types/domain/contact";
-import { Contact } from "@/lib/types/shared/contact";
+import { ApiClient } from "@/lib/api/apiClient";
 import { PaginatedResponse } from "@/lib/types/core/api";
 
 class ContactsServiceClass extends BaseApiService<
-  Contact,
-  CreateContactDto,
-  UpdateContactDto
+    Contact,
+    CreateContactDto,
+    UpdateContactDto
 > {
-  protected basePath = "/contacts";
+    protected basePath = "/contacts";
 
-  /**
-   * Obtener contactos de una empresa
-   * GET /contacts/company/:companyId
-   */
-  async getContactsByCompany(
-    companyId: number,
-    params?: { page?: number; limit?: number }
-  ): Promise<PaginatedResponse<Contact>> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const baseUrl = `${this.basePath}/company/${companyId}`;
-        const url = QueryBuilder.buildUrl(baseUrl, params);
-        return ApiClient.get<PaginatedResponse<Contact>>(url);
-      },
-      this.constructor.name,
-      "getContactsByCompany",
-      { companyId, params }
-    );
-  }
+    async getByPerson(personId: number): Promise<Contact[]> {
+        return ApiErrorHandler.handleApiCall(
+            async () => {
+                const res = await ApiClient.get<PaginatedResponse<Contact>>(
+                    `${this.basePath}/person/${personId}`
+                );
+                return res.data ?? [];
+            },
+            this.constructor.name,
+            "getByPerson",
+            { personId }
+        );
+    }
 
-  /**
-   * Obtener contactos por persona
-   * GET /contacts/person/:personId
-   */
-  async getContactsByPerson(
-    personId: number,
-    params?: { page?: number; limit?: number }
-  ): Promise<PaginatedResponse<Contact>> {
-    return ApiErrorHandler.handleApiCall(
-      async () => {
-        const baseUrl = `${this.basePath}/person/${personId}`;
-        const url = QueryBuilder.buildUrl(baseUrl, params);
-        return ApiClient.get<PaginatedResponse<Contact>>(url);
-      },
-      this.constructor.name,
-      "getContactsByPerson",
-      { personId, params }
-    );
-  }
+    async getByCompany(companyId: number): Promise<Contact[]> {
+        return ApiErrorHandler.handleApiCall(
+            async () => {
+                const res = await ApiClient.get<PaginatedResponse<Contact>>(
+                    `${this.basePath}/company/${companyId}`
+                );
+                return res.data ?? [];
+            },
+            this.constructor.name,
+            "getByCompany",
+            { companyId }
+        );
+    }
 }
 
 export const ContactsService = new ContactsServiceClass();

@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/tire/axle-configurator.tsx
+﻿// filepath: sae-frontend/components/tire/axle-configurator.tsx
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -357,7 +357,7 @@ export const EquipmentAxleConfigurator: React.FC<Props> = ({
                     )}
                   </div>
                 ) : (
-                  <p className="mt-2 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-destructive">
                     Por favor, selecciona un equipo para continuar.
                   </p>
                 )}

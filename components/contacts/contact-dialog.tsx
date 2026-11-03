@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/contacts/contact-dialog.tsx
+﻿// filepath: sae-frontend/components/contacts/contact-dialog.tsx
 "use client";
 
 import {
@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContactSchema, type ContactFormData } from "@/lib/validations/contact";
-import { ContactType } from "@/lib/types/shared/enums";
+import { ContactType } from "@/lib/types/domain/contact";
 
 export interface ContactDialogProps {
   open: boolean;
@@ -148,7 +148,6 @@ export function ContactDialog({
                   <Button
                     type="button"
                     variant="destructive"
-                    className="text-white bg-red-500 hover:bg-red-600"
                     onClick={() => {
                       if (
                         confirm(
@@ -168,15 +167,11 @@ export function ContactDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-amber-500 text-amber-600 hover:bg-amber-50"
                   onClick={() => onOpenChange(false)}
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  className="text-white bg-amber-500 hover:bg-amber-600"
-                >
+                <Button type="submit">
                   Guardar
                 </Button>
               </div>

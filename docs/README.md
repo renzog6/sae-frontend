@@ -1,6 +1,6 @@
 # 📚 Documentación SAE-Frontend
 
-Bienvenido a la documentación oficial de **SAE-Frontend**, el sistema de administración empresarial construido con Next.js 15, TypeScript y Tailwind CSS.
+Bienvenido a la documentación oficial de **SAE-Frontend**, el sistema de administración empresarial construido con Next.js 16, TypeScript y Tailwind CSS.
 
 ---
 
@@ -112,7 +112,7 @@ Bienvenido a la documentación oficial de **SAE-Frontend**, el sistema de admini
 
 ### Videos y Tutoriales
 
-- Next.js 15 App Router: https://www.youtube.com/c/Vercel
+- Next.js 16 App Router: https://www.youtube.com/c/Vercel
 - TypeScript Best Practices: https://typescript.tv
 - Tailwind CSS Patterns: https://tailwindcss.com/docs/guides/nextjs
 
@@ -215,8 +215,8 @@ npm install
 
 ### v1.1.0 (Actual)
 
-- ✅ Next.js 15.5.3 con App Router
-- ✅ React 19.2.1
+- ✅ Next.js 16.4.3 con App Router
+- ✅ React 19.3.1
 - ✅ TypeScript 5+ strict mode
 - ✅ Tailwind CSS 4.0
 - ✅ NextAuth.js 4.24+ con JWT

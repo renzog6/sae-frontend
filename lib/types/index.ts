@@ -18,7 +18,6 @@ export * from "./domain/user";
 
 // Export shared types
 export * from "./shared/catalogs";
-export * from "./shared/contact";
 export * from "./shared/enums";
 export * from "./shared/location";
 export * from "./shared/shared";

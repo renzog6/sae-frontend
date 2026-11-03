@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox-simple";
 import {
   createTireModelSchema,
   type CreateTireModelFormData,
@@ -75,7 +75,7 @@ export function TireModelForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {error && (
-          <div className="p-3 text-sm text-red-600 rounded-md bg-red-50">
+          <div className="p-3 text-sm text-destructive rounded-md bg-destructive/10">
             {error}
           </div>
         )}

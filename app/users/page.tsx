@@ -6,7 +6,7 @@ import { useState } from "react";
 import { User } from "@/lib/types/domain/user";
 import { Button } from "@/components/ui/button";
 
-import { useUsers } from "@/lib/hooks";
+import { useUsers, useDeleteUser } from "@/lib/hooks";
 import { Plus } from "lucide-react";
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { DataTable } from "@/components/data-table/data-table";
@@ -29,16 +29,16 @@ import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 
 export default function UsersPage() {
   const {
-    data: usersResponse,
+    data,
     isLoading: loading,
     error,
-  } = useUsers().useGetAll();
-  const { mutate: deleteUser, isPending: deleting } = useUsers().useDelete();
+  } = useUsers();
+  const { mutate: deleteUser, isPending: deleting } = useDeleteUser();
   const router = useRouter();
   const { toast } = useToast();
 
   // Extract data from standardized response
-  const users = usersResponse?.data || [];
+  const users = data?.data || [];
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);

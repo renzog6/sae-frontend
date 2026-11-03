@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, Filter, Folder } from "lucide-react";
 import type { Employee, EmployeeCategory } from "@/lib/types/domain/employee";
 import { EmployeeStatus } from "@/lib/types/domain/employee";
 import { useEmployeeCategories } from "@/lib/hooks/useEmployees";
@@ -23,15 +23,14 @@ import { ReportType } from "@/lib/types/domain/report";
 import Link from "next/link";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
-import { useRouter } from "next/navigation";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
+
 
 export default function EmployeesPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(
     EmployeeStatus.ACTIVE
   );
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const router = useRouter();
-
   const { useGetAll: useGetCategories } = useEmployeeCategories();
   const { data: categoriesResponse } = useGetCategories();
 
@@ -42,6 +41,7 @@ export default function EmployeesPage() {
     );
   }, [categoriesResponse?.data]);
 
+  // Query function for server-side data table
   const queryFn = async (params: {
     page: number;
     limit: number;
@@ -52,30 +52,16 @@ export default function EmployeesPage() {
       limit: params.limit,
     };
 
-    // Map column filters to query params (using 'q' for text search)
     if (params.filters) {
       if (params.filters.employeeCode) queryParams.q = params.filters.employeeCode;
       if (params.filters.fullName) queryParams.q = params.filters.fullName;
       if (params.filters.cuil) queryParams.q = params.filters.cuil;
-
-      // If we had specific fields backend supported, we would map them here.
-      // For now, mapping multiple columns to the global 'q' search is a safe fallback 
-      // if the backend 'q' searches across these fields.
     }
 
-    // Apply global dropdown filters
     if (selectedStatus && selectedStatus !== "ALL") {
       queryParams.status = selectedStatus;
     }
 
-    // Note: EmployeesService might need to support 'categoryId' in params if we want to filter by it.
-    // BaseApiService allows flexible query params, but the backend Controller/Service needs to handle it.
-    // Assuming backend might NOT handle 'categoryId' natively yet in 'getAll' unless we verified it.
-    // But 'equipments' did. Let's assume standard pattern or map it if possible.
-    // If backend doesn't support 'categoryId', this filter won't work server-side.
-    // However, looking at 'equipment', it did. 'employees'?
-    // Let's send it. If it's ignored, we might need to update backend later, 
-    // but the instruction is "implementar lo mismo" (pattern-wise).
     if (selectedCategory) {
       const category = categories.find(c => c.name === selectedCategory);
       if (category) {
@@ -89,7 +75,7 @@ export default function EmployeesPage() {
   const { table, isLoading, error, totalItems } = useServerDataTable({
     queryKey: ["employees", selectedStatus, selectedCategory],
     queryFn,
-    columns: getEmployeeColumns(),
+    columns: useMemo(() => getEmployeeColumns(), []),
     defaultPageSize: 10,
   });
 
@@ -121,13 +107,15 @@ export default function EmployeesPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">🏷️</span>
-                {selectedStatus === "ALL"
-                  ? "Todos"
-                  : employeeStatusLabels[selectedStatus as EmployeeStatus]}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  {selectedStatus === "ALL"
+                    ? "Todos"
+                    : employeeStatusLabels[selectedStatus as EmployeeStatus]}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -151,11 +139,13 @@ export default function EmployeesPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">📂</span>
-                {selectedCategory || "Todas las categorías"}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Folder className="mr-2 h-4 w-4" />
+                  {selectedCategory || "Todas las categorías"}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

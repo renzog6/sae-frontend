@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/equipment/equipment-category-dialog.tsx
+﻿// filepath: sae-frontend/components/equipment/equipment-category-dialog.tsx
 "use client";
 
 import * as React from "react";
@@ -61,7 +61,7 @@ export function EquipmentCategoryDialog({
       });
     } else if (mode === "edit" && category) {
       updateCategory(
-        { id: category.id, dto: data },
+        { id: category.id, data },
         {
           onSuccess: () => {
             toast({
@@ -78,7 +78,7 @@ export function EquipmentCategoryDialog({
               variant: "error",
             });
           },
-        }
+        },
       );
     }
   };
@@ -117,7 +117,7 @@ export function EquipmentCategoryDialog({
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-sm font-medium text-destructive">
                     Eliminar categoría
                   </p>
                   <p className="text-xs text-muted-foreground">

@@ -9,6 +9,7 @@ import {
 } from "@/lib/types/core/api";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import {
   TireAssignment,
   MountTireDto,
@@ -34,19 +35,7 @@ class TireAssignmentsServiceClass extends BaseApiService<
   ): Promise<PaginatedResponse<TireAssignment>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        const specificParams = {
-          equipmentId: filter?.equipmentId,
-          tireId: filter?.tireId,
-          serialNumber: filter?.serialNumber,
-        };
-
-        const finalUrl = QueryBuilder.combineUrls(
-          baseUrl,
-          QueryBuilder.buildSpecific(specificParams)
-        );
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TireAssignment>>(finalUrl);
       },
       this.constructor.name,
@@ -124,3 +113,12 @@ class TireAssignmentsServiceClass extends BaseApiService<
 }
 
 export const TireAssignmentsService = new TireAssignmentsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTireAssignments,
+  useGetById: useTireAssignmentById,
+  useCreate: useCreateTireAssignment,
+  useUpdate: useUpdateTireAssignment,
+  useDelete: useDeleteTireAssignment,
+} = createApiHooks(TireAssignmentsService, "tireAssignments");

@@ -2,7 +2,7 @@
 
 ## Visión General
 
-SAE-Frontend implementa una **arquitectura hexagonal moderna** (también conocida como Ports & Adapters) usando Next.js 15 con App Router, TypeScript estricto, y patrones empresariales escalables.
+SAE-Frontend implementa una **arquitectura hexagonal moderna** (también conocida como Ports & Adapters) usando Next.js 16 con App Router, TypeScript estricto, y patrones empresariales escalables.
 
 ---
 

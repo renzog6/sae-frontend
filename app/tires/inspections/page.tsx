@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/tires/inspections/page.tsx
+﻿// filepath: sae-frontend/app/tires/inspections/page.tsx
 "use client";
 
 import { useMemo } from "react";
@@ -51,7 +51,7 @@ export default function TireInspectionsPage() {
           {isLoading ? (
             <p>Cargando inspecciones...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

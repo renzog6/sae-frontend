@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/ui/toaster.tsx
+﻿// filepath: sae-frontend/components/ui/toaster.tsx
 "use client";
 
 import React, {
@@ -104,7 +104,7 @@ export function ToasterProvider({ children }: { children: React.ReactNode }) {
                           (t.variant === "success"
                             ? "bg-emerald-500"
                             : t.variant === "error"
-                            ? "bg-red-500"
+                            ? "bg-destructive/100"
                             : t.variant === "warning"
                             ? "bg-yellow-500"
                             : "bg-slate-500")

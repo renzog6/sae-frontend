@@ -1,4 +1,4 @@
-// filepath: sae-frontend/components/forms/tire-size-alias-form.tsx
+﻿// filepath: sae-frontend/components/forms/tire-size-alias-form.tsx
 "use client";
 
 import * as React from "react";
@@ -96,7 +96,7 @@ export function TireSizeAliasForm({
         />
 
         {error && (
-          <div className="p-2 text-sm text-red-600 rounded bg-red-50">
+          <div className="p-2 text-sm text-destructive rounded bg-destructive/10">
             {error}
           </div>
         )}

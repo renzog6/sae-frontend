@@ -10,15 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Filter, Folder } from "lucide-react";
 import type {
   Equipment,
   EquipmentCategory,
 } from "@/lib/types/domain/equipment";
-import {
-  useEquipmentCategories,
-  useEquipmentTypes,
-} from "@/lib/hooks/useEquipments";
+import { useEquipmentCategories } from "@/lib/hooks/useEquipments";
 import { DataTable } from "@/components/data-table/data-table-v2";
 import { useServerDataTable } from "@/components/hooks/useServerDataTable";
 import { getEquipmentColumns } from "./columns";
@@ -29,22 +26,19 @@ import { ReportExportMenu } from "@/components/reports/report-export-menu";
 import { ReportType } from "@/lib/types";
 import { EntityListLayout } from "@/components/entities/entity-list-layout";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
+import { EntityLoadingState } from "@/components/entities/entity-loading-state";
 import { equipmentStatusLabels } from "@/lib/constants/equipment.constants";
 import { EquipmentsService } from "@/lib/api/equipments";
-import type { EquipmentType } from "@/lib/types/domain/equipment";
 
 export default function EquipmentListPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(
-    EquipmentStatus.ACTIVE
+    EquipmentStatus.ACTIVE,
   );
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const router = useRouter();
 
   const { useGetAll: useGetCategories } = useEquipmentCategories();
   const { data: categoriesResponse } = useGetCategories();
-
-  const { useGetAll: useGetTypes } = useEquipmentTypes();
-  const { data: typesResponse } = useGetTypes();
 
   // Query function for server-side data table
   const queryFn = async (params: {
@@ -77,23 +71,8 @@ export default function EquipmentListPage() {
         queryParams.year = parseInt(params.filters.year);
       }
 
-      // Fix: Filter by Type (text input mapped to ID)
-      if (params.filters.type && typesResponse?.data) {
-        const filterValue = params.filters.type.toLowerCase();
-        // Find best matching type
-        const matchedType = typesResponse.data.find((t: EquipmentType) =>
-          t.name.toLowerCase().includes(filterValue)
-        );
-
-        if (matchedType) {
-          queryParams.typeId = matchedType.id;
-        } else {
-          // If user typed something that doesn't match any type, potentially send a dummy ID to return 0 results?
-          // Or just ignore. For now, let's ignore or set a non-existent ID.
-          // Setting -1 to ensure no results if no type matches the text
-          queryParams.typeId = -1;
-        }
-      }
+      if (params.filters.type) queryParams.q = params.filters.type;
+      if (params.filters.model) queryParams.q = params.filters.model;
     }
 
     // Apply global filters
@@ -101,13 +80,7 @@ export default function EquipmentListPage() {
       queryParams.status = selectedStatus;
     }
     if (selectedCategory) {
-      // Find category by name and get ID
-      const category = categoriesResponse?.data?.find(
-        (cat: EquipmentCategory) => cat.name === selectedCategory
-      );
-      if (category) {
-        queryParams.categoryId = category.id;
-      }
+      queryParams.categoryId = selectedCategory;
     }
 
     return EquipmentsService.getAll(queryParams);
@@ -125,11 +98,14 @@ export default function EquipmentListPage() {
   });
 
   const categories = useMemo(() => {
-    return (categoriesResponse?.data || []).sort(
-      (a: EquipmentCategory, b: EquipmentCategory) =>
-        a.name.localeCompare(b.name)
+    const response = categoriesResponse as any;
+    const data = Array.isArray(response?.data)
+      ? response.data
+      : response?.data?.data || [];
+    return (data || []).sort((a: EquipmentCategory, b: EquipmentCategory) =>
+      a.name.localeCompare(b.name),
     );
-  }, [categoriesResponse?.data]);
+  }, [categoriesResponse]);
 
   return (
     <EntityListLayout
@@ -144,7 +120,9 @@ export default function EquipmentListPage() {
                 selectedStatus === "ALL"
                   ? undefined
                   : selectedStatus.toLowerCase(),
-              category: selectedCategory || undefined,
+              category: selectedCategory
+                ? categories.find((c: EquipmentCategory) => c.id === selectedCategory)?.name
+                : undefined,
             }}
             title="Equipos"
           />
@@ -163,13 +141,15 @@ export default function EquipmentListPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">📊</span>
-                {selectedStatus === "ALL"
-                  ? "Todos los estados"
-                  : equipmentStatusLabels[selectedStatus as EquipmentStatus]}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  {selectedStatus === "ALL"
+                    ? "Todos los estados"
+                    : equipmentStatusLabels[selectedStatus as EquipmentStatus]}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -192,24 +172,29 @@ export default function EquipmentListPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between border-dashed"
               >
-                <span className="mr-2">🏷️</span>
-                {selectedCategory || "Todas las categorías"}
-                <ChevronDown className="w-4 h-4" />
+                <div className="flex items-center">
+                  <Folder className="mr-2 h-4 w-4" />
+                  {selectedCategory
+                    ? categories.find((c: EquipmentCategory) => c.id === selectedCategory)?.name ||
+                      "Categoría no encontrada"
+                    : "Todas las categorías"}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
               className="w-48 overflow-y-auto max-h-60"
             >
-              <DropdownMenuItem onClick={() => setSelectedCategory("")}>
+              <DropdownMenuItem onClick={() => setSelectedCategory(null)}>
                 Todas las categorías
               </DropdownMenuItem>
               {categories.map((category: EquipmentCategory) => (
                 <DropdownMenuItem
                   key={category.id}
-                  onClick={() => setSelectedCategory(category.name)}
+                  onClick={() => setSelectedCategory(category.id)}
                 >
                   {category.name}
                 </DropdownMenuItem>
@@ -222,9 +207,9 @@ export default function EquipmentListPage() {
       <EntityErrorState error={error} />
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <p className="text-muted-foreground">Cargando equipos...</p>
-        </div>
+
+        <EntityLoadingState />
+
       ) : (
         <DataTable<Equipment> table={table} totalItems={totalItems} />
       )}

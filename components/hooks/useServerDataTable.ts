@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo, useEffect } from "react";
 
 interface UseServerDataTableProps<TData> {
-  queryKey: string[];
+  queryKey: any[];
   queryFn: (params: {
     page: number;
     limit: number;

@@ -1,4 +1,4 @@
-// filepath: sae-frontend/app/employees/[id]/history/page.tsx
+﻿// filepath: sae-frontend/app/employees/[id]/history/page.tsx
 
 "use client";
 
@@ -323,7 +323,7 @@ export default function EmployeeHistoryPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleDeleteIncident(incident)}
-                                className="text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-700"
+                                className="text-destructive bg-red-100 hover:bg-red-200 hover:text-red-700"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>

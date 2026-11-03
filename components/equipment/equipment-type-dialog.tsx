@@ -1,12 +1,13 @@
-// filepath: sae-frontend/components/equipment/equipment-type-dialog.tsx
+﻿// filepath: sae-frontend/components/equipment/equipment-type-dialog.tsx
 "use client";
 
 import * as React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { EquipmentType } from "@/lib/types/domain/equipment";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
 import { EquipmentTypeForm } from "@/components/forms/equipment-type-form";
-import { useEquipmentTypes } from "@/lib/hooks/useEquipments";
+import { EquipmentTypesService } from "@/lib/api/equipments";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,53 +34,77 @@ export function EquipmentTypeDialog({
   type,
 }: EquipmentTypeDialogProps) {
   const { toast } = useToast();
-  const { useCreate, useUpdate, useDelete } = useEquipmentTypes();
-  const { mutate: createType, isPending: creating } = useCreate();
-  const { mutate: updateType, isPending: updating } = useUpdate();
-  const { mutate: deleteType, isPending: deleting } = useDelete();
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: (data: any) => EquipmentTypesService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentTypes"] });
+      toast({
+        title: "Tipo creado",
+        description: `"${(type as any)?.name || "Tipo"}" creado correctamente.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al crear tipo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      EquipmentTypesService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentTypes"] });
+      toast({
+        title: "Tipo actualizado",
+        description: `"${type?.name}" guardado correctamente.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al actualizar tipo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => EquipmentTypesService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipmentTypes"] });
+      toast({
+        title: "Tipo eliminado",
+        description: `"${type?.name}" eliminado.`,
+        variant: "success",
+      });
+      setConfirmOpen(false);
+      onOpenChange(false);
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error al eliminar tipo",
+        description: e?.message || "Intenta nuevamente.",
+        variant: "error",
+      });
+    },
+  });
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const onSubmit = (data: any) => {
     if (mode === "create") {
-      createType(data, {
-        onSuccess: () => {
-          toast({
-            title: "Tipo creado",
-            description: `"${data.name}" creado correctamente.`,
-            variant: "success",
-          });
-          onOpenChange(false);
-        },
-        onError: (e: any) => {
-          toast({
-            title: "Error al crear tipo",
-            description: e?.message || "Intenta nuevamente.",
-            variant: "error",
-          });
-        },
-      });
+      createMutation.mutate(data);
     } else if (mode === "edit" && type) {
-      updateType(
-        { id: type.id, dto: data },
-        {
-          onSuccess: () => {
-            toast({
-              title: "Tipo actualizado",
-              description: `"${data.name}" guardado correctamente.`,
-              variant: "success",
-            });
-            onOpenChange(false);
-          },
-          onError: (e: any) => {
-            toast({
-              title: "Error al actualizar tipo",
-              description: e?.message || "Intenta nuevamente.",
-              variant: "error",
-            });
-          },
-        }
-      );
+      updateMutation.mutate({ id: type.id, data });
     }
   };
 
@@ -98,7 +123,7 @@ export function EquipmentTypeDialog({
         <div className="space-y-4">
           <EquipmentTypeForm
             onSubmit={onSubmit}
-            isLoading={creating || updating}
+            isLoading={createMutation.isPending || updateMutation.isPending}
             defaultValues={
               mode === "edit" && type
                 ? {
@@ -118,7 +143,7 @@ export function EquipmentTypeDialog({
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-sm font-medium text-destructive">
                     Eliminar tipo
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -128,7 +153,7 @@ export function EquipmentTypeDialog({
                 <Button
                   variant="destructive"
                   onClick={() => setConfirmOpen(true)}
-                  disabled={deleting}
+                  disabled={deleteMutation.isPending}
                 >
                   Eliminar
                 </Button>
@@ -152,24 +177,7 @@ export function EquipmentTypeDialog({
             <AlertDialogAction
               onClick={() => {
                 if (type) {
-                  deleteType(type.id, {
-                    onSuccess: () => {
-                      toast({
-                        title: "Tipo eliminado",
-                        description: `"${type.name}" eliminado.`,
-                        variant: "success",
-                      });
-                      setConfirmOpen(false);
-                      onOpenChange(false);
-                    },
-                    onError: (e: any) => {
-                      toast({
-                        title: "Error al eliminar tipo",
-                        description: e?.message || "Intenta nuevamente.",
-                        variant: "error",
-                      });
-                    },
-                  });
+                  deleteMutation.mutate(type.id);
                 }
               }}
             >

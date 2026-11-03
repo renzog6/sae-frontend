@@ -1,4 +1,4 @@
-// filepath: /sae-frontend/app/equipments/models/page.tsx
+﻿// filepath: /sae-frontend/app/equipments/models/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
@@ -58,8 +58,8 @@ export default function EquipmentModelsPage() {
     isLoading,
     error,
   } = useGetModels({
-    page,
-    limit,
+    skip: (page - 1) * limit,
+    take: limit,
     typeId: selectedTypeId,
   });
 
@@ -84,7 +84,7 @@ export default function EquipmentModelsPage() {
           setDialogOpen(true);
         },
       }),
-    []
+    [],
   );
 
   // TanStack Table
@@ -186,7 +186,7 @@ export default function EquipmentModelsPage() {
 
                   {types
                     .sort((a: EquipmentType, b: EquipmentType) =>
-                      a.name.localeCompare(b.name)
+                      a.name.localeCompare(b.name),
                     )
                     .map((type: EquipmentType) => (
                       <DropdownMenuItem
@@ -206,7 +206,7 @@ export default function EquipmentModelsPage() {
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
-            <p className="text-red-600">Error: {error.message}</p>
+            <p className="text-destructive">Error: {error.message}</p>
           ) : (
             <DataTable
               table={table}

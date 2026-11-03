@@ -35,6 +35,19 @@ export function PaginationBar({
   onPageChange,
   onLimitChange,
 }: PaginationBarProps) {
+  const handleFirst = () => {
+    if (page !== 1) onPageChange(1);
+  };
+  const handlePrev = () => {
+    if (page > 1) onPageChange(Math.max(1, page - 1));
+  };
+  const handleNext = () => {
+    if (page < totalPages) onPageChange(Math.min(totalPages, page + 1));
+  };
+  const handleLast = () => {
+    if (page !== totalPages) onPageChange(totalPages);
+  };
+
   return (
     <div className="flex items-center justify-between px-1 py-2 mt-4 border-t">
       {/* Left: Result count */}
@@ -49,8 +62,8 @@ export function PaginationBar({
           {/* First page */}
           <PaginationItem>
             <PaginationLink
-              onClick={() => onPageChange(1)}
-              disabled={page === 1}
+              onClick={handleFirst}
+              isActive={false}
             >
               «
             </PaginationLink>
@@ -58,10 +71,7 @@ export function PaginationBar({
 
           {/* Previous */}
           <PaginationItem>
-            <PaginationPrevious
-              disabled={page <= 1}
-              onClick={() => onPageChange(Math.max(1, page - 1))}
-            />
+            <PaginationPrevious onClick={handlePrev} />
           </PaginationItem>
 
           {/* Current page (only shows current / total like: 1 de 22) */}
@@ -73,17 +83,14 @@ export function PaginationBar({
 
           {/* Next */}
           <PaginationItem>
-            <PaginationNext
-              disabled={page >= totalPages}
-              onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-            />
+            <PaginationNext onClick={handleNext} />
           </PaginationItem>
 
           {/* Last page */}
           <PaginationItem>
             <PaginationLink
-              onClick={() => onPageChange(totalPages)}
-              disabled={page === totalPages}
+              onClick={handleLast}
+              isActive={false}
             >
               »
             </PaginationLink>

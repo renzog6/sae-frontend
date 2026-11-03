@@ -4,6 +4,7 @@ import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { QueryBuilder } from "@/lib/api/queryBuilder";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
+import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { PaginatedResponse, BaseQueryParams } from "@/lib/types/core/api";
 import { TirePositionConfig } from "@/lib/types/domain/tire";
 
@@ -33,14 +34,7 @@ class TirePositionsServiceClass extends BaseApiService<
   ): Promise<PaginatedResponse<TirePositionConfig>> {
     return ApiErrorHandler.handleApiCall(
       async () => {
-        const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
-
-        const specific = QueryBuilder.buildSpecific({
-          axleId: filter?.axleId,
-        });
-
-        const finalUrl = QueryBuilder.combineUrls(baseUrl, specific);
-
+        const finalUrl = QueryBuilder.buildUrl(this.basePath, filter);
         return ApiClient.get<PaginatedResponse<TirePositionConfig>>(finalUrl);
       },
       this.constructor.name,
@@ -65,3 +59,12 @@ class TirePositionsServiceClass extends BaseApiService<
 }
 
 export const TirePositionsService = new TirePositionsServiceClass();
+
+// Export hooks for consistent usage
+export const {
+  useGetAll: useTirePositions,
+  useGetById: useTirePositionById,
+  useCreate: useCreateTirePosition,
+  useUpdate: useUpdateTirePosition,
+  useDelete: useDeleteTirePosition,
+} = createApiHooks(TirePositionsService, "tirePositions");

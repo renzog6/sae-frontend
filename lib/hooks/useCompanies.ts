@@ -1,33 +1,30 @@
 // file: sae-frontend/lib/hooks/useCompanies.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { invalidateCompanyRelatedQueries } from "@/lib/utils/cache-invalidation";
 import {
-  CompaniesService,
   BusinessCategoriesService,
   BusinessSubCategoriesService,
+  CompaniesService,
 } from "@/lib/api/companies";
 import {
-  Company,
-  BusinessCategory,
   BusinessSubCategory,
-} from "@/lib/types/domain/company";
-import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
   CreateBusinessCategoryDto,
   UpdateBusinessCategoryDto,
-  CreateBusinessSubcategoryDto,
-  UpdateBusinessSubcategoryDto,
 } from "@/lib/types/domain/company";
-import { BaseQueryParams } from "../types/core/api";
 
 // ========== Business Categories ==========
-export function useBusinessCategories(params?: BaseQueryParams) {
-  return useQuery<BusinessCategory[], Error>({
-    queryKey: ["business-categories", params],
-    queryFn: async () => {
-      const response = await BusinessCategoriesService.getAll();
-      return response.data;
-    },
+export function useBusinessCategories() {
+  return useQuery({
+    queryKey: ["business-categories", "list", "all"],
+    queryFn: () => BusinessCategoriesService.getAllNoLimit(),
+  });
+}
+
+export function useBusinessCategory(id: number) {
+  return useQuery({
+    queryKey: ["business-category", id],
+    queryFn: () => BusinessCategoriesService.getById(id),
+    enabled: !!id,
   });
 }
 
@@ -81,13 +78,10 @@ export function useRestoreBusinessCategory() {
 }
 
 // ========== Business SubCategories ==========
-export function useBusinessSubCategories(params?: BaseQueryParams) {
-  return useQuery<BusinessSubCategory[], Error>({
-    queryKey: ["business-subcategories", params],
-    queryFn: async () => {
-      const response = await BusinessSubCategoriesService.getAll();
-      return response.data;
-    },
+export function useBusinessSubCategories() {
+  return useQuery({
+    queryKey: ["business-subcategories", "list", "all"],
+    queryFn: () => BusinessSubCategoriesService.getAllNoLimit(),
   });
 }
 
@@ -102,8 +96,7 @@ export function useBusinessSubCategory(id: number) {
 export function useCreateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateBusinessSubcategoryDto) =>
-      BusinessSubCategoriesService.create(data),
+    mutationFn: (data: any) => BusinessSubCategoriesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
     },
@@ -113,13 +106,8 @@ export function useCreateBusinessSubCategory() {
 export function useUpdateBusinessSubCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: number;
-      data: UpdateBusinessSubcategoryDto;
-    }) => BusinessSubCategoriesService.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      BusinessSubCategoriesService.update(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["business-subcategories"] });
       queryClient.invalidateQueries({
@@ -152,19 +140,30 @@ export function useRestoreBusinessSubCategory() {
 }
 
 // ========== Companies ==========
-export function useCompanies(params?: BaseQueryParams) {
-  return useQuery<Company[], Error>({
-    queryKey: ["companies", params],
-    queryFn: async () => {
-      const response = await CompaniesService.getAll(params);
-      return response.data;
-    },
+/**
+ * Listado paginado de empresas.
+ *
+ * Nota: se conserva la firma histórica `{ skip, take, q }` para no romper a los
+ * consumidores existentes, traduciéndola a los parámetros REST `{ page, limit }`.
+ */
+export function useCompanies(params?: {
+  skip?: number;
+  take?: number;
+  q?: string;
+}) {
+  const take = params?.take ?? 10;
+  const page =
+    params?.skip && take ? Math.floor(params.skip / take) + 1 : 1;
+
+  return useQuery({
+    queryKey: ["companies", "list", { page, limit: take, q: params?.q }],
+    queryFn: () => CompaniesService.getAll({ page, limit: take, q: params?.q }),
   });
 }
 
 export function useCompany(id: number) {
-  return useQuery<Company, Error>({
-    queryKey: ["company", id],
+  return useQuery({
+    queryKey: ["companies", "detail", id],
     queryFn: () => CompaniesService.getById(id),
     enabled: !!id,
   });
@@ -173,9 +172,9 @@ export function useCompany(id: number) {
 export function useCreateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateCompanyDto) => CompaniesService.create(data),
+    mutationFn: (data: any) => CompaniesService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      invalidateCompanyRelatedQueries(queryClient);
     },
   });
 }
@@ -183,11 +182,10 @@ export function useCreateCompany() {
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateCompanyDto }) =>
-      CompaniesService.update(id, data),
+    mutationFn: ({ id, dto }: { id: number; dto: any }) =>
+      CompaniesService.update(id, dto),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", variables.id] });
+      invalidateCompanyRelatedQueries(queryClient, variables.id);
     },
   });
 }
@@ -197,8 +195,7 @@ export function useDeleteCompany() {
   return useMutation({
     mutationFn: (id: number) => CompaniesService.delete(id),
     onSuccess: (_message, id) => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", id] });
+      invalidateCompanyRelatedQueries(queryClient, id);
     },
   });
 }
@@ -209,7 +206,7 @@ export function useRestoreCompany() {
     mutationFn: (id: number) => CompaniesService.restore(id),
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
-      queryClient.invalidateQueries({ queryKey: ["company", id] });
+      queryClient.invalidateQueries({ queryKey: ["companies", "detail", id] });
     },
   });
 }

@@ -129,7 +129,7 @@ curl http://localhost:3305/api/health
 
 # 2. Verificar variables de entorno
 cat .env.local | grep API
-# Debe mostrar: NEXT_PUBLIC_API_BASE_URL=http://localhost:3305
+# Debe mostrar: NEXT_PUBLIC_API_URL=http://localhost:3305
 
 # 3. Verificar logs del frontend
 # En la consola de npm run dev
@@ -143,7 +143,7 @@ cd ../sae-backend
 npm run start:dev
 
 # Si la URL está mal configurada
-echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:3305" > .env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:3305" > .env.local
 
 # Reiniciar frontend
 npm run dev
@@ -361,7 +361,7 @@ GET http://localhost:3305/api/companies 404 (Not Found)
 curl http://localhost:3305/api/companies
 
 # 2. Verificar la ruta completa
-echo $NEXT_PUBLIC_API_BASE_URL
+echo $NEXT_PUBLIC_API_URL
 ```
 
 **Soluciones:**
@@ -379,7 +379,7 @@ class CompanyService extends BaseApiService<Company> {
 
 ```bash
 # En .env.local
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3305  # Sin /api al final
+NEXT_PUBLIC_API_URL=http://localhost:3305  # Sin /api al final
 ```
 
 3. **Backend no tiene ese endpoint:**
