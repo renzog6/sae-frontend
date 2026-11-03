@@ -68,6 +68,6 @@ export const routes = {
   },
 
   reports: {
-    root: "/reports",
+    root: "/tires/reports",
   },
 } as const;
