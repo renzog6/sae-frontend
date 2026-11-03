@@ -71,10 +71,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List all items with pagination
-         * @description Retrieves a paginated list of items based on query parameters such as page, limit, search, and filters.
-         */
+        /** List users */
         get: operations["UsersController_findAll"];
         put?: never;
         /** Create user */
@@ -3550,20 +3547,6 @@ export interface components {
              */
             deletedAt?: string;
         };
-        PaginationMetaDto: {
-            /** @description Total number of records available */
-            total: number;
-            /** @description Current page number (1-based) */
-            page: number;
-            /** @description Number of records per page */
-            limit: number;
-            /** @description Total number of pages available */
-            totalPages: number;
-        };
-        PaginationResponseDto: {
-            data: unknown[][];
-            meta: components["schemas"]["PaginationMetaDto"];
-        };
         CreateCompanyDto: {
             /**
              * @description CUIT
@@ -3637,6 +3620,20 @@ export interface components {
              * @example true
              */
             isActive?: boolean;
+        };
+        PaginationMetaDto: {
+            /** @description Total number of records available */
+            total: number;
+            /** @description Current page number (1-based) */
+            page: number;
+            /** @description Number of records per page */
+            limit: number;
+            /** @description Total number of pages available */
+            totalPages: number;
+        };
+        PaginationResponseDto: {
+            data: unknown[][];
+            meta: components["schemas"]["PaginationMetaDto"];
         };
         CreateBusinessCategoryDto: {
             /**
@@ -4535,7 +4532,7 @@ export interface components {
         CreateInspectionDto: {
             /**
              * Format: date-time
-             * @default 2026-10-28T14:51:19.381Z
+             * @default 2026-11-03T14:40:13.560Z
              */
             date: string;
             description?: string;
@@ -4547,7 +4544,7 @@ export interface components {
         UpdateInspectionDto: {
             /**
              * Format: date-time
-             * @default 2026-10-28T14:51:19.381Z
+             * @default 2026-11-03T14:40:13.560Z
              */
             date: string;
             description?: string;
@@ -5213,7 +5210,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha del evento
-             * @example 2026-10-28T14:51:20.560Z
+             * @example 2026-11-03T14:40:15.693Z
              */
             date?: string;
             /**
@@ -5455,17 +5452,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successfully retrieved paginated items */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginationResponseDto"];
-                };
-            };
-            /** @description Invalid query parameters provided */
-            400: {
                 headers: {
                     [name: string]: unknown;
                 };
