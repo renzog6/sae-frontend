@@ -4532,7 +4532,7 @@ export interface components {
         CreateInspectionDto: {
             /**
              * Format: date-time
-             * @default 2026-11-03T14:40:13.560Z
+             * @default 2026-01-01T00:00:00.000Z
              */
             date: string;
             description?: string;
@@ -4544,7 +4544,7 @@ export interface components {
         UpdateInspectionDto: {
             /**
              * Format: date-time
-             * @default 2026-11-03T14:40:13.560Z
+             * @default 2026-01-01T00:00:00.000Z
              */
             date: string;
             description?: string;
@@ -5210,7 +5210,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha del evento
-             * @example 2026-11-03T14:40:15.693Z
+             * @example 2026-01-01T00:00:00.000Z
              */
             date?: string;
             /**
