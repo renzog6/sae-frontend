@@ -1,8 +1,8 @@
 // filepath: sae-frontend/lib/api/history/history.service.ts
 
 import { ApiClient } from "@/lib/api/apiClient";
-import { ApiResponse } from "@/lib/types/core/api";
-import { EmployeeHistoryResponse } from "@/lib/types/domain/history";
+import type { ApiResponse } from "@/lib/types/core/api";
+import type { EmployeeHistoryResponse } from "@/lib/types/domain/history";
 
 class HistoryServiceClass {
   async getEmployeeHistory(
@@ -14,18 +14,25 @@ class HistoryServiceClass {
     };
 
     try {
-      const res = await ApiClient.get<ApiResponse<EmployeeHistoryResponse>>(
+      const res = await ApiClient.get<
+        EmployeeHistoryResponse | ApiResponse<EmployeeHistoryResponse>
+      >(
         `/employees/${employeeId}/history`
       );
 
-      if (!res || !res.data) {
+      if (!res) {
         console.warn(
           `[HistoryServiceClass] Empty response for employee ${employeeId}`
         );
         return emptyResponse;
       }
 
-      return res.data;
+      const payload = "data" in res ? res.data : res;
+
+      return {
+        incidents: payload?.incidents ?? [],
+        logs: payload?.logs ?? [],
+      };
     } catch (error) {
       console.error(
         `[HistoryServiceClass] getEmployeeHistory failed for employee ${employeeId}:`,

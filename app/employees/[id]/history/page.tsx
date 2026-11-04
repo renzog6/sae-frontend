@@ -123,12 +123,16 @@ export default function EmployeeHistoryPage() {
 
     return items.sort((a, b) => {
       const dateA = new Date(
-        a.createdAt || (a.itemType === "log" ? (a as HistoryLog).eventDate : "")
+        a.itemType === "log"
+          ? (a as HistoryLog).eventDate
+          : (a as EmployeeIncident).startDate || a.createdAt
       ).getTime();
       const dateB = new Date(
-        b.createdAt || (b.itemType === "log" ? (b as HistoryLog).eventDate : "")
+        b.itemType === "log"
+          ? (b as HistoryLog).eventDate
+          : (b as EmployeeIncident).startDate || b.createdAt
       ).getTime();
-      return dateB - dateA; // Most recent first
+      return dateB - dateA; // Most recent event first.
     });
   }, [incidents, logs]);
 

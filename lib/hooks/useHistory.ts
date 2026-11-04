@@ -2,12 +2,7 @@
 import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { useQuery } from "@tanstack/react-query";
 import { HistoryService, EmployeeIncidentsService } from "@/lib/api/history";
-import { EmployeeHistoryResponse } from "@/lib/types/domain/history";
-
-const emptyHistory: EmployeeHistoryResponse = {
-  incidents: [],
-  logs: [],
-};
+import type { EmployeeHistoryResponse } from "@/lib/types/domain/history";
 
 // ===== EMPLOYEE HISTORY =====
 export const useEmployeeHistory = (employeeId: number) =>
@@ -15,7 +10,6 @@ export const useEmployeeHistory = (employeeId: number) =>
     queryKey: ["history", employeeId],
     queryFn: () => HistoryService.getEmployeeHistory(employeeId),
     enabled: !!employeeId,
-    initialData: emptyHistory,
   });
 
 // ===== EMPLOYEE INCIDENTS =====
