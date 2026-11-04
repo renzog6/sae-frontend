@@ -9,8 +9,6 @@ import type {
 } from "@/lib/types/domain/employee";
 import { FormDialog } from "@/components/ui/form-dialog";
 import { useToast } from "@/components/ui/toaster";
-import { Button } from "@/components/ui/button";
-import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { EmployeeVacationFormTaken } from "@/components/forms/employee-vacation-form-taken";
 import { EmployeeVacationFormAssigned } from "@/components/forms/employee-vacation-form-assigned";
 import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
@@ -41,38 +39,6 @@ export function EmployeeVacationDialog({
     useEmployeeVacations().useCreate();
   const { mutate: updateVacation, isPending: updating } =
     useEmployeeVacations().useUpdate();
-  const { mutate: deleteVacation, isPending: deleting } =
-    useEmployeeVacations().useDelete();
-
-  const [confirmOpen, setConfirmOpen] = React.useState(false);
-
-  const handleDeleteConfirm = async () => {
-    if (!vacation) return;
-    deleteVacation(vacation.id, {
-      onSuccess: () => {
-        toast({
-          title: "Vacación eliminada",
-          description: "La vacación fue eliminada.",
-          variant: "success",
-        });
-        setConfirmOpen(false);
-        onOpenChange(false);
-        onSuccess?.();
-      },
-      onError: (e: any) => {
-        toast({
-          title: "Error al eliminar vacación",
-          description: e?.message || "Intenta nuevamente.",
-          variant: "error",
-        });
-      },
-    });
-  };
-
-  const deleteDescription = `¿Seguro que quieres eliminar la vacación "${
-    vacation?.detail || "Sin detalle"
-  }"? Esta acción no se puede deshacer.`;
-
   const onSubmit = (data: any) => {
     if (mode === "create") {
       createVacation(
@@ -213,38 +179,8 @@ export function EmployeeVacationDialog({
             />
           )}
 
-          {/* Delete button, only in edit mode */}
-          {mode === "edit" && vacation && (
-            <div className="pt-2 border-t">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-destructive">
-                    Eliminar vacación
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Esta acción no se puede deshacer.
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  onClick={() => setConfirmOpen(true)}
-                >
-                  Eliminar
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </FormDialog>
-
-      <DeleteConfirmationDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title="Eliminar vacación"
-        description={deleteDescription}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleting}
-      />
     </>
   );
 }

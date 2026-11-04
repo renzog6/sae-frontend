@@ -19,39 +19,28 @@ import {
 import { ChevronDown } from "lucide-react";
 import { routes } from "@/lib/routes";
 import { useRouter } from "next/navigation";
-import { useEquipmentTransactions, useDeleteEquipmentTransaction } from "@/lib/hooks/useEquipmentTransactions";
+import { useEquipmentTransactions } from "@/lib/hooks/useEquipmentTransactions";
 import { getEquipmentTransactionColumns } from "./columns";
 
 import { PaginationBar } from "@/components/data-table/pagination-bar";
 import { DataTable } from "@/components/data-table/data-table";
 import { useDataTable } from "@/components/hooks/useDataTable";
-import { EquipmentTransactionType, EquipmentTransaction } from "@/lib/types/domain/equipment-transaction";
+import {
+  EquipmentTransactionType,
+  EquipmentTransaction,
+} from "@/lib/types/domain/equipment-transaction";
 import { EntityErrorState } from "@/components/entities/entity-error-state";
 import { EntityLoadingState } from "@/components/entities/entity-loading-state";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/toaster";
 
 export default function EquipmentTransactionsPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [selectedType, setSelectedType] = useState<
     EquipmentTransactionType | ""
   >("");
-  const [selectedTransaction, setSelectedTransaction] = useState<
-    EquipmentTransaction | null
-  >(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<EquipmentTransaction | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
@@ -65,9 +54,6 @@ export default function EquipmentTransactionsPage() {
     ...(selectedType ? { type: selectedType } : {}),
   });
 
-  const { mutate: deleteTransaction, isPending: deleting } =
-    useDeleteEquipmentTransaction();
-
   const transactions = transactionsResponse?.data ?? [];
 
   const columns = useMemo(
@@ -78,12 +64,8 @@ export default function EquipmentTransactionsPage() {
           setDialogMode("edit");
           setDialogOpen(true);
         },
-        onDelete: (transaction) => {
-          setSelectedTransaction(transaction);
-          setConfirmOpen(true);
-        },
       }),
-    [deleteTransaction]
+    []
   );
 
   const meta = {
@@ -198,51 +180,6 @@ export default function EquipmentTransactionsPage() {
         </CardContent>
       </Card>
 
-      {/* Confirm delete dialog */}
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar eliminación</AlertDialogTitle>
-            <AlertDialogDescription>
-              ¿Seguro que deseas eliminar la transacción de{" "}
-              {selectedTransaction?.equipment?.name}?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (selectedTransaction) {
-                  deleteTransaction(selectedTransaction.id, {
-                    onSuccess: () => {
-                      toast({
-                        title: "Transacción eliminada",
-                        description: `Transacción eliminada correctamente.`,
-                        variant: "success",
-                      });
-                    },
-                    onError: (e: any) => {
-                      toast({
-                        title: "Error al eliminar transacción",
-                        description: e?.message || "Intenta nuevamente.",
-                        variant: "error",
-                      });
-                    },
-                    onSettled: () => {
-                      setConfirmOpen(false);
-                      setSelectedTransaction(null);
-                    },
-                  });
-                }
-              }}
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

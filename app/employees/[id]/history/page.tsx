@@ -22,13 +22,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmployeeIncidentDialog } from "@/components/employees/employee-incident-dialog";
-import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
-import { useToast } from "@/components/ui/toaster";
 import { useEmployees } from "@/lib/hooks/useEmployees";
-import {
-  useEmployeeHistory,
-  useDeleteEmployeeIncident,
-} from "@/lib/hooks/useHistory";
+import { useEmployeeHistory } from "@/lib/hooks/useHistory";
 import {
   EmployeeIncident,
   HistoryLog,
@@ -48,7 +43,6 @@ import {
   XCircle,
   Plus,
   Edit,
-  Trash2,
 } from "lucide-react";
 
 type HistoryItem =
@@ -89,8 +83,6 @@ export default function EmployeeHistoryPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const { toast } = useToast();
-
   const { data: employee, isLoading: employeeLoading } = useEmployees().useGetById(id);
   const {
     data: historyData,
@@ -98,16 +90,10 @@ export default function EmployeeHistoryPage() {
     refetch,
   } = useEmployeeHistory(id);
 
-  const deleteIncidentMutation = useDeleteEmployeeIncident();
-
   // Dialog states
   const [incidentDialogOpen, setIncidentDialogOpen] = useState(false);
   const [editingIncident, setEditingIncident] =
     useState<EmployeeIncident | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingIncident, setDeletingIncident] =
-    useState<EmployeeIncident | null>(null);
-
   const handleCreateIncident = () => {
     setEditingIncident(null);
     setIncidentDialogOpen(true);
@@ -117,36 +103,6 @@ export default function EmployeeHistoryPage() {
     setEditingIncident(incident);
     setIncidentDialogOpen(true);
   };
-
-  const handleDeleteIncident = (incident: EmployeeIncident) => {
-    setDeletingIncident(incident);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deletingIncident) return;
-    try {
-      await deleteIncidentMutation.mutateAsync(deletingIncident.id);
-      toast({
-        title: "Incidente eliminado",
-        description: "El incidente fue eliminado correctamente.",
-        variant: "success",
-      });
-      setDeleteDialogOpen(false);
-      refetch();
-    } catch (error: any) {
-      toast({
-        title: "Error al eliminar incidente",
-        description: error?.message || "Intenta nuevamente.",
-        variant: "error",
-      });
-    }
-  };
-
-  const deleteDescription = `¿Seguro que quieres eliminar el incidente "${deletingIncident
-    ? employeeIncidentTypeLabels[deletingIncident.type]
-    : "Sin tipo"
-    }"? Esta acción no se puede deshacer.`;
 
   const handleIncidentSuccess = () => {
     refetch();
@@ -202,15 +158,6 @@ export default function EmployeeHistoryPage() {
           onSuccess={handleIncidentSuccess}
         />
 
-        {/* Dialog para eliminar incidentes */}
-        <DeleteConfirmationDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          title="Eliminar incidente"
-          description={deleteDescription}
-          onConfirm={handleDeleteConfirm}
-          isLoading={deleteIncidentMutation.isPending}
-        />
       </div>
     );
   }
@@ -319,14 +266,6 @@ export default function EmployeeHistoryPage() {
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteIncident(incident)}
-                                className="text-destructive bg-red-100 hover:bg-red-200 hover:text-red-700"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -384,15 +323,6 @@ export default function EmployeeHistoryPage() {
         onSuccess={handleIncidentSuccess}
       />
 
-      {/* Dialog para eliminar incidentes */}
-      <DeleteConfirmationDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        title="Eliminar incidente"
-        description={deleteDescription}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleteIncidentMutation.isPending}
-      />
     </div>
   );
 }
