@@ -38,11 +38,12 @@ class ServerFilesServiceClass extends BaseApiService<
     ): Promise<PaginatedResponse<ServerFile>> {
         return ApiErrorHandler.handleApiCall(
             async () => {
-                const baseUrl = QueryBuilder.buildUrl(this.basePath, filter);
+                const { employeeId, companyId, ...baseFilter } = filter ?? {};
+                const baseUrl = QueryBuilder.buildUrl(this.basePath, baseFilter);
 
                 const specificParams = {
-                    employeeId: filter?.employeeId,
-                    companyId: filter?.companyId,
+                    employeeId,
+                    companyId,
                 };
 
                 const specificQuery = QueryBuilder.buildSpecific(specificParams);

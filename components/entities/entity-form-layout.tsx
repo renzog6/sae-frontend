@@ -44,7 +44,7 @@ export function EntityFormLayout({
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
             <div>
-              <CardTitle>{title}</CardTitle>
+              <CardTitle className="text-2xl">{title}</CardTitle>
               {description && (
                 <CardDescription className="mt-1">
                   {description}

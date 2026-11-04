@@ -16,7 +16,8 @@ export const useServerFiles = () => {
 
     const useDownload = () =>
         useMutation({
-            mutationFn: (id: number) => ServerFilesService.downloadById(id),
+            mutationFn: ({ documentId, filename }: { documentId: number; filename: string }) =>
+                ServerFilesService.downloadById(documentId, filename),
         });
 
     const usePreview = () =>

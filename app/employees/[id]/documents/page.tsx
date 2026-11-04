@@ -134,7 +134,7 @@ export default function EmployeeDocumentsPage() {
   };
 
   const handleDownload = (documentId: number, filename: string) => {
-    downloadMutation.mutate(documentId);
+    downloadMutation.mutate({ documentId, filename });
   };
 
   const handleDelete = async (documentId: number) => {

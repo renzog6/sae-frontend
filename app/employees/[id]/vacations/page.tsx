@@ -2,14 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -26,13 +19,13 @@ import { useEmployees } from "@/lib/hooks/useEmployees";
 import { vacationTypeLabels } from "@/lib/constants";
 import { useEmployeeVacations } from "@/lib/hooks/useEmployeeVacations";
 import { EmployeeVacationDialog } from "@/components/employees/employee-vacation-dialog";
-import { formatDate } from "@/lib/utils/date";
+import { calcAge, formatDate, formatTenure } from "@/lib/utils/date";
 import { sumVacationDays } from "@/lib/utils/employee";
+import { ReportExportMenu } from "@/components/reports/report-export-menu";
+import { ReportType } from "@/lib/types";
 
 export default function EmployeeVacationsDetailPage() {
   const params = useParams();
-  const router = useRouter();
-
   const id = useMemo(() => {
     const p = params?.id;
     const asStr = Array.isArray(p) ? p[0] : (p as string | undefined);
@@ -40,7 +33,7 @@ export default function EmployeeVacationsDetailPage() {
     return Number.isNaN(n) ? undefined : n;
   }, [params]);
 
-  const { data: employee, isLoading, error, refetch } = useEmployees().useGetById(id ?? 0);
+  const { data: employee, error, refetch } = useEmployees().useGetById(id ?? 0);
 
   const downloadPdfMutation = useEmployeeVacations().useDownloadPdf();
 
@@ -90,33 +83,77 @@ export default function EmployeeVacationsDetailPage() {
 
   return (
     <>
-      <Card className="shadow-lg">
-        <div className="flex items-center justify-between">
-          <CardHeader>
-            <CardTitle className="text-2xl text-slate-800">
-              Vacaciones
-            </CardTitle>
-            <CardDescription className="text-slate-500">
-              Detalle de vacaciones del empleado
-            </CardDescription>
-          </CardHeader>
-          <div className="flex gap-2 p-6">
-            <div className="p-3 border rounded-lg bg-emerald-50 border-emerald-200">
-              <div className="flex items-center gap-1 text-emerald-600">
-                Dias Disponibles:{" "}
-                <p className="text-lg font-bold text-emerald-800">
-                  {sumVacationDays(employee?.vacations)}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <CardContent className="space-y-8">
+      <div className="space-y-8">
+        <header className="pb-6 border-b border-slate-200">
+          <h1 className="text-2xl text-slate-800">Vacaciones</h1>
+          <p className="text-slate-500 whitespace-nowrap">
+            Detalle de vacaciones del empleado
+          </p>
+        </header>
           {error && (
             <div className="flex items-center gap-2 p-4 text-sm text-destructive border border-destructive/20 rounded-lg bg-destructive/10">
               <span className="text-red-500">⚠️</span>
               {(error as any)?.message ?? "Error al cargar"}
             </div>
+          )}
+
+          {/* Información del empleado */}
+          {employee && (
+            <section className="pt-6 border-t border-slate-200">
+              <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-slate-700">
+                <span>👤</span> Información
+              </h2>
+              <div className="grid grid-cols-1 gap-4 text-sm lg:grid-cols-6 md:grid-cols-3">
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>🏷️</span> Legajo
+                  </div>
+                  <div className="font-medium text-slate-800">
+                    {employee.employeeCode ?? "-"}
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>👤</span> Apellido y Nombre
+                  </div>
+                  <div className="font-medium text-slate-800">
+                    {`${employee.person?.lastName ?? ""} ${employee.person?.firstName ?? ""}`.trim() || "-"}
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>🎂</span> Edad
+                  </div>
+                  <div className="font-medium text-slate-800">
+                    {calcAge(employee.person?.birthDate)}
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>📅</span> Fecha Ingreso
+                  </div>
+                  <div className="font-medium text-slate-800">
+                    {formatDate(employee.hireDate)}
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <span>⏳</span> Antigüedad
+                  </div>
+                  <div className="font-medium text-slate-800">
+                    {formatTenure(employee.hireDate)}
+                  </div>
+                </div>
+                <div className="p-3 border rounded-lg bg-emerald-50 border-emerald-200">
+                  <div className="flex items-center gap-1 text-emerald-600">
+                    <span>🏖️</span> Días Disponibles
+                  </div>
+                  <div className="text-lg font-bold text-emerald-800">
+                    {sumVacationDays(employee.vacations)}
+                  </div>
+                </div>
+              </div>
+            </section>
           )}
 
           {/* Acciones */}
@@ -137,6 +174,11 @@ export default function EmployeeVacationsDetailPage() {
               >
                 <span className="mr-2">🏖️</span> Asignar Días de Vacaciones
               </Button>
+              <ReportExportMenu
+                reportType={ReportType.EMPLOYEE_VACATION_HISTORY}
+                filter={{ employeeId: id }}
+                title="Historial de Vacaciones"
+              />
             </div>
           </section>
 
@@ -234,8 +276,7 @@ export default function EmployeeVacationsDetailPage() {
               </Table>
             </div>
           </section>
-        </CardContent>
-      </Card>
+      </div>
 
       {/* Dialog: Agregar Vacaciones Anuales (ASSIGNED) */}
       {employee && (

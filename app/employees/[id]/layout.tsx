@@ -48,15 +48,13 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
             </div>
           </CardContent>
         </Card>
-        <Card className="flex-1">
-          <CardContent className="p-6">
-            <div className="space-y-4 animate-pulse">
-              <div className="w-1/4 h-6 rounded bg-muted"></div>
-              <div className="w-1/2 h-4 rounded bg-muted"></div>
-              <div className="h-32 rounded bg-muted"></div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex-1 min-w-0 p-6">
+          <div className="space-y-4 animate-pulse">
+            <div className="w-1/4 h-6 rounded bg-muted"></div>
+            <div className="w-1/2 h-4 rounded bg-muted"></div>
+            <div className="h-32 rounded bg-muted"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -99,10 +97,8 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
         </CardContent>
       </Card>
 
-      {/* Contenido dinámico de cada sección */}
-      <Card className="flex-1">
-        <CardContent className="p-0">{children}</CardContent>
-      </Card>
+      {/* Cada sección controla sus propios recuadros; el layout solo aporta separación. */}
+      <main className="flex-1 min-w-0 p-6">{children}</main>
     </div>
   );
 }
