@@ -201,7 +201,7 @@ Create a `.env.local` file in the project root with the following variables:
 NODE_ENV=development
 
 # Backend API (NestJS)
-NEXT_PUBLIC_API_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305/api
 API_URL=http://localhost:3305/api
 
 # NextAuth
@@ -300,7 +300,7 @@ services:
 This frontend integrates with the SAE Backend (NestJS application) through RESTful APIs. The backend provides:
 
 - **Authentication**: JWT token generation and validation
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: MySQL with Prisma ORM
 - **Business Logic**: Complete CRUD operations for all entities
 - **File Upload**: Document and image management
 - **Reports**: Excel/PDF generation

@@ -273,28 +273,27 @@ services:
       - "3305:3305"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://user:pass@db:5432/sae
+      - DATABASE_URL=mysql://user:pass@db:3306/sae
     restart: unless-stopped
     depends_on:
       - db
     networks:
       - sae-network
 
-  # PostgreSQL Database
+  # MySQL Database
   db:
-    image: postgres:16-alpine
+    image: mysql:8.4
     environment:
-      - POSTGRES_USER=sae_user
-      - POSTGRES_PASSWORD=secure_password
-      - POSTGRES_DB=sae_db
+      - MYSQL_ROOT_PASSWORD=secure_password
+      - MYSQL_DATABASE=sae_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     restart: unless-stopped
     networks:
       - sae-network
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   sae-network:
@@ -304,7 +303,7 @@ networks:
 Crear `.env.production`:
 
 ```env
-NEXT_PUBLIC_API_URL=http://backend:3305
+NEXT_PUBLIC_API_URL=http://backend:3305/api
 NEXTAUTH_URL=http://localhost:3003
 NEXTAUTH_SECRET=tu-secret-key-de-32-caracteres-minimo
 ```

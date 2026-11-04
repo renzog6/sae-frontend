@@ -63,7 +63,11 @@ export function getUserColumns({
       cell: ({ row }: { row: Row<User> }) => (
         <span>
           {row.original.lastLoginAt
-            ? new Date(row.original.lastLoginAt).toLocaleDateString("es-ES")
+            ? new Date(row.original.lastLoginAt).toLocaleString("es-AR", {
+                timeZone: "America/Argentina/Buenos_Aires",
+                dateStyle: "short",
+                timeStyle: "short",
+              })
             : "Nunca"}
         </span>
       ),

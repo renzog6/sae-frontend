@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -30,9 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
-        <ThemeProvider attribute="class" defaultTheme="light">
           {children}
-        </ThemeProvider>
       </SessionProvider>
     </QueryClientProvider>
   );

@@ -129,7 +129,7 @@ curl http://localhost:3305/api/health
 
 # 2. Verificar variables de entorno
 cat .env.local | grep API
-# Debe mostrar: NEXT_PUBLIC_API_URL=http://localhost:3305
+# Debe mostrar: NEXT_PUBLIC_API_URL=http://localhost:3305/api
 
 # 3. Verificar logs del frontend
 # En la consola de npm run dev
@@ -143,7 +143,7 @@ cd ../sae-backend
 npm run start:dev
 
 # Si la URL está mal configurada
-echo "NEXT_PUBLIC_API_URL=http://localhost:3305" > .env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:3305/api" > .env.local
 
 # Reiniciar frontend
 npm run dev
@@ -379,7 +379,7 @@ class CompanyService extends BaseApiService<Company> {
 
 ```bash
 # En .env.local
-NEXT_PUBLIC_API_URL=http://localhost:3305  # Sin /api al final
+NEXT_PUBLIC_API_URL=http://localhost:3305/api
 ```
 
 3. **Backend no tiene ese endpoint:**
@@ -648,7 +648,7 @@ docker run -p 3004:3003 sae-frontend:latest
 ```bash
 # Pasar todas las env vars necesarias
 docker run -d \
-  -e NEXT_PUBLIC_API_URL=http://localhost:3305 \
+  -e NEXT_PUBLIC_API_URL=http://localhost:3305/api \
   -e NEXTAUTH_URL=http://localhost:3003 \
   -e NEXTAUTH_SECRET=tu-secret-key \
   sae-frontend:latest

@@ -18,7 +18,7 @@ Esta guía explica cómo el frontend SAE se integra con el backend SAE-NestJS a 
       ▲                                           │
       │                                           ▼
       │                                  ┌─────────────┐
-      └──────── JWT Tokens ─────────────│ PostgreSQL  │
+      └──────── JWT Tokens ─────────────│   MySQL     │
         (accessToken + refreshToken)     │  Database   │
                                           └─────────────┘
 ```
@@ -33,7 +33,7 @@ Esta guía explica cómo el frontend SAE se integra con el backend SAE-NestJS a 
 # .env.local
 
 # URL pública del API (usada en el navegador)
-NEXT_PUBLIC_API_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305/api
 
 # URL interna del API (usada en servidor Next.js)
 API_URL=http://localhost:3305/api

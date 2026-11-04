@@ -64,7 +64,7 @@ Edita `.env.local` con tus valores:
 NODE_ENV=development
 
 # Backend API (NestJS) - IMPORTANTE: Cambiar el puerto
-NEXT_PUBLIC_API_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305/api
 API_URL=http://localhost:3305/api
 
 # NextAuth - URL donde corre tu frontend
@@ -193,7 +193,7 @@ Este frontend requiere el backend SAE-NestJS funcionando.
 **Requisitos:**
 
 - Backend corriendo en: `http://localhost:3305`
-- Base de datos PostgreSQL configurada
+- Base de datos MySQL configurada en `localhost:3306`
 - Endpoints de API disponibles
 
 ### Verificar conexión

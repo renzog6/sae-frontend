@@ -53,7 +53,7 @@ SAE-Frontend implementa una **arquitectura hexagonal moderna** (también conocid
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                   BACKEND API (NestJS)                       │
-│                    PostgreSQL Database                       │
+│                       MySQL Database                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 

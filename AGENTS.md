@@ -22,7 +22,7 @@ Create `.env.local`:
 
 ```env
 NODE_ENV=development
-NEXT_PUBLIC_API_URL=http://localhost:3305
+NEXT_PUBLIC_API_URL=http://localhost:3305/api
 API_URL=http://localhost:3305/api
 NEXTAUTH_URL=http://localhost:3003
 NEXTAUTH_SECRET=<generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
@@ -155,9 +155,11 @@ Add to `package.json`:
 "coverage": "vitest --coverage"
 ```
 
-### Add GitHub Actions CI
+### CI already configured
 
-Create `.github/workflows/ci.yml`:
+The root repository already defines `.github/workflows/ci.yml`, including backend,
+frontend, migrations, E2E and OpenAPI contract validation. Do not create a second
+workflow unless the existing one is intentionally replaced.
 
 ```yaml
 name: CI
@@ -173,3 +175,13 @@ jobs:
       - run: npm ci
       - run: npm run build
 ```
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
