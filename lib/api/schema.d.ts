@@ -2623,6 +2623,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/server-files/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List document audit events
+         * @description Lists administrative document events. Restricted to admins.
+         */
+        get: operations["ServerFilesController_findDocumentAuditLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/server-files/upload": {
         parameters: {
             query?: never;
@@ -2658,6 +2678,26 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/server-files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Soft-delete a file
+         * @description Marks a file as deleted without removing it from physical storage.
+         */
+        delete: operations["ServerFilesController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -11470,10 +11510,10 @@ export interface operations {
     ServerFilesController_findAll: {
         parameters: {
             query?: {
-                /** @description Filter files by employee ID */
-                employeeId?: number;
                 /** @description Filter files by company ID */
                 companyId?: number;
+                /** @description Filter files by employee ID */
+                employeeId?: number;
             };
             header?: never;
             path?: never;
@@ -11503,6 +11543,24 @@ export interface operations {
                         }[];
                     };
                 };
+            };
+        };
+    };
+    ServerFilesController_findDocumentAuditLog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Document audit events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -11574,6 +11632,41 @@ export interface operations {
                 };
             };
             /** @description File not found with the specified ID */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServerFilesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Unique identifier of the file to delete */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File marked as deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The user does not have access to the file's company */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File not found or already deleted */
             404: {
                 headers: {
                     [name: string]: unknown;

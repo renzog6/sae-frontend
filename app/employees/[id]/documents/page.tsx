@@ -37,7 +37,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useEmployees } from "@/lib/hooks/useEmployees";
 import { useServerFiles } from "@/lib/hooks/useServerFiles";
-import { ServerFile } from "@/lib/types/domain/server-file";
+import { useToast } from "@/components/ui/toaster";
+import type { ServerFile } from "@/lib/types/domain/server-file";
 import {
   uploadServerFileSchema,
   type UploadServerFileFormData,
@@ -73,6 +74,7 @@ function formatFileSize(bytes: number): string {
 export default function EmployeeDocumentsPage() {
   const params = useParams();
   const id = Number(params.id);
+  const { toast } = useToast();
 
   const { data: employee, isLoading: employeeLoading } = useEmployees().useGetById(id);
   const serverFilesHooks = useServerFiles();
@@ -140,8 +142,19 @@ export default function EmployeeDocumentsPage() {
   const handleDelete = async (documentId: number) => {
     try {
       await deleteMutation.mutateAsync(documentId);
+      toast({
+        title: "Documento quitado",
+        description: "El archivo físico se conservó en el almacenamiento.",
+        variant: "success",
+      });
     } catch (error) {
       console.error("Delete failed:", error);
+      toast({
+        title: "No se pudo quitar el documento",
+        description:
+          error instanceof Error ? error.message : "Intenta nuevamente.",
+        variant: "error",
+      });
     }
   };
 
@@ -346,14 +359,16 @@ export default function EmployeeDocumentsPage() {
                               Eliminar Documento
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              ¿Estás seguro de que quieres eliminar "
-                              {doc.filename}"? Esta acción no se puede deshacer.
+                              ¿Querés quitar "{doc.filename}" del legajo? El
+                              archivo físico se conservará, pero dejará de
+                              aparecer y no podrá descargarse desde la aplicación.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(doc.id)}
+                              disabled={deleteMutation.isPending}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
                               Eliminar

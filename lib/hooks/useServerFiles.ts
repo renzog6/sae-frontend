@@ -1,7 +1,7 @@
 import { createApiHooks } from "@/lib/hooks/createApiHooks";
 import { ServerFilesService } from "@/lib/api/server-files/server-files.service";
-import { UploadServerFileData } from "@/lib/types/domain/server-file";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { UploadServerFileData } from "@/lib/types/domain/server-file";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useServerFiles = () => {
     const base = createApiHooks(ServerFilesService, "server-files");
@@ -25,10 +25,18 @@ export const useServerFiles = () => {
             mutationFn: (id: number) => ServerFilesService.preview(id),
         });
 
+    const useAuditLog = (enabled = false) =>
+        useQuery({
+            queryKey: ["server-files", "audit"],
+            queryFn: () => ServerFilesService.getAuditLog(),
+            enabled,
+        });
+
     return {
         ...base,
         useUpload,
         useDownload,
         usePreview,
+        useAuditLog,
     };
 };

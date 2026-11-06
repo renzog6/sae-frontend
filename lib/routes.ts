@@ -59,6 +59,7 @@ export const routes = {
     locations: "/settings/locations",
     brands: "/settings/brands",
     units: "/settings/units",
+    documentAudit: "/settings/document-audit",
   },
 
   users: {

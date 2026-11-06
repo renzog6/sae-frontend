@@ -14,6 +14,19 @@ export interface ServerFile {
     companyId?: number;
 }
 
+export interface DocumentAuditLog {
+    id: number;
+    action: "LOGICAL_DELETE";
+    serverFileId: number;
+    filename: string;
+    mimetype: string;
+    size: number;
+    description?: string | null;
+    employeeId?: number | null;
+    companyId?: number | null;
+    eventDate: string;
+}
+
 export type EntityType = "EMPLOYEE" | "COMPANY";
 
 export interface UploadServerFileData {

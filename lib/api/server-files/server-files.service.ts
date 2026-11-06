@@ -3,14 +3,15 @@ import { BaseApiService } from "@/lib/api/base-api.service";
 import { ApiClient } from "@/lib/api/apiClient";
 import { ApiErrorHandler } from "@/lib/utils/api-error-handler";
 
-import {
+import type {
     BaseQueryParams,
     PaginatedResponse,
     ApiResponse,
 } from "@/lib/types/core/api";
 
-import {
+import type {
     ServerFile,
+    DocumentAuditLog,
     UploadServerFileData,
     CreateServerFileDto,
     UpdateServerFileDto,
@@ -80,6 +81,19 @@ class ServerFilesServiceClass extends BaseApiService<
             this.constructor.name,
             "upload",
             { data }
+        );
+    }
+
+    async getAuditLog(): Promise<DocumentAuditLog[]> {
+        return ApiErrorHandler.handleApiCall(
+            async () => {
+                const response = await ApiClient.get<
+                    DocumentAuditLog[] | ApiResponse<DocumentAuditLog[]>
+                >(`${this.basePath}/audit`);
+                return Array.isArray(response) ? response : response.data;
+            },
+            this.constructor.name,
+            "getAuditLog"
         );
     }
 

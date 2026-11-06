@@ -2,7 +2,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Building2, Tags, Ruler, Users, ChevronRight } from "lucide-react";
+import { Building2, Tags, Ruler, Users, ChevronRight, ClipboardList } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { useSession } from "next-auth/react";
 
 // Config data for the cards to make the JSX cleaner
 const settingsSections = [
@@ -63,10 +64,27 @@ const settingsSections = [
     hoverColor: "group-hover:text-purple-700",
     hoverBg: "group-hover:bg-purple-600",
   },
+  {
+    title: "Auditoría de documentos",
+    description: "Consulta las operaciones administrativas sobre documentos.",
+    icon: ClipboardList,
+    href: routes.settings.documentAudit,
+    ariaLabel: "Ir a auditoría de documentos",
+    ariaDescribedBy: "desc-document-audit",
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-50",
+    hoverColor: "group-hover:text-indigo-700",
+    hoverBg: "group-hover:bg-indigo-600",
+    adminOnly: true,
+  },
 ];
 
 export default function SettingsPage() {
   const prefersReducedMotion = useReducedMotion();
+  const { data: session } = useSession();
+  const visibleSections = settingsSections.filter(
+    (section) => !("adminOnly" in section) || session?.user?.role === "ADMIN"
+  );
 
   return (
     <div className="space-y-8">
@@ -89,7 +107,7 @@ export default function SettingsPage() {
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {settingsSections.map((section, i) => (
+        {visibleSections.map((section, i) => (
           <motion.div
             key={section.title}
             initial={{ opacity: 0, y: 10 }}
